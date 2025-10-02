@@ -1,0 +1,138 @@
+{
+  "mcpServers": {
+    "chrome-devtools-mcp-server": {
+      "command": "npx",
+      "args": ["chrome-devtools-mcp@latest"]
+    },
+    "jina-mcp-server": {
+      "command": "npx",
+      "args": [
+        "mcp-remote",
+        "https://mcp.jina.ai/sse",
+        "--header",
+        "Authorization: Bearer ${JINA_API_KEY}"
+      ]
+    },
+    "artifacthub-mcp": {
+      "type": "stdio",
+      "command": "docker",
+      "args": ["run", "-i", "--rm", "ghcr.io/alexw00/artifacthub-mcp"]
+    },
+    "serena-mcp-server": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": [
+        "--from",
+        "git+https://github.com/oraios/serena",
+        "serena",
+        "start-mcp-server",
+        "--context",
+        "ide-assistant",
+        "--project",
+        "/Users/juliano.barbosa/Repos/azure/rg-hypera-cafehyna-web/Repos/dev/src/argocd"
+      ],
+      "env": {}
+    },
+    "argocd-mcp-server": {
+      "command": "npx",
+      "args": ["argocd-mcp@latest", "stdio"],
+      "env": {
+        "ARGOCD_BASE_URL": "${ARGOCD_BASE_URL}",
+        "ARGOCD_API_TOKEN": "${ARGOCD_AUTH_TOKEN}"
+      }
+    },
+    "aks-mcp-server": {
+      "type": "stdio",
+      "command": "/usr/local/bin/aks-mcp",
+      "args": ["--transport", "stdio"]
+    },
+    "desktop-commander-mcp-server": {
+      "command": "npx",
+      "args": ["-y", "@wonderwhy-er/desktop-commander"]
+    },
+    "kyverno-mcp-server": {
+      "command": "/opt/homebrew/bin/kyverno-mcp",
+      "args": ["--kubeconfig=${KUBECONFIG}"]
+    },
+    "kubernetes-mcp-server": {
+      "command": "npx",
+      "args": ["mcp-server-kubernetes"]
+    },
+    "azure-mcp-server": {
+      "command": "npx",
+      "args": ["-y", "@azure/mcp@latest", "server", "start"]
+    },
+    "azure-devops-mcp-server": {
+      "command": "npx",
+      "args": ["-y", "@azure-devops/mcp", "${AZURE_DEVOPS_ORG_URL}"]
+    },
+    "trivy-mcp-server": {
+      "command": "trivy",
+      "args": ["mcp"]
+    },
+    "gemini-cli-mcp-server": {
+      "command": "npx",
+      "args": ["-y", "gemini-mcp-tool"]
+    },
+    "microsoft-docs-mcp-server": {
+      "type": "http",
+      "url": "https://learn.microsoft.com/api/mcp"
+    },
+    "fetch-mcp-server": {
+      "command": "uvx",
+      "args": ["mcp-server-fetch"]
+    },
+    "context7-mcp-server": {
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp@latest"],
+      "alwaysAllow": ["resolve-library-id", "get-library-docs"]
+    },
+    "repomix-mcp-server": {
+      "command": "npx",
+      "args": ["-y", "repomix", "--mcp"],
+      "alwaysAllow": [
+        "pack_codebase",
+        "pack_remote_repository",
+        "read_repomix_output",
+        "file_system_read_file",
+        "file_system_read_directory"
+      ]
+    },
+    "sequential-thinking-mcp-server": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"],
+      "alwaysAllow": []
+    },
+    "magic-mcp-server": {
+      "command": "npx",
+      "args": ["-y", "@21st-dev/magic@latest"],
+      "alwaysAllow": []
+    },
+    "playwright-mcp-server": {
+      "command": "npx",
+      "args": ["-y", "@executeautomation/playwright-mcp-server"],
+      "alwaysAllow": [
+        "playwright_navigate",
+        "playwright_screenshot",
+        "playwright_click",
+        "playwright_fill",
+        "playwright_extract_content",
+        "playwright_extract_links",
+        "playwright_select_option",
+        "playwright_wait_for_element",
+        "playwright_evaluate"
+      ]
+    },
+    "taskmaster-ai-mcp-server": {
+      "command": "npx",
+      "args": ["-y", "--package=task-master-ai", "task-master-ai"],
+      "env": {
+        "ANTHROPIC_API_KEY": "${ANTHROPIC_API_KEY}",
+        "GOOGLE_API_KEY": "${GOOGLE_API_KEY}",
+        "MISTRAL_API_KEY": "${MISTRAL_API_KEY}",
+        "OPENROUTER_API_KEY": "${OPENROUTER_API_KEY}",
+        "XAI_API_KEY": "${XAI_API_KEY}"
+      }
+    }
+  }
+}

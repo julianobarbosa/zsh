@@ -1,0 +1,47 @@
+# zsh-tool Team Configuration
+version: "1.0"
+
+# Team configuration repository (optional)
+# team_config_repo: "git@github.com:yourteam/zsh-config.git"
+
+# Oh My Zsh plugins
+plugins:
+  - git
+  - docker
+  - kubectl
+  - zsh-syntax-highlighting
+  - zsh-autosuggestions
+
+# Oh My Zsh theme
+themes:
+  default: "robbyrussell"
+  available:
+    - robbyrussell
+    - agnoster
+    - af-magic
+
+# Team aliases
+aliases:
+  - name: "gs"
+    command: "git status"
+  - name: "gp"
+    command: "git pull"
+  - name: "gps"
+    command: "git push"
+  - name: "gc"
+    command: "git commit"
+  - name: "ll"
+    command: "ls -lah"
+
+# Team exports
+exports:
+  - name: "EDITOR"
+    value: "vim"
+  - name: "VISUAL"
+    value: "vim"
+
+# PATH modifications
+paths:
+  prepend:
+    - "$HOME/.local/bin"
+    - "$HOME/bin"

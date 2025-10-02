@@ -71,23 +71,54 @@ fi
 # Load core utilities
 source "${ZSH_TOOL_LIB_DIR}/core/utils.zsh"
 
-# Load installation functions
+# Load installation modules
 source "${ZSH_TOOL_LIB_DIR}/install/prerequisites.zsh"
 source "${ZSH_TOOL_LIB_DIR}/install/backup.zsh"
-# Additional modules loaded on demand
+source "${ZSH_TOOL_LIB_DIR}/install/omz.zsh"
+source "${ZSH_TOOL_LIB_DIR}/install/config.zsh"
+source "${ZSH_TOOL_LIB_DIR}/install/plugins.zsh"
+source "${ZSH_TOOL_LIB_DIR}/install/themes.zsh"
+source "${ZSH_TOOL_LIB_DIR}/install/verify.zsh"
 
 # Main install command
 zsh-tool-install() {
-  _zsh_tool_log INFO "Starting zsh-tool installation..."
+  local start_time=$(date +%s)
 
-  # Check prerequisites
+  _zsh_tool_log INFO "Starting zsh-tool installation..."
+  echo ""
+
+  # Check prerequisites (Story 1.1)
   _zsh_tool_check_prerequisites || return 1
 
-  # Create backup
+  # Create backup (Story 1.2)
   _zsh_tool_create_backup "pre-install" || return 1
 
-  _zsh_tool_log INFO "Installation will continue in future iterations..."
-  _zsh_tool_log INFO "Currently implemented: prerequisites check and backup"
+  # Install/verify Oh My Zsh
+  _zsh_tool_ensure_omz || return 1
+
+  # Install team configuration (Story 1.3)
+  _zsh_tool_install_config || return 1
+
+  # Install plugins (Story 1.4)
+  _zsh_tool_install_plugins || return 1
+
+  # Apply theme (Story 1.5)
+  _zsh_tool_apply_theme || return 1
+
+  # Setup customization layer (Story 1.6)
+  _zsh_tool_setup_custom_layer || return 1
+
+  # Verify installation (Story 1.7)
+  _zsh_tool_verify_installation
+
+  # Display summary
+  _zsh_tool_display_summary "$start_time"
+
+  # Update state - mark as installed
+  _zsh_tool_update_state "installed" "true"
+  _zsh_tool_update_state "install_timestamp" "\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\""
+
+  return 0
 }
 
 # Help command
@@ -125,5 +156,12 @@ echo "  1. Reload your shell: exec zsh"
 echo "  2. Run installation: zsh-tool-install"
 echo "  3. Get help: zsh-tool-help"
 echo ""
-echo "Note: This is an MVP implementation with prerequisites and backup functionality."
-echo "Additional features (plugins, themes, etc.) will be added in future iterations."
+echo "Epic 1 features available:"
+echo "  ✓ Prerequisites detection and installation"
+echo "  ✓ Automatic backups"
+echo "  ✓ Oh My Zsh installation"
+echo "  ✓ Team configuration management"
+echo "  ✓ Plugin installation"
+echo "  ✓ Theme selection"
+echo "  ✓ Personal customization layer"
+echo ""

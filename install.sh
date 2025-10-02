@@ -71,7 +71,7 @@ fi
 # Load core utilities
 source "${ZSH_TOOL_LIB_DIR}/core/utils.zsh"
 
-# Load installation modules
+# Load installation modules (Epic 1)
 source "${ZSH_TOOL_LIB_DIR}/install/prerequisites.zsh"
 source "${ZSH_TOOL_LIB_DIR}/install/backup.zsh"
 source "${ZSH_TOOL_LIB_DIR}/install/omz.zsh"
@@ -79,6 +79,18 @@ source "${ZSH_TOOL_LIB_DIR}/install/config.zsh"
 source "${ZSH_TOOL_LIB_DIR}/install/plugins.zsh"
 source "${ZSH_TOOL_LIB_DIR}/install/themes.zsh"
 source "${ZSH_TOOL_LIB_DIR}/install/verify.zsh"
+
+# Load update modules (Epic 2)
+source "${ZSH_TOOL_LIB_DIR}/update/self.zsh"
+source "${ZSH_TOOL_LIB_DIR}/update/omz.zsh"
+source "${ZSH_TOOL_LIB_DIR}/update/plugins.zsh"
+
+# Load restore modules (Epic 2)
+source "${ZSH_TOOL_LIB_DIR}/restore/backup-mgmt.zsh"
+source "${ZSH_TOOL_LIB_DIR}/restore/restore.zsh"
+
+# Load git integration (Epic 2)
+source "${ZSH_TOOL_LIB_DIR}/git/integration.zsh"
 
 # Main install command
 zsh-tool-install() {
@@ -121,14 +133,135 @@ zsh-tool-install() {
   return 0
 }
 
+# Epic 2 Commands
+
+# Update command
+zsh-tool-update() {
+  local target="\${1:-all}"
+
+  case "\$target" in
+    self)
+      _zsh_tool_self_update
+      ;;
+    omz)
+      _zsh_tool_create_backup "pre-update" || return 1
+      _zsh_tool_update_omz
+      ;;
+    plugins)
+      _zsh_tool_create_backup "pre-update" || return 1
+      _zsh_tool_update_all_plugins
+      ;;
+    all)
+      _zsh_tool_log INFO "Updating all components..."
+      echo ""
+
+      # Update self
+      _zsh_tool_self_update --check && _zsh_tool_apply_update
+
+      # Create backup before updating OMZ and plugins
+      _zsh_tool_create_backup "pre-update" || return 1
+
+      # Update OMZ
+      _zsh_tool_update_omz
+
+      # Update plugins
+      _zsh_tool_update_all_plugins
+
+      echo ""
+      echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+      echo "✓ All updates complete!"
+      echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+      echo ""
+      echo "Reload shell to apply updates: exec zsh"
+      echo ""
+      ;;
+    *)
+      echo "Usage: zsh-tool-update [self|omz|plugins|all]"
+      return 1
+      ;;
+  esac
+}
+
+# Backup command
+zsh-tool-backup() {
+  local subcommand="\${1:-create}"
+
+  case "\$subcommand" in
+    create)
+      _zsh_tool_create_manual_backup
+      ;;
+    list)
+      _zsh_tool_list_backups
+      ;;
+    remote)
+      _zsh_tool_backup_to_remote
+      ;;
+    *)
+      echo "Usage: zsh-tool-backup [create|list|remote]"
+      return 1
+      ;;
+  esac
+}
+
+# Restore command
+zsh-tool-restore() {
+  local subcommand="\$1"
+  shift
+
+  case "\$subcommand" in
+    list)
+      _zsh_tool_list_backups
+      ;;
+    apply)
+      _zsh_tool_restore_from_backup "\$@"
+      ;;
+    *)
+      echo "Usage: zsh-tool-restore [list|apply <backup-id>]"
+      return 1
+      ;;
+  esac
+}
+
+# Git integration command
+zsh-tool-git() {
+  _zsh_tool_git_integration "\$@"
+}
+
 # Help command
 zsh-tool-help() {
   cat <<HELP
 zsh-tool - zsh Configuration Management Tool
 
-Available commands:
+Epic 1 - Installation & Configuration:
   zsh-tool-install              Install team configuration
   zsh-tool-config [list|edit]   Manage configuration
+
+Epic 2 - Maintenance & Lifecycle:
+  zsh-tool-update [target]      Update components
+    self                        Update zsh-tool itself
+    omz                         Update Oh My Zsh
+    plugins                     Update all plugins
+    all                         Update everything (default)
+
+  zsh-tool-backup [action]      Manage backups
+    create                      Create manual backup (default)
+    list                        List all backups
+    remote                      Push backup to remote
+
+  zsh-tool-restore [action]     Restore from backup
+    list                        List available backups
+    apply <id>                  Restore from backup
+
+  zsh-tool-git [command]        Git integration for dotfiles
+    init                        Initialize dotfiles repository
+    remote <url>                Configure remote URL
+    status                      Show dotfiles status
+    add <files>                 Add files to version control
+    commit <message>            Commit changes
+    push                        Push to remote
+    pull                        Pull from remote
+
+Other:
   zsh-tool-help                 Show this help message
 
 For more information, see: https://github.com/yourteam/zsh-tool
@@ -156,7 +289,7 @@ echo "  1. Reload your shell: exec zsh"
 echo "  2. Run installation: zsh-tool-install"
 echo "  3. Get help: zsh-tool-help"
 echo ""
-echo "Epic 1 features available:"
+echo "Epic 1 - Core Installation & Configuration:"
 echo "  ✓ Prerequisites detection and installation"
 echo "  ✓ Automatic backups"
 echo "  ✓ Oh My Zsh installation"
@@ -164,4 +297,11 @@ echo "  ✓ Team configuration management"
 echo "  ✓ Plugin installation"
 echo "  ✓ Theme selection"
 echo "  ✓ Personal customization layer"
+echo ""
+echo "Epic 2 - Maintenance & Lifecycle Management:"
+echo "  ✓ Self-update mechanism"
+echo "  ✓ Bulk plugin and theme updates"
+echo "  ✓ Configuration backup management"
+echo "  ✓ Configuration restore from backup"
+echo "  ✓ Git integration for dotfiles"
 echo ""

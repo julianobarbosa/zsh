@@ -436,6 +436,142 @@ test_error_mixed_valid_invalid() {
 }
 
 # ============================================================================
+# CONCURRENT EXECUTION TESTS (LOW PRIORITY)
+# ============================================================================
+
+# Test 21: Concurrent settings configuration
+test_concurrent_settings_updates() {
+  # Reset to clean state
+  echo '{"disabledClis":[]}' > "$AMAZONQ_SETTINGS_FILE"
+
+  # Launch multiple background processes
+  local pids=()
+  for i in {1..5}; do
+    (_amazonq_configure_settings "cli$i" >/dev/null 2>&1) &
+    pids+=($!)
+  done
+
+  # Wait for all to complete
+  for pid in "${pids[@]}"; do
+    wait $pid 2>/dev/null
+  done
+
+  # Verify file is still valid JSON
+  if jq empty "$AMAZONQ_SETTINGS_FILE" 2>/dev/null; then
+    test_result "Concurrent: parallel settings updates" "PASS"
+  else
+    test_result "Concurrent: parallel settings updates" "FAIL" "JSON corrupted by concurrent writes"
+  fi
+}
+
+# Test 22: Concurrent file creation
+test_concurrent_file_creation() {
+  # Remove settings file
+  rm -f "$AMAZONQ_SETTINGS_FILE"
+
+  # Launch multiple processes trying to create file simultaneously
+  local pids=()
+  for i in {1..3}; do
+    (_amazonq_configure_settings "concurrent$i" >/dev/null 2>&1) &
+    pids+=($!)
+  done
+
+  # Wait for all
+  for pid in "${pids[@]}"; do
+    wait $pid 2>/dev/null
+  done
+
+  # Check file exists and is valid
+  if [[ -f "$AMAZONQ_SETTINGS_FILE" ]] && jq empty "$AMAZONQ_SETTINGS_FILE" 2>/dev/null; then
+    test_result "Concurrent: file creation race" "PASS"
+  else
+    test_result "Concurrent: file creation race" "FAIL" "File not created or corrupted"
+  fi
+}
+
+# Test 23: Unicode character handling
+test_security_unicode_characters() {
+  local unicode_names=("test🚀cli" "café" "日本語" "tëst")
+  local all_rejected=true
+
+  for name in "${unicode_names[@]}"; do
+    if _amazonq_validate_cli_name "$name" 2>/dev/null; then
+      all_rejected=false
+      break
+    fi
+  done
+
+  if [[ "$all_rejected" == "true" ]]; then
+    test_result "Security: reject unicode characters" "PASS"
+  else
+    test_result "Security: reject unicode characters" "FAIL" "Should reject non-ASCII characters"
+  fi
+}
+
+# Test 24: Newlines and tabs in CLI names
+test_security_whitespace_characters() {
+  _amazonq_validate_cli_name "test\nname" 2>/dev/null
+  local newline_result=$?
+
+  _amazonq_validate_cli_name "test\tname" 2>/dev/null
+  local tab_result=$?
+
+  _amazonq_validate_cli_name "test name" 2>/dev/null
+  local space_result=$?
+
+  if [[ $newline_result -ne 0 ]] && [[ $tab_result -ne 0 ]] && [[ $space_result -ne 0 ]]; then
+    test_result "Security: reject whitespace characters" "PASS"
+  else
+    test_result "Security: reject whitespace characters" "FAIL" "Should reject names with whitespace"
+  fi
+}
+
+# Test 25: Unwritable settings file
+test_filesystem_unwritable_file() {
+  # Create settings file and make both directory and file read-only
+  echo '{"disabledClis":[]}' > "$AMAZONQ_SETTINGS_FILE"
+  chmod 444 "$AMAZONQ_SETTINGS_FILE"
+
+  # Also restrict directory to prevent mv from working
+  local old_perms=$(stat -f "%p" "$AMAZONQ_CONFIG_DIR" 2>/dev/null | tail -c 4)
+  chmod 555 "$AMAZONQ_CONFIG_DIR"
+
+  _amazonq_configure_settings "atuin" 2>/dev/null
+  local result=$?
+
+  # Restore permissions for cleanup
+  chmod "$old_perms" "$AMAZONQ_CONFIG_DIR" 2>/dev/null || chmod 755 "$AMAZONQ_CONFIG_DIR"
+  chmod 644 "$AMAZONQ_SETTINGS_FILE"
+
+  if [[ $result -ne 0 ]]; then
+    test_result "Filesystem: detect unwritable file" "PASS"
+  else
+    test_result "Filesystem: detect unwritable file" "FAIL" "Should fail with read-only directory"
+  fi
+}
+
+# Test 26: Partial JSON structure
+test_filesystem_partial_json() {
+  # Create file with empty JSON object (missing disabledClis)
+  echo '{}' > "$AMAZONQ_SETTINGS_FILE"
+
+  _amazonq_configure_settings "atuin" 2>/dev/null
+  local result=$?
+
+  if [[ $result -eq 0 ]]; then
+    # Verify disabledClis was added
+    local content=$(jq -r '.disabledClis[]' "$AMAZONQ_SETTINGS_FILE" 2>/dev/null)
+    if [[ "$content" == "atuin" ]]; then
+      test_result "Filesystem: handle partial JSON" "PASS"
+    else
+      test_result "Filesystem: handle partial JSON" "FAIL" "Should add disabledClis field"
+    fi
+  else
+    test_result "Filesystem: handle partial JSON" "FAIL" "Should handle empty JSON object"
+  fi
+}
+
+# ============================================================================
 # MAIN TEST RUNNER
 # ============================================================================
 
@@ -463,6 +599,8 @@ run_edge_case_tests() {
   test_security_length_limit
   test_security_empty_name
   test_security_valid_names
+  test_security_unicode_characters
+  test_security_whitespace_characters
 
   echo ""
   echo "${YELLOW}Running Filesystem Tests (MEDIUM Priority)${NC}"
@@ -470,6 +608,8 @@ run_edge_case_tests() {
   test_filesystem_invalid_json
   test_filesystem_readonly_directory
   test_filesystem_no_jq
+  test_filesystem_unwritable_file
+  test_filesystem_partial_json
 
   echo ""
   echo "${YELLOW}Running Configuration Tests (MEDIUM Priority)${NC}"
@@ -484,6 +624,12 @@ run_edge_case_tests() {
   echo ""
   test_error_multiple_invalid_names
   test_error_mixed_valid_invalid
+
+  echo ""
+  echo "${YELLOW}Running Concurrent Execution Tests (LOW Priority)${NC}"
+  echo ""
+  test_concurrent_settings_updates
+  test_concurrent_file_creation
 
   # Teardown
   teardown_test_env

@@ -56,6 +56,7 @@ EOF
 # Cleanup test environment
 teardown_test_env() {
   rm -rf "/tmp/zsh-tool-test-$$" 2>/dev/null
+  rm -rf "/tmp/test-home-$$" 2>/dev/null
 }
 
 # Load the modules to test
@@ -204,8 +205,11 @@ test_lazy_loading_setup() {
   local test_home="/tmp/test-home-$$"
   local result="FAIL"
 
-  # Create test environment
+  # Create test environment with cleanup trap
   mkdir -p "$test_home"
+
+  # Set up trap to ensure cleanup on exit/interrupt
+  trap "rm -rf '$test_home' 2>/dev/null" EXIT INT TERM
 
   # Run test in isolated subshell and capture output
   result=$(
@@ -223,8 +227,9 @@ test_lazy_loading_setup() {
     fi
   )
 
-  # Cleanup test environment
-  rm -rf "$test_home"
+  # Explicit cleanup (trap will also handle this in case of failures)
+  rm -rf "$test_home" 2>/dev/null
+  trap - EXIT INT TERM
 
   # Verify result
   if [[ "$result" == "PASS" ]]; then

@@ -9,6 +9,7 @@ plugins:
   - git
   - docker
   - kubectl
+  - azure
   - zsh-syntax-highlighting
   - zsh-autosuggestions
 

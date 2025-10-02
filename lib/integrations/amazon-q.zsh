@@ -3,9 +3,11 @@
 # Manages installation, configuration, and integration with zsh
 
 # Amazon Q CLI configuration
-AMAZONQ_CONFIG_DIR="${HOME}/.aws/amazonq"
-AMAZONQ_SETTINGS_FILE="${AMAZONQ_CONFIG_DIR}/settings.json"
-AMAZONQ_APP_PATH="/Applications/Amazon Q.app"
+# These paths match Amazon Q's default installation locations on macOS
+# Can be overridden by setting these variables before sourcing this file
+AMAZONQ_CONFIG_DIR="${AMAZONQ_CONFIG_DIR:-${HOME}/.aws/amazonq}"
+AMAZONQ_SETTINGS_FILE="${AMAZONQ_SETTINGS_FILE:-${AMAZONQ_CONFIG_DIR}/settings.json}"
+AMAZONQ_APP_PATH="${AMAZONQ_APP_PATH:-/Applications/Amazon Q.app}"
 
 # Check if Amazon Q CLI is installed
 _amazonq_is_installed() {
@@ -17,6 +19,7 @@ _amazonq_detect() {
   _zsh_tool_log INFO "Detecting Amazon Q CLI installation..."
 
   if _amazonq_is_installed; then
+    # Extract first line only as version output may include additional info
     local version=$(q --version 2>/dev/null | head -n1)
     _zsh_tool_log INFO "✓ Amazon Q CLI detected: $version"
     return 0
@@ -423,7 +426,6 @@ amazonq_install_integration() {
   return 0
 }
 
-# Expose main function
-_amazonq_install_integration() {
-  amazonq_install_integration "$@"
-}
+# Alias for consistency with naming convention
+# Both amazonq_install_integration and _amazonq_install_integration are available
+alias _amazonq_install_integration='amazonq_install_integration'

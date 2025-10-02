@@ -167,9 +167,9 @@ zsh-tool-install() {
 
 # Update command
 zsh-tool-update() {
-  local target="\${1:-all}"
+  local target="${1:-all}"
 
-  case "\$target" in
+  case "$target" in
     self)
       _zsh_tool_self_update
       ;;
@@ -214,9 +214,9 @@ zsh-tool-update() {
 
 # Backup command
 zsh-tool-backup() {
-  local subcommand="\${1:-create}"
+  local subcommand="${1:-create}"
 
-  case "\$subcommand" in
+  case "$subcommand" in
     create)
       _zsh_tool_create_manual_backup
       ;;
@@ -235,15 +235,15 @@ zsh-tool-backup() {
 
 # Restore command
 zsh-tool-restore() {
-  local subcommand="\$1"
+  local subcommand="$1"
   shift
 
-  case "\$subcommand" in
+  case "$subcommand" in
     list)
       _zsh_tool_list_backups
       ;;
     apply)
-      _zsh_tool_restore_from_backup "\$@"
+      _zsh_tool_restore_from_backup "$@"
       ;;
     *)
       echo "Usage: zsh-tool-restore [list|apply <backup-id>]"
@@ -254,19 +254,19 @@ zsh-tool-restore() {
 
 # Git integration command
 zsh-tool-git() {
-  _zsh_tool_git_integration "\$@"
+  _zsh_tool_git_integration "$@"
 }
 
 # Amazon Q integration command
 zsh-tool-amazonq() {
-  local subcommand="\${1:-status}"
+  local subcommand="${1:-status}"
 
-  case "\$subcommand" in
+  case "$subcommand" in
     install)
       _zsh_tool_log INFO "Installing Amazon Q CLI integration..."
       local lazy_loading=$(_zsh_tool_parse_amazon_q_lazy_loading)
       local atuin_compat=$(_zsh_tool_parse_amazon_q_atuin_compatibility)
-      _amazonq_install_integration "\$lazy_loading" "\$atuin_compat"
+      _amazonq_install_integration "$lazy_loading" "$atuin_compat"
       ;;
     status|detect)
       _amazonq_detect
@@ -295,14 +295,14 @@ AMAZONQ_HELP
 
 # Config management command
 zsh-tool-config() {
-  local subcommand="\${1:-list}"
+  local subcommand="${1:-list}"
 
-  case "\$subcommand" in
+  case "$subcommand" in
     list)
       cat "${CONFIG_DIR}/config.yaml"
       ;;
     edit)
-      "\${EDITOR:-vim}" "${CONFIG_DIR}/config.yaml"
+      "${EDITOR:-vim}" "${CONFIG_DIR}/config.yaml"
       ;;
     *)
       echo "Usage: zsh-tool-config [list|edit]"

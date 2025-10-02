@@ -143,8 +143,9 @@ _zsh_tool_error_handler() {
   return $exit_code
 }
 
-# Set up error trap
-trap '_zsh_tool_error_handler $LINENO' ERR
+# Set up error trap (disabled - too aggressive for global use)
+# Use 'trap _zsh_tool_error_handler ERR' in specific functions if needed
+# trap '_zsh_tool_error_handler $LINENO' ERR
 
 # Progress spinner
 # Usage: _zsh_tool_with_spinner <message> <command...>

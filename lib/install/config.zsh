@@ -100,6 +100,40 @@ _zsh_tool_parse_paths() {
   done <<< "$config"
 }
 
+# Parse Amazon Q configuration
+_zsh_tool_parse_amazon_q_enabled() {
+  local config=$(_zsh_tool_load_config)
+  echo "$config" | grep -A5 '^amazon_q:' | grep 'enabled:' | awk '{print $2}' | tr -d ' '
+}
+
+_zsh_tool_parse_amazon_q_lazy_loading() {
+  local config=$(_zsh_tool_load_config)
+  echo "$config" | grep -A5 '^amazon_q:' | grep 'lazy_loading:' | awk '{print $2}' | tr -d ' '
+}
+
+_zsh_tool_parse_amazon_q_atuin_compatibility() {
+  local config=$(_zsh_tool_load_config)
+  echo "$config" | grep -A5 '^amazon_q:' | grep 'atuin_compatibility:' | awk '{print $2}' | tr -d ' '
+}
+
+_zsh_tool_parse_amazon_q_disabled_clis() {
+  local config=$(_zsh_tool_load_config)
+  local in_disabled_clis=false
+
+  while IFS= read -r line; do
+    if [[ "$line" =~ disabled_clis: ]]; then
+      in_disabled_clis=true
+      continue
+    elif [[ "$line" =~ ^[a-z_]+: ]] && [[ "$in_disabled_clis" == true ]]; then
+      break
+    fi
+
+    if [[ "$in_disabled_clis" == true && "$line" =~ -\ ([a-z]+) ]]; then
+      echo "${match[1]} "
+    fi
+  done <<< "$config"
+}
+
 # Generate .zshrc content from template
 _zsh_tool_generate_zshrc() {
   local template_file="${ZSH_TOOL_TEMPLATE_DIR}/zshrc.template"

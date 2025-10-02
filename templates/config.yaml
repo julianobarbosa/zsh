@@ -45,3 +45,13 @@ paths:
   prepend:
     - "$HOME/.local/bin"
     - "$HOME/bin"
+
+# Amazon Q Developer CLI Integration
+amazon_q:
+  enabled: false  # Set to true to enable Amazon Q CLI integration
+  lazy_loading: true  # Defer initialization to improve startup time (recommended)
+  atuin_compatibility: true  # Configure compatibility with Atuin command history
+  disabled_clis:  # CLIs to exclude from Amazon Q autocomplete
+    - atuin  # Prevent Amazon Q from intercepting Atuin keybindings
+  # Performance note: Amazon Q adds ~11ms per command and ~1.8s startup overhead
+  # Lazy loading helps mitigate startup impact

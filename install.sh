@@ -92,6 +92,33 @@ source "${ZSH_TOOL_LIB_DIR}/restore/restore.zsh"
 # Load git integration (Epic 2)
 source "${ZSH_TOOL_LIB_DIR}/git/integration.zsh"
 
+# Load integrations (Epic 3)
+if [[ -d "${ZSH_TOOL_LIB_DIR}/integrations" ]]; then
+  source "${ZSH_TOOL_LIB_DIR}/integrations/amazon-q.zsh"
+fi
+
+# Setup integrations based on config
+_zsh_tool_setup_integrations() {
+  _zsh_tool_log INFO "Setting up integrations..."
+
+  # Check if Amazon Q is enabled in config
+  local amazonq_enabled=$(_zsh_tool_parse_amazon_q_enabled)
+
+  if [[ "$amazonq_enabled" == "true" ]]; then
+    _zsh_tool_log INFO "Amazon Q enabled in configuration"
+
+    local lazy_loading=$(_zsh_tool_parse_amazon_q_lazy_loading)
+    local atuin_compat=$(_zsh_tool_parse_amazon_q_atuin_compatibility)
+
+    # Install and configure Amazon Q
+    _amazonq_install_integration "$lazy_loading" "$atuin_compat"
+  else
+    _zsh_tool_log DEBUG "Amazon Q not enabled, skipping"
+  fi
+
+  return 0
+}
+
 # Main install command
 zsh-tool-install() {
   local start_time=$(date +%s)
@@ -119,6 +146,9 @@ zsh-tool-install() {
 
   # Setup customization layer (Story 1.6)
   _zsh_tool_setup_custom_layer || return 1
+
+  # Setup integrations (if enabled in config)
+  _zsh_tool_setup_integrations
 
   # Verify installation (Story 1.7)
   _zsh_tool_verify_installation
@@ -227,6 +257,60 @@ zsh-tool-git() {
   _zsh_tool_git_integration "\$@"
 }
 
+# Amazon Q integration command
+zsh-tool-amazonq() {
+  local subcommand="\${1:-status}"
+
+  case "\$subcommand" in
+    install)
+      _zsh_tool_log INFO "Installing Amazon Q CLI integration..."
+      local lazy_loading=$(_zsh_tool_parse_amazon_q_lazy_loading)
+      local atuin_compat=$(_zsh_tool_parse_amazon_q_atuin_compatibility)
+      _amazonq_install_integration "\$lazy_loading" "\$atuin_compat"
+      ;;
+    status|detect)
+      _amazonq_detect
+      ;;
+    health|doctor)
+      _amazonq_health_check
+      ;;
+    config-atuin)
+      _amazonq_configure_atuin_compatibility
+      ;;
+    *)
+      cat <<AMAZONQ_HELP
+Usage: zsh-tool-amazonq [command]
+
+Commands:
+  install         Install and configure Amazon Q CLI
+  status          Check Amazon Q CLI installation status
+  health          Run Amazon Q health check (q doctor)
+  config-atuin    Configure Atuin compatibility
+
+For more info: https://docs.aws.amazon.com/amazonq/latest/qdeveloper-ug/command-line.html
+AMAZONQ_HELP
+      ;;
+  esac
+}
+
+# Config management command
+zsh-tool-config() {
+  local subcommand="\${1:-list}"
+
+  case "\$subcommand" in
+    list)
+      cat "${CONFIG_DIR}/config.yaml"
+      ;;
+    edit)
+      "\${EDITOR:-vim}" "${CONFIG_DIR}/config.yaml"
+      ;;
+    *)
+      echo "Usage: zsh-tool-config [list|edit]"
+      return 1
+      ;;
+  esac
+}
+
 # Help command
 zsh-tool-help() {
   cat <<HELP
@@ -260,6 +344,13 @@ Epic 2 - Maintenance & Lifecycle:
     commit <message>            Commit changes
     push                        Push to remote
     pull                        Pull from remote
+
+Epic 3 - Integrations:
+  zsh-tool-amazonq [command]    Amazon Q CLI integration
+    install                     Install and configure Amazon Q
+    status                      Check installation status
+    health                      Run health check (q doctor)
+    config-atuin                Configure Atuin compatibility
 
 Other:
   zsh-tool-help                 Show this help message

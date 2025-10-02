@@ -201,39 +201,37 @@ test_atuin_compatibility_config() {
 
 # Test 10: Lazy loading setup (mock test)
 test_lazy_loading_setup() {
-  # Create a temporary zshrc for testing
-  local test_zshrc="/tmp/test-zshrc-$$"
-  export HOME="/tmp"
+  local test_home="/tmp/test-home-$$"
+  local result="FAIL"
 
-  mkdir -p "/tmp"
-  touch "$test_zshrc"
+  # Create test environment
+  mkdir -p "$test_home"
 
-  # Override HOME for this test
-  (
-    HOME="/tmp/test-home-$$"
-    mkdir -p "$HOME"
+  # Run test in isolated subshell and capture output
+  result=$(
+    HOME="$test_home"
     touch "${HOME}/.zshrc"
 
+    # Run the function under test
     _amazonq_setup_lazy_loading >/dev/null 2>&1
 
+    # Check if lazy loading marker was added
     if grep -q "Amazon Q lazy loading" "${HOME}/.zshrc"; then
       echo "PASS"
     else
       echo "FAIL"
     fi
-
-    rm -rf "$HOME"
   )
 
-  local result=$?
+  # Cleanup test environment
+  rm -rf "$test_home"
 
-  if [[ $(cat) == "PASS" ]]; then
+  # Verify result
+  if [[ "$result" == "PASS" ]]; then
     test_result "Lazy loading: setup" "PASS"
   else
     test_result "Lazy loading: setup" "FAIL" "Lazy loading marker not found in .zshrc"
   fi
-
-  rm -f "$test_zshrc"
 }
 
 # Test 11: Shell integration configuration function exists

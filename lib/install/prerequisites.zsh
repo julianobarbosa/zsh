@@ -97,12 +97,52 @@ _zsh_tool_install_xcode_cli() {
   return 0
 }
 
+# Check if jq is installed
+_zsh_tool_check_jq() {
+  if _zsh_tool_is_installed jq; then
+    local version=$(jq --version 2>/dev/null)
+    _zsh_tool_log INFO "$version already installed"
+    return 0
+  else
+    _zsh_tool_log WARN "jq not found"
+    return 1
+  fi
+}
+
+# Install jq via Homebrew
+_zsh_tool_install_jq() {
+  _zsh_tool_log INFO "jq is required for safe JSON manipulation in Amazon Q integration"
+
+  if ! _zsh_tool_prompt_confirm "Install jq now?"; then
+    _zsh_tool_log WARN "jq installation skipped"
+    _zsh_tool_log WARN "Amazon Q integration may not work without jq"
+    return 1
+  fi
+
+  if ! _zsh_tool_is_installed brew; then
+    _zsh_tool_log ERROR "Homebrew required to install jq"
+    return 1
+  fi
+
+  brew install jq
+  local exit_code=$?
+
+  if [[ $exit_code -eq 0 ]]; then
+    _zsh_tool_log INFO "jq installed successfully"
+    return 0
+  else
+    _zsh_tool_log ERROR "jq installation failed"
+    return 1
+  fi
+}
+
 # Main prerequisite check and install
 _zsh_tool_check_prerequisites() {
   _zsh_tool_log INFO "Checking prerequisites..."
 
   local homebrew_needed=false
   local git_needed=false
+  local jq_needed=false
 
   # Check Homebrew
   if ! _zsh_tool_check_homebrew; then
@@ -122,6 +162,14 @@ _zsh_tool_check_prerequisites() {
     _zsh_tool_install_git || return 1
   fi
 
+  # Check jq (required for Amazon Q integration)
+  if ! _zsh_tool_check_jq; then
+    jq_needed=true
+    _zsh_tool_install_jq || {
+      _zsh_tool_log WARN "Continuing without jq - Amazon Q integration will be limited"
+    }
+  fi
+
   # Check Xcode CLI (optional)
   if ! _zsh_tool_check_xcode_cli; then
     _zsh_tool_install_xcode_cli
@@ -129,7 +177,7 @@ _zsh_tool_check_prerequisites() {
 
   # Update state
   local state=$(_zsh_tool_load_state)
-  state=$(echo "$state" | sed 's/}/,"prerequisites":{"homebrew":true,"git":true,"xcode_cli":'$(xcode-select -p >/dev/null 2>&1 && echo "true" || echo "false")'}}/')
+  state=$(echo "$state" | sed 's/}/,"prerequisites":{"homebrew":true,"git":true,"jq":'$(command -v jq >/dev/null 2>&1 && echo "true" || echo "false")',"xcode_cli":'$(xcode-select -p >/dev/null 2>&1 && echo "true" || echo "false")'}}/')
   _zsh_tool_save_state "$state"
 
   _zsh_tool_log INFO "✓ Prerequisites check complete"

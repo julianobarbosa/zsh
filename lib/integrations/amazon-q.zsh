@@ -118,8 +118,26 @@ _amazonq_configure_shell_integration() {
 _amazonq_health_check() {
   _zsh_tool_log INFO "Running Amazon Q health check..."
 
+  # Initial installation check
   if ! _amazonq_is_installed; then
     _zsh_tool_log ERROR "Amazon Q CLI not installed"
+    return 1
+  fi
+
+  # Verify q command is available before execution
+  if ! command -v q >/dev/null 2>&1; then
+    _zsh_tool_log ERROR "Amazon Q command 'q' not found in PATH"
+    _zsh_tool_log ERROR "Current PATH: $PATH"
+    _zsh_tool_log ERROR "Try reloading your shell: exec zsh"
+    _zsh_tool_log ERROR "Or reinstall Amazon Q"
+    return 1
+  fi
+
+  # Verify q is executable
+  local q_path=$(command -v q)
+  if [[ ! -x "$q_path" ]]; then
+    _zsh_tool_log ERROR "Amazon Q command is not executable: $q_path"
+    _zsh_tool_log ERROR "Fix with: chmod +x $q_path"
     return 1
   fi
 
@@ -127,20 +145,43 @@ _amazonq_health_check() {
   echo "Running 'q doctor' to check Amazon Q configuration..."
   echo ""
 
-  # Run q doctor
-  q doctor
-  local exit_code=$?
-
-  echo ""
-
-  if [[ $exit_code -eq 0 ]]; then
-    _zsh_tool_log INFO "✓ Amazon Q health check passed"
-    return 0
-  else
+  # Run q doctor with proper error handling
+  if ! q doctor; then
+    echo ""
     _zsh_tool_log WARN "Amazon Q health check reported issues"
     _zsh_tool_log INFO "Review output above and fix any reported problems"
     return 1
   fi
+
+  echo ""
+  _zsh_tool_log INFO "✓ Amazon Q health check passed"
+  return 0
+}
+
+# Validate CLI name for security
+_amazonq_validate_cli_name() {
+  local cli_name="$1"
+
+  # Check for empty
+  if [[ -z "$cli_name" ]]; then
+    _zsh_tool_log ERROR "CLI name cannot be empty"
+    return 1
+  fi
+
+  # Check length (max 64 characters)
+  if [[ ${#cli_name} -gt 64 ]]; then
+    _zsh_tool_log ERROR "CLI name too long: '$cli_name' (max 64 characters)"
+    return 1
+  fi
+
+  # Check pattern: only alphanumeric, hyphen, and underscore allowed
+  if [[ ! "$cli_name" =~ ^[a-zA-Z0-9_-]+$ ]]; then
+    _zsh_tool_log ERROR "Invalid CLI name: '$cli_name'"
+    _zsh_tool_log ERROR "Only alphanumeric characters, hyphens, and underscores are allowed"
+    return 1
+  fi
+
+  return 0
 }
 
 # Configure Amazon Q settings file
@@ -149,28 +190,86 @@ _amazonq_configure_settings() {
 
   _zsh_tool_log INFO "Configuring Amazon Q settings..."
 
-  # Ensure config directory exists
-  mkdir -p "$AMAZONQ_CONFIG_DIR"
+  # Validate all CLI names first
+  for cli in "${disabled_clis[@]}"; do
+    if ! _amazonq_validate_cli_name "$cli"; then
+      return 1
+    fi
+  done
 
-  # Create or update settings.json
-  local settings_content='{"disabledClis":[]}'
-
-  if [[ -f "$AMAZONQ_SETTINGS_FILE" ]]; then
-    settings_content=$(cat "$AMAZONQ_SETTINGS_FILE")
+  # Check if jq is available for safe JSON manipulation
+  if ! command -v jq >/dev/null 2>&1; then
+    _zsh_tool_log ERROR "jq is required for safe JSON manipulation"
+    _zsh_tool_log ERROR "Install with: brew install jq"
+    return 1
   fi
 
-  # Add disabled CLIs (simple append, would need jq for proper JSON manipulation)
+  # Ensure config directory exists with error checking
+  if ! mkdir -p "$AMAZONQ_CONFIG_DIR" 2>/dev/null; then
+    _zsh_tool_log ERROR "Failed to create config directory: $AMAZONQ_CONFIG_DIR"
+    _zsh_tool_log ERROR "Check parent directory permissions and disk space"
+    return 1
+  fi
+
+  # Verify directory was created and is writable
+  if [[ ! -d "$AMAZONQ_CONFIG_DIR" ]]; then
+    _zsh_tool_log ERROR "Config directory not found after creation: $AMAZONQ_CONFIG_DIR"
+    return 1
+  fi
+
+  if [[ ! -w "$AMAZONQ_CONFIG_DIR" ]]; then
+    _zsh_tool_log ERROR "Config directory not writable: $AMAZONQ_CONFIG_DIR"
+    _zsh_tool_log ERROR "Check directory permissions"
+    return 1
+  fi
+
+  # Initialize settings file if it doesn't exist or has invalid JSON
+  if [[ ! -f "$AMAZONQ_SETTINGS_FILE" ]]; then
+    if ! echo '{"disabledClis":[]}' > "$AMAZONQ_SETTINGS_FILE" 2>/dev/null; then
+      _zsh_tool_log ERROR "Failed to create settings file: $AMAZONQ_SETTINGS_FILE"
+      return 1
+    fi
+  else
+    # Validate existing JSON file
+    if ! jq empty "$AMAZONQ_SETTINGS_FILE" 2>/dev/null; then
+      _zsh_tool_log WARN "Settings file contains invalid JSON, recreating..."
+      if ! echo '{"disabledClis":[]}' > "$AMAZONQ_SETTINGS_FILE" 2>/dev/null; then
+        _zsh_tool_log ERROR "Failed to recreate settings file: $AMAZONQ_SETTINGS_FILE"
+        return 1
+      fi
+    fi
+  fi
+
+  # Build jq array from disabled_clis using safe method
+  local jq_array="[]"
   if [[ ${#disabled_clis[@]} -gt 0 ]]; then
-    local disabled_list=$(printf ',"%s"' "${disabled_clis[@]}")
-    disabled_list="[${disabled_list:1}]"  # Remove leading comma
-
-    # Simple JSON update (for production, use jq)
-    settings_content=$(echo "$settings_content" | sed "s/\"disabledClis\":\[.*\]/\"disabledClis\":${disabled_list}/")
+    jq_array=$(printf '%s\n' "${disabled_clis[@]}" | jq -R . | jq -s .)
   fi
 
-  echo "$settings_content" > "$AMAZONQ_SETTINGS_FILE"
+  # Update settings file using jq (safe JSON manipulation)
+  local temp_file="${AMAZONQ_SETTINGS_FILE}.tmp.$$"
+  if ! jq ".disabledClis = $jq_array" "$AMAZONQ_SETTINGS_FILE" > "$temp_file" 2>/dev/null; then
+    _zsh_tool_log ERROR "Failed to update settings with jq"
+    rm -f "$temp_file" 2>/dev/null
+    return 1
+  fi
+
+  # Verify temp file was created and has content
+  if [[ ! -f "$temp_file" ]] || [[ ! -s "$temp_file" ]]; then
+    _zsh_tool_log ERROR "Temporary settings file creation failed"
+    rm -f "$temp_file" 2>/dev/null
+    return 1
+  fi
+
+  # Atomic move
+  if ! mv "$temp_file" "$AMAZONQ_SETTINGS_FILE" 2>/dev/null; then
+    _zsh_tool_log ERROR "Failed to move settings file into place"
+    rm -f "$temp_file" 2>/dev/null
+    return 1
+  fi
 
   _zsh_tool_log INFO "✓ Amazon Q settings configured"
+  _zsh_tool_log DEBUG "Settings file: $AMAZONQ_SETTINGS_FILE"
   _zsh_tool_log DEBUG "Disabled CLIs: ${disabled_clis[*]}"
 
   return 0
@@ -196,14 +295,46 @@ _amazonq_setup_lazy_loading() {
   local zshrc="${HOME}/.zshrc"
   local lazy_load_marker="# Amazon Q lazy loading (zsh-tool)"
 
+  # Verify .zshrc exists
+  if [[ ! -f "$zshrc" ]]; then
+    _zsh_tool_log ERROR ".zshrc not found: $zshrc"
+    return 1
+  fi
+
+  # Check if .zshrc is a symlink and warn user
+  if [[ -L "$zshrc" ]]; then
+    local link_target=$(readlink "$zshrc")
+    _zsh_tool_log WARN ".zshrc is a symlink: $zshrc -> $link_target"
+    _zsh_tool_log WARN "Modifying symlinked configuration may affect other systems"
+
+    # In non-interactive mode or if prompt function doesn't exist, continue anyway
+    if type _zsh_tool_prompt_confirm >/dev/null 2>&1; then
+      if ! _zsh_tool_prompt_confirm "Continue anyway?"; then
+        _zsh_tool_log INFO "Lazy loading setup skipped"
+        return 1
+      fi
+    else
+      _zsh_tool_log WARN "Continuing with symlinked .zshrc (non-interactive mode)"
+    fi
+  fi
+
   # Check if already configured
   if grep -q "$lazy_load_marker" "$zshrc" 2>/dev/null; then
     _zsh_tool_log INFO "✓ Lazy loading already configured"
     return 0
   fi
 
-  # Create lazy loading wrapper
-  cat >> "$zshrc" << 'EOF'
+  # Create backup with timestamp
+  local backup="${zshrc}.backup-$(date +%Y%m%d-%H%M%S)"
+  if ! cp "$zshrc" "$backup" 2>/dev/null; then
+    _zsh_tool_log ERROR "Failed to create backup: $backup"
+    _zsh_tool_log ERROR "Aborting to avoid data loss"
+    return 1
+  fi
+  _zsh_tool_log INFO "Created backup: $backup"
+
+  # Append lazy loading code with error checking
+  if ! cat >> "$zshrc" << 'EOF'
 
 # Amazon Q lazy loading (zsh-tool)
 # Defers Amazon Q initialization until first use to improve shell startup time
@@ -224,9 +355,29 @@ _amazonq_lazy_init() {
 alias q='_amazonq_lazy_init'
 
 EOF
+  then
+    _zsh_tool_log ERROR "Failed to append lazy loading code to .zshrc"
+    _zsh_tool_log INFO "Restoring from backup..."
+    if mv "$backup" "$zshrc" 2>/dev/null; then
+      _zsh_tool_log INFO "✓ Restored from backup"
+    else
+      _zsh_tool_log ERROR "Failed to restore backup - manual recovery may be needed"
+      _zsh_tool_log ERROR "Backup location: $backup"
+    fi
+    return 1
+  fi
+
+  # Verify the marker was added
+  if ! grep -q "$lazy_load_marker" "$zshrc" 2>/dev/null; then
+    _zsh_tool_log ERROR "Lazy loading marker not found after append"
+    _zsh_tool_log INFO "Restoring from backup..."
+    mv "$backup" "$zshrc" 2>/dev/null
+    return 1
+  fi
 
   _zsh_tool_log INFO "✓ Lazy loading configured"
   _zsh_tool_log INFO "Amazon Q will initialize on first 'q' command use"
+  _zsh_tool_log DEBUG "Backup saved at: $backup"
 
   return 0
 }
@@ -260,7 +411,12 @@ amazonq_install_integration() {
   fi
 
   # Step 5: Health check
-  _amazonq_health_check
+  if ! _amazonq_health_check; then
+    _zsh_tool_log ERROR "Amazon Q health check failed"
+    _zsh_tool_log ERROR "Installation incomplete - please address issues and retry"
+    _zsh_tool_log INFO "Run 'zsh-tool-amazonq health' to diagnose issues"
+    return 1
+  fi
 
   _zsh_tool_log INFO "✓ Amazon Q CLI integration complete"
 

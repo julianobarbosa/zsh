@@ -32,6 +32,7 @@ A comprehensive command-line tool for managing zsh shell configurations on macOS
 - macOS 12 (Monterey) or newer
 - zsh shell (pre-installed on modern macOS)
 - Internet connection for initial setup
+- jq (installed automatically for Amazon Q integration)
 
 ## Quick Start
 
@@ -75,7 +76,7 @@ zsh-tool-install
 ```
 
 This command will:
-- Check and install prerequisites (Homebrew, git, etc.)
+- Check and install prerequisites (Homebrew, git, jq, etc.)
 - Create a backup of existing configuration
 - Install or verify Oh My Zsh
 - Apply team-standard configuration

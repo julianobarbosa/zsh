@@ -94,6 +94,7 @@ source "${ZSH_TOOL_LIB_DIR}/git/integration.zsh"
 
 # Load integrations (Epic 3)
 if [[ -d "${ZSH_TOOL_LIB_DIR}/integrations" ]]; then
+  source "${ZSH_TOOL_LIB_DIR}/integrations/atuin.zsh"
   source "${ZSH_TOOL_LIB_DIR}/integrations/amazon-q.zsh"
 fi
 
@@ -101,9 +102,29 @@ fi
 _zsh_tool_setup_integrations() {
   _zsh_tool_log INFO "Setting up integrations..."
 
-  # Check if Amazon Q is enabled in config
+  # Check if Atuin is enabled in config
+  local atuin_enabled=$(_zsh_tool_parse_atuin_enabled)
   local amazonq_enabled=$(_zsh_tool_parse_amazon_q_enabled)
 
+  if [[ "$atuin_enabled" == "true" ]]; then
+    _zsh_tool_log INFO "Atuin enabled in configuration"
+
+    local import_history=$(_zsh_tool_parse_atuin_import_history)
+    local sync_enabled=$(_zsh_tool_parse_atuin_sync_enabled)
+
+    # If Amazon Q is also enabled, configure compatibility
+    local configure_amazonq="false"
+    if [[ "$amazonq_enabled" == "true" ]]; then
+      configure_amazonq="true"
+    fi
+
+    # Install and configure Atuin
+    _atuin_install_integration "$import_history" "$configure_amazonq" "$sync_enabled"
+  else
+    _zsh_tool_log DEBUG "Atuin not enabled, skipping"
+  fi
+
+  # Check if Amazon Q is enabled in config
   if [[ "$amazonq_enabled" == "true" ]]; then
     _zsh_tool_log INFO "Amazon Q enabled in configuration"
 
@@ -257,6 +278,59 @@ zsh-tool-git() {
   _zsh_tool_git_integration "$@"
 }
 
+# Atuin integration command
+zsh-tool-atuin() {
+  local subcommand="${1:-status}"
+
+  case "$subcommand" in
+    install)
+      _zsh_tool_log INFO "Installing Atuin shell history integration..."
+      local import_history=$(_zsh_tool_parse_atuin_import_history)
+      local sync_enabled=$(_zsh_tool_parse_atuin_sync_enabled)
+      local amazonq_enabled=$(_zsh_tool_parse_amazon_q_enabled)
+      local configure_amazonq="false"
+      if [[ "$amazonq_enabled" == "true" ]]; then
+        configure_amazonq="true"
+      fi
+      _atuin_install_integration "$import_history" "$configure_amazonq" "$sync_enabled"
+      ;;
+    status|detect)
+      _atuin_detect
+      ;;
+    health|doctor)
+      _atuin_health_check
+      ;;
+    import)
+      _atuin_import_history
+      ;;
+    stats)
+      if command -v atuin >/dev/null 2>&1; then
+        atuin stats
+      else
+        _zsh_tool_log ERROR "Atuin not installed"
+      fi
+      ;;
+    sync-setup)
+      _atuin_setup_sync
+      ;;
+    *)
+      cat <<ATUIN_HELP
+Usage: zsh-tool-atuin [command]
+
+Commands:
+  install         Install and configure Atuin shell history
+  status          Check Atuin installation status
+  health          Run Atuin health check
+  import          Import existing zsh history
+  stats           Show history statistics
+  sync-setup      Setup history sync across machines
+
+For more info: https://docs.atuin.sh
+ATUIN_HELP
+      ;;
+  esac
+}
+
 # Amazon Q integration command
 zsh-tool-amazonq() {
   local subcommand="${1:-status}"
@@ -346,6 +420,14 @@ Epic 2 - Maintenance & Lifecycle:
     pull                        Pull from remote
 
 Epic 3 - Integrations:
+  zsh-tool-atuin [command]      Atuin shell history integration
+    install                     Install and configure Atuin
+    status                      Check installation status
+    health                      Run health check
+    import                      Import existing zsh history
+    stats                       Show history statistics
+    sync-setup                  Setup history sync
+
   zsh-tool-amazonq [command]    Amazon Q CLI integration
     install                     Install and configure Amazon Q
     status                      Check installation status

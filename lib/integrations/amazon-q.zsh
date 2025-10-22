@@ -342,19 +342,29 @@ _amazonq_setup_lazy_loading() {
 # Amazon Q lazy loading (zsh-tool)
 # Defers Amazon Q initialization until first use to improve shell startup time
 _amazonq_lazy_init() {
-  # Remove lazy loading hooks
-  unfunction q 2>/dev/null
+  # Remove the alias to prevent recursion
+  unalias q 2>/dev/null
+
+  # Remove this lazy init function
+  unfunction _amazonq_lazy_init 2>/dev/null
 
   # Source Amazon Q integration (typically added by installer)
+  # This will define the real 'q' function
   if [[ -f "${HOME}/.aws/amazonq/shell/zshrc" ]]; then
     source "${HOME}/.aws/amazonq/shell/zshrc"
   fi
 
-  # Execute the original command
-  q "$@"
+  # Execute the command with the real q function (now defined by Amazon Q)
+  # Use 'command' to ensure we bypass any remaining aliases
+  if type q &>/dev/null; then
+    q "$@"
+  else
+    echo "Amazon Q integration not found or failed to load" >&2
+    return 1
+  fi
 }
 
-# Alias q to lazy init function
+# Create alias that will be replaced after first use
 alias q='_amazonq_lazy_init'
 
 EOF

@@ -47,6 +47,18 @@ paths:
     - "$HOME/.local/bin"
     - "$HOME/bin"
 
+# Atuin Shell History Integration
+atuin:
+  enabled: true  # Set to true to enable Atuin shell history
+  import_history: true  # Import existing .zsh_history on first setup
+  sync_enabled: false  # Enable history sync across machines (requires account)
+  search_mode: "fuzzy"  # Search mode: fuzzy, prefix, fulltext, skim
+  filter_mode: "global"  # Filter mode: global, host, session, directory
+  inline_height: 20  # Number of lines in search interface
+  style: "auto"  # UI style: auto, compact, full
+  # Atuin provides enhanced shell history with search, sync, and statistics
+  # Press Ctrl+R to open interactive search interface
+
 # Amazon Q Developer CLI Integration
 amazon_q:
   enabled: false  # Set to true to enable Amazon Q CLI integration

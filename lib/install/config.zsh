@@ -134,6 +134,42 @@ _zsh_tool_parse_amazon_q_disabled_clis() {
   done <<< "$config"
 }
 
+# Parse Atuin configuration
+_zsh_tool_parse_atuin_enabled() {
+  local config=$(_zsh_tool_load_config)
+  echo "$config" | grep -A10 '^atuin:' | grep 'enabled:' | awk '{print $2}' | tr -d ' '
+}
+
+_zsh_tool_parse_atuin_import_history() {
+  local config=$(_zsh_tool_load_config)
+  echo "$config" | grep -A10 '^atuin:' | grep 'import_history:' | awk '{print $2}' | tr -d ' '
+}
+
+_zsh_tool_parse_atuin_sync_enabled() {
+  local config=$(_zsh_tool_load_config)
+  echo "$config" | grep -A10 '^atuin:' | grep 'sync_enabled:' | awk '{print $2}' | tr -d ' '
+}
+
+_zsh_tool_parse_atuin_search_mode() {
+  local config=$(_zsh_tool_load_config)
+  echo "$config" | grep -A10 '^atuin:' | grep 'search_mode:' | awk '{print $2}' | tr -d ' "' | head -n1
+}
+
+_zsh_tool_parse_atuin_filter_mode() {
+  local config=$(_zsh_tool_load_config)
+  echo "$config" | grep -A10 '^atuin:' | grep 'filter_mode:' | awk '{print $2}' | tr -d ' "' | head -n1
+}
+
+_zsh_tool_parse_atuin_inline_height() {
+  local config=$(_zsh_tool_load_config)
+  echo "$config" | grep -A10 '^atuin:' | grep 'inline_height:' | awk '{print $2}' | tr -d ' '
+}
+
+_zsh_tool_parse_atuin_style() {
+  local config=$(_zsh_tool_load_config)
+  echo "$config" | grep -A10 '^atuin:' | grep 'style:' | awk '{print $2}' | tr -d ' "' | head -n1
+}
+
 # Generate .zshrc content from template
 _zsh_tool_generate_zshrc() {
   local template_file="${ZSH_TOOL_TEMPLATE_DIR}/zshrc.template"

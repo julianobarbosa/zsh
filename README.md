@@ -23,8 +23,9 @@ A comprehensive command-line tool for managing zsh shell configurations on macOS
 - ✓ Rollback capabilities
 
 ### Epic 3: Advanced Integrations
+- ✓ Atuin shell history integration (search, sync, statistics)
 - ✓ Amazon Q Developer CLI integration
-- ✓ Atuin compatibility configuration
+- ✓ Atuin-Amazon Q compatibility configuration
 - ✓ Lazy loading for performance optimization
 
 ## Requirements
@@ -177,6 +178,166 @@ Pull from remote:
 zsh-tool-git pull
 ```
 
+### Atuin Shell History Integration
+
+[Atuin](https://atuin.sh) replaces your default shell history with a searchable SQLite database, providing enhanced search, statistics, and optional sync across machines. zsh-tool includes built-in integration with automatic configuration and Amazon Q compatibility.
+
+#### Features
+
+- **Enhanced search**: Fuzzy, prefix, or full-text search with interactive UI (Ctrl+R)
+- **SQLite database**: Fast queries on large command histories
+- **Statistics**: View command usage, frequency, and patterns
+- **Optional sync**: Share history across machines (requires account or self-hosted server)
+- **Context awareness**: Filter by directory, session, or host
+- **Import existing history**: Seamlessly import from .zsh_history
+
+#### Quick Setup
+
+Enable Atuin in configuration (enabled by default):
+```bash
+zsh-tool-config edit
+# Verify atuin.enabled: true
+```
+
+Install and configure Atuin:
+```bash
+zsh-tool-atuin install
+```
+
+This will:
+1. Detect or install Atuin (via Homebrew or manual)
+2. Configure Atuin settings (search mode, UI style, etc.)
+3. Add shell integration to .zshrc.local
+4. Import existing zsh history
+5. Configure Amazon Q compatibility (if enabled)
+
+#### Commands
+
+Check Atuin status:
+```bash
+zsh-tool-atuin status
+```
+
+Run health check:
+```bash
+zsh-tool-atuin health
+```
+
+View history statistics:
+```bash
+zsh-tool-atuin stats
+```
+
+Import existing history manually:
+```bash
+zsh-tool-atuin import
+```
+
+Setup sync (optional):
+```bash
+zsh-tool-atuin sync-setup
+```
+
+#### Usage
+
+After installation, press **Ctrl+R** to open Atuin's interactive search:
+- Type to search commands (fuzzy search by default)
+- Use arrow keys to navigate
+- Press Enter to execute
+- Press Esc to cancel
+
+View detailed statistics:
+```bash
+atuin stats
+```
+
+Search from command line:
+```bash
+atuin search "git commit"
+```
+
+#### Configuration
+
+Atuin settings in `config.yaml`:
+```yaml
+atuin:
+  enabled: true              # Enable Atuin integration
+  import_history: true       # Import existing .zsh_history on setup
+  sync_enabled: false        # Enable sync (requires registration)
+  search_mode: "fuzzy"       # fuzzy, prefix, fulltext, skim
+  filter_mode: "global"      # global, host, session, directory
+  inline_height: 20          # Search UI height (lines)
+  style: "auto"              # auto, compact, full
+```
+
+Advanced configuration in `~/.config/atuin/config.toml`:
+```toml
+search_mode = "fuzzy"
+filter_mode = "global"
+style = "auto"
+inline_height = 20
+show_preview = true
+```
+
+#### Sync Setup (Optional)
+
+Atuin can sync history across machines using cloud or self-hosted server:
+
+1. Register for Atuin sync service:
+```bash
+atuin register -u <username> -e <email>
+```
+
+2. Login on other machines:
+```bash
+atuin login -u <username>
+```
+
+3. Sync history:
+```bash
+atuin sync
+```
+
+Or self-host your own sync server: https://docs.atuin.sh/self-hosting/
+
+#### Amazon Q Compatibility
+
+When both Atuin and Amazon Q are enabled, zsh-tool automatically:
+1. Configures Amazon Q to ignore Atuin commands
+2. Restores Ctrl+R keybinding to Atuin after Amazon Q loads
+
+This prevents Amazon Q from intercepting Atuin's Ctrl+R search shortcut.
+
+Manual configuration (if needed):
+```bash
+zsh-tool-amazonq config-atuin
+```
+
+#### Troubleshooting
+
+**Ctrl+R not opening Atuin:**
+- Check if Atuin is installed: `command -v atuin`
+- Verify keybinding: `bindkey | grep '^R'`
+- Reload shell: `exec zsh`
+- Check Amazon Q compatibility: `zsh-tool-amazonq config-atuin`
+
+**History not importing:**
+```bash
+zsh-tool-atuin import
+# or manually:
+atuin import auto
+```
+
+**Sync not working:**
+- Verify login: `atuin account status`
+- Check sync config: `cat ~/.config/atuin/config.toml | grep sync`
+- Manual sync: `atuin sync`
+
+**Learn more:**
+- [Atuin Documentation](https://docs.atuin.sh)
+- [Atuin GitHub](https://github.com/atuinsh/atuin)
+- [Compatibility with Amazon Q](/docs/ATUIN-CTRL-R-FIX.md)
+
 ### Amazon Q Developer CLI Integration
 
 [Amazon Q Developer CLI](https://aws.amazon.com/q/developer/) provides AI-powered command completions, inline suggestions, and chat capabilities for the command line. zsh-tool includes built-in integration with performance optimization and Atuin compatibility.
@@ -269,6 +430,7 @@ zsh-tool/
 │   ├── git/               # Epic 2: Git integration
 │   │   └── integration.zsh
 │   └── integrations/      # Epic 3: Advanced integrations
+│       ├── atuin.zsh      # Atuin shell history
 │       └── amazon-q.zsh   # Amazon Q Developer CLI
 ├── templates/             # Configuration templates
 │   ├── config.yaml        # Team configuration template
@@ -301,6 +463,15 @@ backup:
 git:
   enabled: false
   remote_url: ""
+
+atuin:
+  enabled: true
+  import_history: true
+  sync_enabled: false
+  search_mode: "fuzzy"
+  filter_mode: "global"
+  inline_height: 20
+  style: "auto"
 
 amazon_q:
   enabled: false

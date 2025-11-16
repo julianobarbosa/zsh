@@ -1,0 +1,1949 @@
+[
+  {
+    "timestamp": "2025-11-16T11:42:00.878436",
+    "input_data": {
+      "session_id": "cc936007-0019-4b0c-851e-b7200f317850",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh/cc936007-0019-4b0c-851e-b7200f317850.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh",
+      "model": {
+        "id": "claude-sonnet-4-5-20250929",
+        "display_name": "Sonnet 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh"
+      },
+      "version": "2.0.42",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.0375201999999994,
+        "total_duration_ms": 1559077,
+        "total_api_duration_ms": 456042,
+        "total_lines_added": 1277,
+        "total_lines_removed": 2
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/cc936007-0019-4b0c-851e-b7200f317850.json does not exist"
+  },
+  {
+    "timestamp": "2025-11-16T11:42:00.879102",
+    "input_data": {
+      "session_id": "cc936007-0019-4b0c-851e-b7200f317850",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh/cc936007-0019-4b0c-851e-b7200f317850.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh",
+      "model": {
+        "id": "claude-sonnet-4-5-20250929",
+        "display_name": "Sonnet 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh"
+      },
+      "version": "2.0.42",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.0375201999999994,
+        "total_duration_ms": 1559077,
+        "total_api_duration_ms": 456042,
+        "total_lines_added": 1277,
+        "total_lines_removed": 2
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-11-16T11:42:17.928876",
+    "input_data": {
+      "session_id": "cc936007-0019-4b0c-851e-b7200f317850",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh/cc936007-0019-4b0c-851e-b7200f317850.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh",
+      "model": {
+        "id": "claude-sonnet-4-5-20250929",
+        "display_name": "Sonnet 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh"
+      },
+      "version": "2.0.42",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.0643684499999997,
+        "total_duration_ms": 1576088,
+        "total_api_duration_ms": 474105,
+        "total_lines_added": 1277,
+        "total_lines_removed": 2
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/cc936007-0019-4b0c-851e-b7200f317850.json does not exist"
+  },
+  {
+    "timestamp": "2025-11-16T11:42:17.929194",
+    "input_data": {
+      "session_id": "cc936007-0019-4b0c-851e-b7200f317850",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh/cc936007-0019-4b0c-851e-b7200f317850.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh",
+      "model": {
+        "id": "claude-sonnet-4-5-20250929",
+        "display_name": "Sonnet 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh"
+      },
+      "version": "2.0.42",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.0643684499999997,
+        "total_duration_ms": 1576088,
+        "total_api_duration_ms": 474105,
+        "total_lines_added": 1277,
+        "total_lines_removed": 2
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-11-16T11:47:24.518503",
+    "input_data": {
+      "session_id": "27e61215-157d-48a9-9e42-9460c0520600",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh/27e61215-157d-48a9-9e42-9460c0520600.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh",
+      "model": {
+        "id": "claude-sonnet-4-5-20250929",
+        "display_name": "Sonnet 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh"
+      },
+      "version": "2.0.42",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.5975251,
+        "total_duration_ms": 921886,
+        "total_api_duration_ms": 165476,
+        "total_lines_added": 0,
+        "total_lines_removed": 0
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/27e61215-157d-48a9-9e42-9460c0520600.json does not exist"
+  },
+  {
+    "timestamp": "2025-11-16T11:47:24.519175",
+    "input_data": {
+      "session_id": "27e61215-157d-48a9-9e42-9460c0520600",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh/27e61215-157d-48a9-9e42-9460c0520600.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh",
+      "model": {
+        "id": "claude-sonnet-4-5-20250929",
+        "display_name": "Sonnet 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh"
+      },
+      "version": "2.0.42",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.5975251,
+        "total_duration_ms": 921840,
+        "total_api_duration_ms": 165476,
+        "total_lines_added": 0,
+        "total_lines_removed": 0
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-11-16T11:47:24.525288",
+    "input_data": {
+      "session_id": "27e61215-157d-48a9-9e42-9460c0520600",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh/27e61215-157d-48a9-9e42-9460c0520600.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh",
+      "model": {
+        "id": "claude-sonnet-4-5-20250929",
+        "display_name": "Sonnet 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh"
+      },
+      "version": "2.0.42",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.5975251,
+        "total_duration_ms": 921906,
+        "total_api_duration_ms": 165476,
+        "total_lines_added": 0,
+        "total_lines_removed": 0
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/27e61215-157d-48a9-9e42-9460c0520600.json does not exist"
+  },
+  {
+    "timestamp": "2025-11-16T11:47:24.525802",
+    "input_data": {
+      "session_id": "27e61215-157d-48a9-9e42-9460c0520600",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh/27e61215-157d-48a9-9e42-9460c0520600.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh",
+      "model": {
+        "id": "claude-sonnet-4-5-20250929",
+        "display_name": "Sonnet 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh"
+      },
+      "version": "2.0.42",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.5975251,
+        "total_duration_ms": 921906,
+        "total_api_duration_ms": 165476,
+        "total_lines_added": 0,
+        "total_lines_removed": 0
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-11-16T11:47:27.991716",
+    "input_data": {
+      "session_id": "27e61215-157d-48a9-9e42-9460c0520600",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh/27e61215-157d-48a9-9e42-9460c0520600.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh",
+      "model": {
+        "id": "claude-sonnet-4-5-20250929",
+        "display_name": "Sonnet 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh"
+      },
+      "version": "2.0.42",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.6156874,
+        "total_duration_ms": 925366,
+        "total_api_duration_ms": 168904,
+        "total_lines_added": 0,
+        "total_lines_removed": 0
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/27e61215-157d-48a9-9e42-9460c0520600.json does not exist"
+  },
+  {
+    "timestamp": "2025-11-16T11:47:27.992203",
+    "input_data": {
+      "session_id": "27e61215-157d-48a9-9e42-9460c0520600",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh/27e61215-157d-48a9-9e42-9460c0520600.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh",
+      "model": {
+        "id": "claude-sonnet-4-5-20250929",
+        "display_name": "Sonnet 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh"
+      },
+      "version": "2.0.42",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.6156874,
+        "total_duration_ms": 925366,
+        "total_api_duration_ms": 168904,
+        "total_lines_added": 0,
+        "total_lines_removed": 0
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-11-16T11:47:28.029570",
+    "input_data": {
+      "session_id": "27e61215-157d-48a9-9e42-9460c0520600",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh/27e61215-157d-48a9-9e42-9460c0520600.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh",
+      "model": {
+        "id": "claude-sonnet-4-5-20250929",
+        "display_name": "Sonnet 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh"
+      },
+      "version": "2.0.42",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.6156874,
+        "total_duration_ms": 925409,
+        "total_api_duration_ms": 168904,
+        "total_lines_added": 0,
+        "total_lines_removed": 0
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/27e61215-157d-48a9-9e42-9460c0520600.json does not exist"
+  },
+  {
+    "timestamp": "2025-11-16T11:47:28.030061",
+    "input_data": {
+      "session_id": "27e61215-157d-48a9-9e42-9460c0520600",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh/27e61215-157d-48a9-9e42-9460c0520600.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh",
+      "model": {
+        "id": "claude-sonnet-4-5-20250929",
+        "display_name": "Sonnet 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh"
+      },
+      "version": "2.0.42",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.6156874,
+        "total_duration_ms": 925409,
+        "total_api_duration_ms": 168904,
+        "total_lines_added": 0,
+        "total_lines_removed": 0
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-11-16T11:47:39.880475",
+    "input_data": {
+      "session_id": "27e61215-157d-48a9-9e42-9460c0520600",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh/27e61215-157d-48a9-9e42-9460c0520600.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh",
+      "model": {
+        "id": "claude-sonnet-4-5-20250929",
+        "display_name": "Sonnet 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh"
+      },
+      "version": "2.0.42",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.643042,
+        "total_duration_ms": 937256,
+        "total_api_duration_ms": 181837,
+        "total_lines_added": 2,
+        "total_lines_removed": 13
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/27e61215-157d-48a9-9e42-9460c0520600.json does not exist"
+  },
+  {
+    "timestamp": "2025-11-16T11:47:39.881158",
+    "input_data": {
+      "session_id": "27e61215-157d-48a9-9e42-9460c0520600",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh/27e61215-157d-48a9-9e42-9460c0520600.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh",
+      "model": {
+        "id": "claude-sonnet-4-5-20250929",
+        "display_name": "Sonnet 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh"
+      },
+      "version": "2.0.42",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.643042,
+        "total_duration_ms": 937256,
+        "total_api_duration_ms": 181837,
+        "total_lines_added": 2,
+        "total_lines_removed": 13
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-11-16T11:47:39.920403",
+    "input_data": {
+      "session_id": "27e61215-157d-48a9-9e42-9460c0520600",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh/27e61215-157d-48a9-9e42-9460c0520600.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh",
+      "model": {
+        "id": "claude-sonnet-4-5-20250929",
+        "display_name": "Sonnet 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh"
+      },
+      "version": "2.0.42",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.643042,
+        "total_duration_ms": 937297,
+        "total_api_duration_ms": 181837,
+        "total_lines_added": 2,
+        "total_lines_removed": 13
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/27e61215-157d-48a9-9e42-9460c0520600.json does not exist"
+  },
+  {
+    "timestamp": "2025-11-16T11:47:39.920974",
+    "input_data": {
+      "session_id": "27e61215-157d-48a9-9e42-9460c0520600",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh/27e61215-157d-48a9-9e42-9460c0520600.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh",
+      "model": {
+        "id": "claude-sonnet-4-5-20250929",
+        "display_name": "Sonnet 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh"
+      },
+      "version": "2.0.42",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.643042,
+        "total_duration_ms": 937297,
+        "total_api_duration_ms": 181837,
+        "total_lines_added": 2,
+        "total_lines_removed": 13
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-11-16T11:47:39.941818",
+    "input_data": {
+      "session_id": "27e61215-157d-48a9-9e42-9460c0520600",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh/27e61215-157d-48a9-9e42-9460c0520600.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh",
+      "model": {
+        "id": "claude-sonnet-4-5-20250929",
+        "display_name": "Sonnet 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh"
+      },
+      "version": "2.0.42",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.643042,
+        "total_duration_ms": 937320,
+        "total_api_duration_ms": 181837,
+        "total_lines_added": 2,
+        "total_lines_removed": 13
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/27e61215-157d-48a9-9e42-9460c0520600.json does not exist"
+  },
+  {
+    "timestamp": "2025-11-16T11:47:39.942389",
+    "input_data": {
+      "session_id": "27e61215-157d-48a9-9e42-9460c0520600",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh/27e61215-157d-48a9-9e42-9460c0520600.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh",
+      "model": {
+        "id": "claude-sonnet-4-5-20250929",
+        "display_name": "Sonnet 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh"
+      },
+      "version": "2.0.42",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.643042,
+        "total_duration_ms": 937320,
+        "total_api_duration_ms": 181837,
+        "total_lines_added": 2,
+        "total_lines_removed": 13
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-11-16T11:47:46.692691",
+    "input_data": {
+      "session_id": "27e61215-157d-48a9-9e42-9460c0520600",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh/27e61215-157d-48a9-9e42-9460c0520600.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh",
+      "model": {
+        "id": "claude-sonnet-4-5-20250929",
+        "display_name": "Sonnet 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh"
+      },
+      "version": "2.0.42",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.66745885,
+        "total_duration_ms": 944071,
+        "total_api_duration_ms": 188485,
+        "total_lines_added": 2,
+        "total_lines_removed": 13
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/27e61215-157d-48a9-9e42-9460c0520600.json does not exist"
+  },
+  {
+    "timestamp": "2025-11-16T11:47:46.693412",
+    "input_data": {
+      "session_id": "27e61215-157d-48a9-9e42-9460c0520600",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh/27e61215-157d-48a9-9e42-9460c0520600.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh",
+      "model": {
+        "id": "claude-sonnet-4-5-20250929",
+        "display_name": "Sonnet 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh"
+      },
+      "version": "2.0.42",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.66745885,
+        "total_duration_ms": 944071,
+        "total_api_duration_ms": 188485,
+        "total_lines_added": 2,
+        "total_lines_removed": 13
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-11-16T11:47:46.739016",
+    "input_data": {
+      "session_id": "27e61215-157d-48a9-9e42-9460c0520600",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh/27e61215-157d-48a9-9e42-9460c0520600.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh",
+      "model": {
+        "id": "claude-sonnet-4-5-20250929",
+        "display_name": "Sonnet 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh"
+      },
+      "version": "2.0.42",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.66745885,
+        "total_duration_ms": 944119,
+        "total_api_duration_ms": 188485,
+        "total_lines_added": 2,
+        "total_lines_removed": 13
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/27e61215-157d-48a9-9e42-9460c0520600.json does not exist"
+  },
+  {
+    "timestamp": "2025-11-16T11:47:46.739684",
+    "input_data": {
+      "session_id": "27e61215-157d-48a9-9e42-9460c0520600",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh/27e61215-157d-48a9-9e42-9460c0520600.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh",
+      "model": {
+        "id": "claude-sonnet-4-5-20250929",
+        "display_name": "Sonnet 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh"
+      },
+      "version": "2.0.42",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.66745885,
+        "total_duration_ms": 944119,
+        "total_api_duration_ms": 188485,
+        "total_lines_added": 2,
+        "total_lines_removed": 13
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-11-16T11:47:46.761047",
+    "input_data": {
+      "session_id": "27e61215-157d-48a9-9e42-9460c0520600",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh/27e61215-157d-48a9-9e42-9460c0520600.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh",
+      "model": {
+        "id": "claude-sonnet-4-5-20250929",
+        "display_name": "Sonnet 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh"
+      },
+      "version": "2.0.42",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.66745885,
+        "total_duration_ms": 944142,
+        "total_api_duration_ms": 188485,
+        "total_lines_added": 2,
+        "total_lines_removed": 13
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/27e61215-157d-48a9-9e42-9460c0520600.json does not exist"
+  },
+  {
+    "timestamp": "2025-11-16T11:47:46.761740",
+    "input_data": {
+      "session_id": "27e61215-157d-48a9-9e42-9460c0520600",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh/27e61215-157d-48a9-9e42-9460c0520600.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh",
+      "model": {
+        "id": "claude-sonnet-4-5-20250929",
+        "display_name": "Sonnet 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh"
+      },
+      "version": "2.0.42",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.66745885,
+        "total_duration_ms": 944142,
+        "total_api_duration_ms": 188485,
+        "total_lines_added": 2,
+        "total_lines_removed": 13
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-11-16T11:47:51.154904",
+    "input_data": {
+      "session_id": "27e61215-157d-48a9-9e42-9460c0520600",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh/27e61215-157d-48a9-9e42-9460c0520600.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh",
+      "model": {
+        "id": "claude-sonnet-4-5-20250929",
+        "display_name": "Sonnet 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh"
+      },
+      "version": "2.0.42",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.6878458000000001,
+        "total_duration_ms": 948526,
+        "total_api_duration_ms": 192792,
+        "total_lines_added": 2,
+        "total_lines_removed": 15
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/27e61215-157d-48a9-9e42-9460c0520600.json does not exist"
+  },
+  {
+    "timestamp": "2025-11-16T11:47:51.155826",
+    "input_data": {
+      "session_id": "27e61215-157d-48a9-9e42-9460c0520600",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh/27e61215-157d-48a9-9e42-9460c0520600.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh",
+      "model": {
+        "id": "claude-sonnet-4-5-20250929",
+        "display_name": "Sonnet 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh"
+      },
+      "version": "2.0.42",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.6878458000000001,
+        "total_duration_ms": 948526,
+        "total_api_duration_ms": 192792,
+        "total_lines_added": 2,
+        "total_lines_removed": 15
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-11-16T11:47:51.201076",
+    "input_data": {
+      "session_id": "27e61215-157d-48a9-9e42-9460c0520600",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh/27e61215-157d-48a9-9e42-9460c0520600.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh",
+      "model": {
+        "id": "claude-sonnet-4-5-20250929",
+        "display_name": "Sonnet 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh"
+      },
+      "version": "2.0.42",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.6878458000000001,
+        "total_duration_ms": 948582,
+        "total_api_duration_ms": 192792,
+        "total_lines_added": 2,
+        "total_lines_removed": 15
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/27e61215-157d-48a9-9e42-9460c0520600.json does not exist"
+  },
+  {
+    "timestamp": "2025-11-16T11:47:51.201742",
+    "input_data": {
+      "session_id": "27e61215-157d-48a9-9e42-9460c0520600",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh/27e61215-157d-48a9-9e42-9460c0520600.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh",
+      "model": {
+        "id": "claude-sonnet-4-5-20250929",
+        "display_name": "Sonnet 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh"
+      },
+      "version": "2.0.42",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.6878458000000001,
+        "total_duration_ms": 948582,
+        "total_api_duration_ms": 192792,
+        "total_lines_added": 2,
+        "total_lines_removed": 15
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-11-16T11:47:58.902019",
+    "input_data": {
+      "session_id": "27e61215-157d-48a9-9e42-9460c0520600",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh/27e61215-157d-48a9-9e42-9460c0520600.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh",
+      "model": {
+        "id": "claude-sonnet-4-5-20250929",
+        "display_name": "Sonnet 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh"
+      },
+      "version": "2.0.42",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.7111220500000001,
+        "total_duration_ms": 956283,
+        "total_api_duration_ms": 200505,
+        "total_lines_added": 2,
+        "total_lines_removed": 15
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/27e61215-157d-48a9-9e42-9460c0520600.json does not exist"
+  },
+  {
+    "timestamp": "2025-11-16T11:47:58.902794",
+    "input_data": {
+      "session_id": "27e61215-157d-48a9-9e42-9460c0520600",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh/27e61215-157d-48a9-9e42-9460c0520600.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh",
+      "model": {
+        "id": "claude-sonnet-4-5-20250929",
+        "display_name": "Sonnet 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh"
+      },
+      "version": "2.0.42",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.7111220500000001,
+        "total_duration_ms": 956283,
+        "total_api_duration_ms": 200505,
+        "total_lines_added": 2,
+        "total_lines_removed": 15
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-11-16T11:47:58.962868",
+    "input_data": {
+      "session_id": "27e61215-157d-48a9-9e42-9460c0520600",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh/27e61215-157d-48a9-9e42-9460c0520600.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh",
+      "model": {
+        "id": "claude-sonnet-4-5-20250929",
+        "display_name": "Sonnet 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh"
+      },
+      "version": "2.0.42",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.7111220500000001,
+        "total_duration_ms": 956343,
+        "total_api_duration_ms": 200505,
+        "total_lines_added": 2,
+        "total_lines_removed": 15
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/27e61215-157d-48a9-9e42-9460c0520600.json does not exist"
+  },
+  {
+    "timestamp": "2025-11-16T11:47:58.963697",
+    "input_data": {
+      "session_id": "27e61215-157d-48a9-9e42-9460c0520600",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh/27e61215-157d-48a9-9e42-9460c0520600.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh",
+      "model": {
+        "id": "claude-sonnet-4-5-20250929",
+        "display_name": "Sonnet 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh"
+      },
+      "version": "2.0.42",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.7111220500000001,
+        "total_duration_ms": 956343,
+        "total_api_duration_ms": 200505,
+        "total_lines_added": 2,
+        "total_lines_removed": 15
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-11-16T11:47:58.988363",
+    "input_data": {
+      "session_id": "27e61215-157d-48a9-9e42-9460c0520600",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh/27e61215-157d-48a9-9e42-9460c0520600.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh",
+      "model": {
+        "id": "claude-sonnet-4-5-20250929",
+        "display_name": "Sonnet 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh"
+      },
+      "version": "2.0.42",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.7111220500000001,
+        "total_duration_ms": 956369,
+        "total_api_duration_ms": 200505,
+        "total_lines_added": 2,
+        "total_lines_removed": 15
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/27e61215-157d-48a9-9e42-9460c0520600.json does not exist"
+  },
+  {
+    "timestamp": "2025-11-16T11:47:58.989324",
+    "input_data": {
+      "session_id": "27e61215-157d-48a9-9e42-9460c0520600",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh/27e61215-157d-48a9-9e42-9460c0520600.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh",
+      "model": {
+        "id": "claude-sonnet-4-5-20250929",
+        "display_name": "Sonnet 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh"
+      },
+      "version": "2.0.42",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.7111220500000001,
+        "total_duration_ms": 956369,
+        "total_api_duration_ms": 200505,
+        "total_lines_added": 2,
+        "total_lines_removed": 15
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-11-16T11:48:06.659404",
+    "input_data": {
+      "session_id": "27e61215-157d-48a9-9e42-9460c0520600",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh/27e61215-157d-48a9-9e42-9460c0520600.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh",
+      "model": {
+        "id": "claude-sonnet-4-5-20250929",
+        "display_name": "Sonnet 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh"
+      },
+      "version": "2.0.42",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.73569965,
+        "total_duration_ms": 964037,
+        "total_api_duration_ms": 210245,
+        "total_lines_added": 2,
+        "total_lines_removed": 15
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/27e61215-157d-48a9-9e42-9460c0520600.json does not exist"
+  },
+  {
+    "timestamp": "2025-11-16T11:48:06.660530",
+    "input_data": {
+      "session_id": "27e61215-157d-48a9-9e42-9460c0520600",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh/27e61215-157d-48a9-9e42-9460c0520600.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh",
+      "model": {
+        "id": "claude-sonnet-4-5-20250929",
+        "display_name": "Sonnet 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh"
+      },
+      "version": "2.0.42",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.73569965,
+        "total_duration_ms": 964037,
+        "total_api_duration_ms": 210245,
+        "total_lines_added": 2,
+        "total_lines_removed": 15
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-11-16T11:48:06.700230",
+    "input_data": {
+      "session_id": "27e61215-157d-48a9-9e42-9460c0520600",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh/27e61215-157d-48a9-9e42-9460c0520600.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh",
+      "model": {
+        "id": "claude-sonnet-4-5-20250929",
+        "display_name": "Sonnet 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh"
+      },
+      "version": "2.0.42",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.73569965,
+        "total_duration_ms": 964078,
+        "total_api_duration_ms": 210245,
+        "total_lines_added": 2,
+        "total_lines_removed": 15
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/27e61215-157d-48a9-9e42-9460c0520600.json does not exist"
+  },
+  {
+    "timestamp": "2025-11-16T11:48:06.701315",
+    "input_data": {
+      "session_id": "27e61215-157d-48a9-9e42-9460c0520600",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh/27e61215-157d-48a9-9e42-9460c0520600.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh",
+      "model": {
+        "id": "claude-sonnet-4-5-20250929",
+        "display_name": "Sonnet 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh"
+      },
+      "version": "2.0.42",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.73569965,
+        "total_duration_ms": 964078,
+        "total_api_duration_ms": 210245,
+        "total_lines_added": 2,
+        "total_lines_removed": 15
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-11-16T11:48:06.723247",
+    "input_data": {
+      "session_id": "27e61215-157d-48a9-9e42-9460c0520600",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh/27e61215-157d-48a9-9e42-9460c0520600.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh",
+      "model": {
+        "id": "claude-sonnet-4-5-20250929",
+        "display_name": "Sonnet 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh"
+      },
+      "version": "2.0.42",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.73569965,
+        "total_duration_ms": 964102,
+        "total_api_duration_ms": 210245,
+        "total_lines_added": 2,
+        "total_lines_removed": 15
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/27e61215-157d-48a9-9e42-9460c0520600.json does not exist"
+  },
+  {
+    "timestamp": "2025-11-16T11:48:06.724182",
+    "input_data": {
+      "session_id": "27e61215-157d-48a9-9e42-9460c0520600",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh/27e61215-157d-48a9-9e42-9460c0520600.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh",
+      "model": {
+        "id": "claude-sonnet-4-5-20250929",
+        "display_name": "Sonnet 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh"
+      },
+      "version": "2.0.42",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.73569965,
+        "total_duration_ms": 964102,
+        "total_api_duration_ms": 210245,
+        "total_lines_added": 2,
+        "total_lines_removed": 15
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-11-16T11:48:16.870235",
+    "input_data": {
+      "session_id": "27e61215-157d-48a9-9e42-9460c0520600",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh/27e61215-157d-48a9-9e42-9460c0520600.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh",
+      "model": {
+        "id": "claude-sonnet-4-5-20250929",
+        "display_name": "Sonnet 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh"
+      },
+      "version": "2.0.42",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.7636584000000001,
+        "total_duration_ms": 974247,
+        "total_api_duration_ms": 225027,
+        "total_lines_added": 2,
+        "total_lines_removed": 15
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/27e61215-157d-48a9-9e42-9460c0520600.json does not exist"
+  },
+  {
+    "timestamp": "2025-11-16T11:48:16.871431",
+    "input_data": {
+      "session_id": "27e61215-157d-48a9-9e42-9460c0520600",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh/27e61215-157d-48a9-9e42-9460c0520600.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh",
+      "model": {
+        "id": "claude-sonnet-4-5-20250929",
+        "display_name": "Sonnet 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh"
+      },
+      "version": "2.0.42",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.7636584000000001,
+        "total_duration_ms": 974247,
+        "total_api_duration_ms": 225027,
+        "total_lines_added": 2,
+        "total_lines_removed": 15
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-11-16T11:48:16.908064",
+    "input_data": {
+      "session_id": "27e61215-157d-48a9-9e42-9460c0520600",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh/27e61215-157d-48a9-9e42-9460c0520600.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh",
+      "model": {
+        "id": "claude-sonnet-4-5-20250929",
+        "display_name": "Sonnet 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh"
+      },
+      "version": "2.0.42",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.7636584000000001,
+        "total_duration_ms": 974286,
+        "total_api_duration_ms": 225027,
+        "total_lines_added": 2,
+        "total_lines_removed": 15
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/27e61215-157d-48a9-9e42-9460c0520600.json does not exist"
+  },
+  {
+    "timestamp": "2025-11-16T11:48:16.909016",
+    "input_data": {
+      "session_id": "27e61215-157d-48a9-9e42-9460c0520600",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh/27e61215-157d-48a9-9e42-9460c0520600.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh",
+      "model": {
+        "id": "claude-sonnet-4-5-20250929",
+        "display_name": "Sonnet 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh"
+      },
+      "version": "2.0.42",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.7636584000000001,
+        "total_duration_ms": 974286,
+        "total_api_duration_ms": 225027,
+        "total_lines_added": 2,
+        "total_lines_removed": 15
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-11-16T11:48:16.931122",
+    "input_data": {
+      "session_id": "27e61215-157d-48a9-9e42-9460c0520600",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh/27e61215-157d-48a9-9e42-9460c0520600.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh",
+      "model": {
+        "id": "claude-sonnet-4-5-20250929",
+        "display_name": "Sonnet 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh"
+      },
+      "version": "2.0.42",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.7636584000000001,
+        "total_duration_ms": 974310,
+        "total_api_duration_ms": 225027,
+        "total_lines_added": 2,
+        "total_lines_removed": 15
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/27e61215-157d-48a9-9e42-9460c0520600.json does not exist"
+  },
+  {
+    "timestamp": "2025-11-16T11:48:16.932145",
+    "input_data": {
+      "session_id": "27e61215-157d-48a9-9e42-9460c0520600",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh/27e61215-157d-48a9-9e42-9460c0520600.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh",
+      "model": {
+        "id": "claude-sonnet-4-5-20250929",
+        "display_name": "Sonnet 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh"
+      },
+      "version": "2.0.42",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.7636584000000001,
+        "total_duration_ms": 974310,
+        "total_api_duration_ms": 225027,
+        "total_lines_added": 2,
+        "total_lines_removed": 15
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-11-16T11:48:35.543989",
+    "input_data": {
+      "session_id": "27e61215-157d-48a9-9e42-9460c0520600",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh/27e61215-157d-48a9-9e42-9460c0520600.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh",
+      "model": {
+        "id": "claude-sonnet-4-5-20250929",
+        "display_name": "Sonnet 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh"
+      },
+      "version": "2.0.42",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.7937286500000001,
+        "total_duration_ms": 992909,
+        "total_api_duration_ms": 245266,
+        "total_lines_added": 2,
+        "total_lines_removed": 15
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/27e61215-157d-48a9-9e42-9460c0520600.json does not exist"
+  },
+  {
+    "timestamp": "2025-11-16T11:48:35.545188",
+    "input_data": {
+      "session_id": "27e61215-157d-48a9-9e42-9460c0520600",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh/27e61215-157d-48a9-9e42-9460c0520600.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh",
+      "model": {
+        "id": "claude-sonnet-4-5-20250929",
+        "display_name": "Sonnet 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh"
+      },
+      "version": "2.0.42",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.7937286500000001,
+        "total_duration_ms": 992909,
+        "total_api_duration_ms": 245266,
+        "total_lines_added": 2,
+        "total_lines_removed": 15
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-11-16T11:48:35.577750",
+    "input_data": {
+      "session_id": "27e61215-157d-48a9-9e42-9460c0520600",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh/27e61215-157d-48a9-9e42-9460c0520600.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh",
+      "model": {
+        "id": "claude-sonnet-4-5-20250929",
+        "display_name": "Sonnet 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh"
+      },
+      "version": "2.0.42",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.7937286500000001,
+        "total_duration_ms": 992957,
+        "total_api_duration_ms": 245266,
+        "total_lines_added": 2,
+        "total_lines_removed": 15
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/27e61215-157d-48a9-9e42-9460c0520600.json does not exist"
+  },
+  {
+    "timestamp": "2025-11-16T11:48:35.578820",
+    "input_data": {
+      "session_id": "27e61215-157d-48a9-9e42-9460c0520600",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh/27e61215-157d-48a9-9e42-9460c0520600.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh",
+      "model": {
+        "id": "claude-sonnet-4-5-20250929",
+        "display_name": "Sonnet 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh"
+      },
+      "version": "2.0.42",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.7937286500000001,
+        "total_duration_ms": 992957,
+        "total_api_duration_ms": 245266,
+        "total_lines_added": 2,
+        "total_lines_removed": 15
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-11-16T11:49:48.549356",
+    "input_data": {
+      "session_id": "cc936007-0019-4b0c-851e-b7200f317850",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh/cc936007-0019-4b0c-851e-b7200f317850.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh",
+      "model": {
+        "id": "claude-sonnet-4-5-20250929",
+        "display_name": "Sonnet 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh"
+      },
+      "version": "2.0.42",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.0643684499999997,
+        "total_duration_ms": 2026648,
+        "total_api_duration_ms": 474105,
+        "total_lines_added": 1277,
+        "total_lines_removed": 2
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/cc936007-0019-4b0c-851e-b7200f317850.json does not exist"
+  },
+  {
+    "timestamp": "2025-11-16T11:49:48.550810",
+    "input_data": {
+      "session_id": "cc936007-0019-4b0c-851e-b7200f317850",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh/cc936007-0019-4b0c-851e-b7200f317850.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh",
+      "model": {
+        "id": "claude-sonnet-4-5-20250929",
+        "display_name": "Sonnet 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh"
+      },
+      "version": "2.0.42",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.0643684499999997,
+        "total_duration_ms": 2026648,
+        "total_api_duration_ms": 474105,
+        "total_lines_added": 1277,
+        "total_lines_removed": 2
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-11-16T11:50:10.212248",
+    "input_data": {
+      "session_id": "27e61215-157d-48a9-9e42-9460c0520600",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh/27e61215-157d-48a9-9e42-9460c0520600.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh",
+      "model": {
+        "id": "claude-sonnet-4-5-20250929",
+        "display_name": "Sonnet 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh"
+      },
+      "version": "2.0.42",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0,
+        "total_duration_ms": 1373,
+        "total_api_duration_ms": 0,
+        "total_lines_added": 0,
+        "total_lines_removed": 0
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/27e61215-157d-48a9-9e42-9460c0520600.json does not exist"
+  },
+  {
+    "timestamp": "2025-11-16T11:50:10.213219",
+    "input_data": {
+      "session_id": "27e61215-157d-48a9-9e42-9460c0520600",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh/27e61215-157d-48a9-9e42-9460c0520600.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh",
+      "model": {
+        "id": "claude-sonnet-4-5-20250929",
+        "display_name": "Sonnet 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh"
+      },
+      "version": "2.0.42",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0,
+        "total_duration_ms": 1373,
+        "total_api_duration_ms": 0,
+        "total_lines_added": 0,
+        "total_lines_removed": 0
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-11-16T11:50:10.462407",
+    "input_data": {
+      "session_id": "27e61215-157d-48a9-9e42-9460c0520600",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh/27e61215-157d-48a9-9e42-9460c0520600.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh",
+      "model": {
+        "id": "claude-sonnet-4-5-20250929",
+        "display_name": "Sonnet 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh"
+      },
+      "version": "2.0.42",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0,
+        "total_duration_ms": 1674,
+        "total_api_duration_ms": 0,
+        "total_lines_added": 0,
+        "total_lines_removed": 0
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/27e61215-157d-48a9-9e42-9460c0520600.json does not exist"
+  },
+  {
+    "timestamp": "2025-11-16T11:50:10.463415",
+    "input_data": {
+      "session_id": "27e61215-157d-48a9-9e42-9460c0520600",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh/27e61215-157d-48a9-9e42-9460c0520600.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh",
+      "model": {
+        "id": "claude-sonnet-4-5-20250929",
+        "display_name": "Sonnet 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh"
+      },
+      "version": "2.0.42",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0,
+        "total_duration_ms": 1674,
+        "total_api_duration_ms": 0,
+        "total_lines_added": 0,
+        "total_lines_removed": 0
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-11-16T11:50:19.475485",
+    "input_data": {
+      "session_id": "27e61215-157d-48a9-9e42-9460c0520600",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh/27e61215-157d-48a9-9e42-9460c0520600.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh",
+      "model": {
+        "id": "claude-sonnet-4-5-20250929",
+        "display_name": "Sonnet 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh"
+      },
+      "version": "2.0.42",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.14506785000000003,
+        "total_duration_ms": 10683,
+        "total_api_duration_ms": 14771,
+        "total_lines_added": 0,
+        "total_lines_removed": 0
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/27e61215-157d-48a9-9e42-9460c0520600.json does not exist"
+  },
+  {
+    "timestamp": "2025-11-16T11:50:19.476731",
+    "input_data": {
+      "session_id": "27e61215-157d-48a9-9e42-9460c0520600",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh/27e61215-157d-48a9-9e42-9460c0520600.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh",
+      "model": {
+        "id": "claude-sonnet-4-5-20250929",
+        "display_name": "Sonnet 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh"
+      },
+      "version": "2.0.42",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.14506785000000003,
+        "total_duration_ms": 10683,
+        "total_api_duration_ms": 14771,
+        "total_lines_added": 0,
+        "total_lines_removed": 0
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-11-16T11:50:19.478448",
+    "input_data": {
+      "session_id": "27e61215-157d-48a9-9e42-9460c0520600",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh/27e61215-157d-48a9-9e42-9460c0520600.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh",
+      "model": {
+        "id": "claude-sonnet-4-5-20250929",
+        "display_name": "Sonnet 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh"
+      },
+      "version": "2.0.42",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.14506785000000003,
+        "total_duration_ms": 10687,
+        "total_api_duration_ms": 14771,
+        "total_lines_added": 0,
+        "total_lines_removed": 0
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/27e61215-157d-48a9-9e42-9460c0520600.json does not exist"
+  },
+  {
+    "timestamp": "2025-11-16T11:50:19.479652",
+    "input_data": {
+      "session_id": "27e61215-157d-48a9-9e42-9460c0520600",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh/27e61215-157d-48a9-9e42-9460c0520600.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh",
+      "model": {
+        "id": "claude-sonnet-4-5-20250929",
+        "display_name": "Sonnet 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh"
+      },
+      "version": "2.0.42",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.14506785000000003,
+        "total_duration_ms": 10687,
+        "total_api_duration_ms": 14771,
+        "total_lines_added": 0,
+        "total_lines_removed": 0
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-11-16T11:50:19.482440",
+    "input_data": {
+      "session_id": "27e61215-157d-48a9-9e42-9460c0520600",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh/27e61215-157d-48a9-9e42-9460c0520600.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh",
+      "model": {
+        "id": "claude-sonnet-4-5-20250929",
+        "display_name": "Sonnet 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh"
+      },
+      "version": "2.0.42",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.14506785000000003,
+        "total_duration_ms": 10690,
+        "total_api_duration_ms": 14771,
+        "total_lines_added": 0,
+        "total_lines_removed": 0
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/27e61215-157d-48a9-9e42-9460c0520600.json does not exist"
+  },
+  {
+    "timestamp": "2025-11-16T11:50:19.483591",
+    "input_data": {
+      "session_id": "27e61215-157d-48a9-9e42-9460c0520600",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh/27e61215-157d-48a9-9e42-9460c0520600.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh",
+      "model": {
+        "id": "claude-sonnet-4-5-20250929",
+        "display_name": "Sonnet 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh"
+      },
+      "version": "2.0.42",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.14506785000000003,
+        "total_duration_ms": 10690,
+        "total_api_duration_ms": 14771,
+        "total_lines_added": 0,
+        "total_lines_removed": 0
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-11-16T11:50:19.495206",
+    "input_data": {
+      "session_id": "27e61215-157d-48a9-9e42-9460c0520600",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh/27e61215-157d-48a9-9e42-9460c0520600.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh",
+      "model": {
+        "id": "claude-sonnet-4-5-20250929",
+        "display_name": "Sonnet 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh"
+      },
+      "version": "2.0.42",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.14506785000000003,
+        "total_duration_ms": 10705,
+        "total_api_duration_ms": 14771,
+        "total_lines_added": 0,
+        "total_lines_removed": 0
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/27e61215-157d-48a9-9e42-9460c0520600.json does not exist"
+  },
+  {
+    "timestamp": "2025-11-16T11:50:19.496437",
+    "input_data": {
+      "session_id": "27e61215-157d-48a9-9e42-9460c0520600",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh/27e61215-157d-48a9-9e42-9460c0520600.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh",
+      "model": {
+        "id": "claude-sonnet-4-5-20250929",
+        "display_name": "Sonnet 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh"
+      },
+      "version": "2.0.42",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.14506785000000003,
+        "total_duration_ms": 10705,
+        "total_api_duration_ms": 14771,
+        "total_lines_added": 0,
+        "total_lines_removed": 0
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-11-16T11:50:26.484182",
+    "input_data": {
+      "session_id": "27e61215-157d-48a9-9e42-9460c0520600",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh/27e61215-157d-48a9-9e42-9460c0520600.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh",
+      "model": {
+        "id": "claude-sonnet-4-5-20250929",
+        "display_name": "Sonnet 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh"
+      },
+      "version": "2.0.42",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.19217675000000004,
+        "total_duration_ms": 17685,
+        "total_api_duration_ms": 25512,
+        "total_lines_added": 0,
+        "total_lines_removed": 0
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Sonnet 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/27e61215-157d-48a9-9e42-9460c0520600.json does not exist"
+  },
+  {
+    "timestamp": "2025-11-16T11:50:26.485443",
+    "input_data": {
+      "session_id": "27e61215-157d-48a9-9e42-9460c0520600",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh/27e61215-157d-48a9-9e42-9460c0520600.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh",
+      "model": {
+        "id": "claude-sonnet-4-5-20250929",
+        "display_name": "Sonnet 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh"
+      },
+      "version": "2.0.42",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.19217675000000004,
+        "total_duration_ms": 17697,
+        "total_api_duration_ms": 25512,
+        "total_lines_added": 0,
+        "total_lines_removed": 0
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Sonnet 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  }
+]

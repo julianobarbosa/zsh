@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>PayloadContent</key>
+    <array>
+        <dict>
+            <key>PayloadDescription</key>
+            <string>Grants Screen Recording permissions to specified applications</string>
+            <key>PayloadDisplayName</key>
+            <string>Screen Recording Privacy Preferences</string>
+            <key>PayloadIdentifier</key>
+            <string>com.github.zsh.screenrecording</string>
+            <key>PayloadOrganization</key>
+            <string>Local</string>
+            <key>PayloadType</key>
+            <string>com.apple.TCC.configuration-profile-policy</string>
+            <key>PayloadUUID</key>
+            <string>8E8A0B6E-9F4A-4B5C-8D3E-1F2A3B4C5D6E</string>
+            <key>PayloadVersion</key>
+            <integer>1</integer>
+            <key>Services</key>
+            <dict>
+                <key>ScreenCapture</key>
+                <array>
+                    <dict>
+                        <key>Allowed</key>
+                        <true/>
+                        <key>BundleID</key>
+                        <string>com.surteesstudios.Bartender</string>
+                        <key>Comment</key>
+                        <string>Allow Bartender 5 to record screen</string>
+                    </dict>
+                    <dict>
+                        <key>Allowed</key>
+                        <true/>
+                        <key>BundleID</key>
+                        <string>com.microsoft.teams2</string>
+                        <key>Comment</key>
+                        <string>Allow Microsoft Teams to record screen</string>
+                    </dict>
+                </array>
+            </dict>
+        </dict>
+    </array>
+    <key>PayloadDescription</key>
+    <string>Configures Screen Recording permissions for Bartender 5 and Microsoft Teams</string>
+    <key>PayloadDisplayName</key>
+    <string>Screen Recording Permissions</string>
+    <key>PayloadIdentifier</key>
+    <string>com.github.zsh.screenrecording.main</string>
+    <key>PayloadOrganization</key>
+    <string>Local</string>
+    <key>PayloadRemovalDisallowed</key>
+    <false/>
+    <key>PayloadScope</key>
+    <string>System</string>
+    <key>PayloadType</key>
+    <string>Configuration</string>
+    <key>PayloadUUID</key>
+    <string>9F9A0B6E-9F4A-4B5C-8D3E-1F2A3B4C5D6F</string>
+    <key>PayloadVersion</key>
+    <integer>1</integer>
+</dict>
+</plist>

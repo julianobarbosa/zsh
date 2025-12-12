@@ -1,0 +1,4 @@
+description = "BMAD BMAD-CUSTOM Workflow: wassup"
+prompt = """
+IT IS CRITICAL THAT YOU FOLLOW THIS COMMAND: LOAD the FULL @.bmad/bmad-custom/workflows/wassup/workflow.md, READ its entire contents and follow its directions exactly!
+"""

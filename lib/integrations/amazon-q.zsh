@@ -10,8 +10,32 @@ AMAZONQ_SETTINGS_FILE="${AMAZONQ_SETTINGS_FILE:-${AMAZONQ_CONFIG_DIR}/settings.j
 AMAZONQ_APP_PATH="${AMAZONQ_APP_PATH:-/Applications/Amazon Q.app}"
 
 # Check if Amazon Q CLI is installed
+# Validates both command existence AND that it's actually Amazon Q (not another 'q' command)
 _amazonq_is_installed() {
-  _zsh_tool_is_installed "q"
+  # First check if 'q' command exists
+  if ! _zsh_tool_is_installed "q"; then
+    return 1
+  fi
+
+  # Verify it's actually Amazon Q by checking version output
+  # Amazon Q version format: "Amazon Q Developer CLI vX.X.X" or similar
+  local version_output=$(q --version 2>/dev/null | head -n1)
+
+  # Check for Amazon Q identifiers in version string
+  if [[ "$version_output" =~ [Aa]mazon.*[Qq] ]] || \
+     [[ "$version_output" =~ "AWS Q" ]] || \
+     [[ "$version_output" =~ "q-cli" ]]; then
+    return 0
+  fi
+
+  # Also check if the q binary is from Amazon Q app bundle
+  local q_path=$(command -v q 2>/dev/null)
+  if [[ "$q_path" =~ "Amazon Q" ]] || [[ "$q_path" =~ "amazonq" ]]; then
+    return 0
+  fi
+
+  # Not Amazon Q - some other 'q' command
+  return 1
 }
 
 # Detect Amazon Q installation
@@ -24,7 +48,14 @@ _amazonq_detect() {
     _zsh_tool_log INFO "✓ Amazon Q CLI detected: $version"
     return 0
   else
-    _zsh_tool_log INFO "Amazon Q CLI not found"
+    # Check if there's a different 'q' command that's not Amazon Q
+    if _zsh_tool_is_installed "q"; then
+      local other_q=$(q --version 2>/dev/null | head -n1)
+      _zsh_tool_log WARN "Found 'q' command but it's not Amazon Q: $other_q"
+      _zsh_tool_log INFO "Amazon Q CLI needs to be installed separately"
+    else
+      _zsh_tool_log INFO "Amazon Q CLI not found"
+    fi
     return 1
   fi
 }
@@ -190,6 +221,10 @@ _amazonq_validate_cli_name() {
 # Configure Amazon Q settings file
 _amazonq_configure_settings() {
   local disabled_clis=("$@")
+  local temp_file=""
+  local _cleanup_temp() {
+    [[ -n "$temp_file" && -f "$temp_file" ]] && rm -f "$temp_file" 2>/dev/null
+  }
 
   _zsh_tool_log INFO "Configuring Amazon Q settings..."
 
@@ -226,6 +261,9 @@ _amazonq_configure_settings() {
     return 1
   fi
 
+  # Clean up any orphaned temp files from previous failed runs
+  rm -f "${AMAZONQ_SETTINGS_FILE}.tmp."* 2>/dev/null
+
   # Initialize settings file if it doesn't exist or has invalid JSON
   if [[ ! -f "$AMAZONQ_SETTINGS_FILE" ]]; then
     if ! echo '{"disabledClis":[]}' > "$AMAZONQ_SETTINGS_FILE" 2>/dev/null; then
@@ -250,26 +288,36 @@ _amazonq_configure_settings() {
   fi
 
   # Update settings file using jq (safe JSON manipulation)
-  local temp_file="${AMAZONQ_SETTINGS_FILE}.tmp.$$"
+  temp_file="${AMAZONQ_SETTINGS_FILE}.tmp.$$"
+
+  # Set up trap for cleanup on interrupt/error
+  trap '_cleanup_temp' INT TERM
+
   if ! jq ".disabledClis = $jq_array" "$AMAZONQ_SETTINGS_FILE" > "$temp_file" 2>/dev/null; then
     _zsh_tool_log ERROR "Failed to update settings with jq"
-    rm -f "$temp_file" 2>/dev/null
+    _cleanup_temp
+    trap - INT TERM
     return 1
   fi
 
   # Verify temp file was created and has content
   if [[ ! -f "$temp_file" ]] || [[ ! -s "$temp_file" ]]; then
     _zsh_tool_log ERROR "Temporary settings file creation failed"
-    rm -f "$temp_file" 2>/dev/null
+    _cleanup_temp
+    trap - INT TERM
     return 1
   fi
 
   # Atomic move
   if ! mv "$temp_file" "$AMAZONQ_SETTINGS_FILE" 2>/dev/null; then
     _zsh_tool_log ERROR "Failed to move settings file into place"
-    rm -f "$temp_file" 2>/dev/null
+    _cleanup_temp
+    trap - INT TERM
     return 1
   fi
+
+  # Clear trap after successful completion
+  trap - INT TERM
 
   _zsh_tool_log INFO "✓ Amazon Q settings configured"
   _zsh_tool_log DEBUG "Settings file: $AMAZONQ_SETTINGS_FILE"

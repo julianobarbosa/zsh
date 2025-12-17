@@ -100,20 +100,49 @@ _zsh_tool_parse_paths() {
   done <<< "$config"
 }
 
+# Helper: Extract a YAML section by name (handles sections up to 50 lines)
+# Returns all lines from section start until next top-level key or EOF
+_zsh_tool_extract_yaml_section() {
+  local section_name="$1"
+  local config="$2"
+  local in_section=false
+
+  while IFS= read -r line; do
+    # Check if we hit the target section
+    if [[ "$line" =~ ^${section_name}: ]]; then
+      in_section=true
+      echo "$line"
+      continue
+    fi
+
+    # If we're in the section, check if we've hit a new top-level key
+    if [[ "$in_section" == true ]]; then
+      # New top-level key starts at column 0 with no leading space
+      if [[ "$line" =~ ^[a-zA-Z_][a-zA-Z0-9_]*: ]] && [[ ! "$line" =~ ^[[:space:]] ]]; then
+        break
+      fi
+      echo "$line"
+    fi
+  done <<< "$config"
+}
+
 # Parse Amazon Q configuration
 _zsh_tool_parse_amazon_q_enabled() {
   local config=$(_zsh_tool_load_config)
-  echo "$config" | grep -A5 '^amazon_q:' | grep 'enabled:' | awk '{print $2}' | tr -d ' '
+  local section=$(_zsh_tool_extract_yaml_section "amazon_q" "$config")
+  echo "$section" | grep '^\s*enabled:' | head -1 | awk '{print $2}' | tr -d ' '
 }
 
 _zsh_tool_parse_amazon_q_lazy_loading() {
   local config=$(_zsh_tool_load_config)
-  echo "$config" | grep -A5 '^amazon_q:' | grep 'lazy_loading:' | awk '{print $2}' | tr -d ' '
+  local section=$(_zsh_tool_extract_yaml_section "amazon_q" "$config")
+  echo "$section" | grep '^\s*lazy_loading:' | head -1 | awk '{print $2}' | tr -d ' '
 }
 
 _zsh_tool_parse_amazon_q_atuin_compatibility() {
   local config=$(_zsh_tool_load_config)
-  echo "$config" | grep -A5 '^amazon_q:' | grep 'atuin_compatibility:' | awk '{print $2}' | tr -d ' '
+  local section=$(_zsh_tool_extract_yaml_section "amazon_q" "$config")
+  echo "$section" | grep '^\s*atuin_compatibility:' | head -1 | awk '{print $2}' | tr -d ' '
 }
 
 _zsh_tool_parse_amazon_q_disabled_clis() {
@@ -137,37 +166,44 @@ _zsh_tool_parse_amazon_q_disabled_clis() {
 # Parse Atuin configuration
 _zsh_tool_parse_atuin_enabled() {
   local config=$(_zsh_tool_load_config)
-  echo "$config" | grep -A10 '^atuin:' | grep 'enabled:' | awk '{print $2}' | tr -d ' '
+  local section=$(_zsh_tool_extract_yaml_section "atuin" "$config")
+  echo "$section" | grep '^\s*enabled:' | head -1 | awk '{print $2}' | tr -d ' '
 }
 
 _zsh_tool_parse_atuin_import_history() {
   local config=$(_zsh_tool_load_config)
-  echo "$config" | grep -A10 '^atuin:' | grep 'import_history:' | awk '{print $2}' | tr -d ' '
+  local section=$(_zsh_tool_extract_yaml_section "atuin" "$config")
+  echo "$section" | grep '^\s*import_history:' | head -1 | awk '{print $2}' | tr -d ' '
 }
 
 _zsh_tool_parse_atuin_sync_enabled() {
   local config=$(_zsh_tool_load_config)
-  echo "$config" | grep -A10 '^atuin:' | grep 'sync_enabled:' | awk '{print $2}' | tr -d ' '
+  local section=$(_zsh_tool_extract_yaml_section "atuin" "$config")
+  echo "$section" | grep '^\s*sync_enabled:' | head -1 | awk '{print $2}' | tr -d ' '
 }
 
 _zsh_tool_parse_atuin_search_mode() {
   local config=$(_zsh_tool_load_config)
-  echo "$config" | grep -A10 '^atuin:' | grep 'search_mode:' | awk '{print $2}' | tr -d ' "' | head -n1
+  local section=$(_zsh_tool_extract_yaml_section "atuin" "$config")
+  echo "$section" | grep '^\s*search_mode:' | head -1 | awk '{print $2}' | tr -d ' "'
 }
 
 _zsh_tool_parse_atuin_filter_mode() {
   local config=$(_zsh_tool_load_config)
-  echo "$config" | grep -A10 '^atuin:' | grep 'filter_mode:' | awk '{print $2}' | tr -d ' "' | head -n1
+  local section=$(_zsh_tool_extract_yaml_section "atuin" "$config")
+  echo "$section" | grep '^\s*filter_mode:' | head -1 | awk '{print $2}' | tr -d ' "'
 }
 
 _zsh_tool_parse_atuin_inline_height() {
   local config=$(_zsh_tool_load_config)
-  echo "$config" | grep -A10 '^atuin:' | grep 'inline_height:' | awk '{print $2}' | tr -d ' '
+  local section=$(_zsh_tool_extract_yaml_section "atuin" "$config")
+  echo "$section" | grep '^\s*inline_height:' | head -1 | awk '{print $2}' | tr -d ' '
 }
 
 _zsh_tool_parse_atuin_style() {
   local config=$(_zsh_tool_load_config)
-  echo "$config" | grep -A10 '^atuin:' | grep 'style:' | awk '{print $2}' | tr -d ' "' | head -n1
+  local section=$(_zsh_tool_extract_yaml_section "atuin" "$config")
+  echo "$section" | grep '^\s*style:' | head -1 | awk '{print $2}' | tr -d ' "'
 }
 
 # Generate .zshrc content from template

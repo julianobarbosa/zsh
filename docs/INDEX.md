@@ -25,6 +25,8 @@ Start here if you're new to zsh-tool:
 
 | Document | Description | Best For |
 |----------|-------------|----------|
+| [project-overview.md](project-overview.md) | Executive summary and quick reference | Quick project understanding |
+| [source-tree-analysis.md](source-tree-analysis.md) | Annotated directory structure | Navigating the codebase |
 | [solution-architecture.md](solution-architecture.md) | Technical design and architecture decisions | Understanding system design |
 | [tech-spec-epic-1.md](tech-spec-epic-1.md) | Technical specification for Core Installation & Configuration | Epic 1 implementation details |
 | [tech-spec-epic-2.md](tech-spec-epic-2.md) | Technical specification for Maintenance & Lifecycle Management | Epic 2 implementation details |
@@ -46,11 +48,14 @@ Start here if you're new to zsh-tool:
 |----------|-------------|----------|
 | [DISK_CLEANUP_README.md](DISK_CLEANUP_README.md) | Disk cleanup utility overview | Understanding disk cleanup features |
 | [DISK_CLEANUP_GUIDE.md](DISK_CLEANUP_GUIDE.md) | Detailed disk cleanup usage guide | Using disk cleanup utility |
+| [TOUCH-ID-SUDO-TMUX.md](TOUCH-ID-SUDO-TMUX.md) | Touch ID for sudo with tmux/screen | Enabling biometric sudo in terminal multiplexers |
+| [FABRIC-AI-GUIDE.md](FABRIC-AI-GUIDE.md) | Fabric AI patterns and integration | Using AI patterns with shell workflows |
 
 ### Development & Workflow
 
 | Document | Description | Best For |
 |----------|-------------|----------|
+| [development-guide.md](development-guide.md) | Developer setup and workflow | Getting started with development |
 | [AGENTS.md](AGENTS.md) | BMAD method agents reference | Understanding workflow automation |
 | [project-workflow-analysis.md](project-workflow-analysis.md) | Development workflow analysis | Understanding development process |
 | [technical-decisions-template.md](technical-decisions-template.md) | Template for documenting technical decisions | Recording architecture decisions |
@@ -142,7 +147,9 @@ docs/
 │
 ├── Utilities
 │   ├── DISK_CLEANUP_README.md      # Disk cleanup overview
-│   └── DISK_CLEANUP_GUIDE.md       # Disk cleanup guide
+│   ├── DISK_CLEANUP_GUIDE.md       # Disk cleanup guide
+│   ├── TOUCH-ID-SUDO-TMUX.md       # Touch ID for sudo in tmux
+│   └── FABRIC-AI-GUIDE.md          # Fabric AI integration guide
 │
 ├── Development
 │   ├── AGENTS.md                   # BMAD workflow agents
@@ -203,4 +210,4 @@ If you can't find what you're looking for:
 
 ---
 
-Last Updated: 2025-11-16
+Last Updated: 2025-12-17

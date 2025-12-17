@@ -30,6 +30,7 @@ Start here if you're new to zsh-tool:
 | [solution-architecture.md](solution-architecture.md) | Technical design and architecture decisions | Understanding system design |
 | [tech-spec-epic-1.md](tech-spec-epic-1.md) | Technical specification for Core Installation & Configuration | Epic 1 implementation details |
 | [tech-spec-epic-2.md](tech-spec-epic-2.md) | Technical specification for Maintenance & Lifecycle Management | Epic 2 implementation details |
+| [tech-spec-epic-3.md](tech-spec-epic-3.md) | Technical specification for Advanced Integrations (Atuin, Amazon Q) | Epic 3 implementation details |
 | [CODEBASE-ANALYSIS.md](CODEBASE-ANALYSIS.md) | Detailed code structure analysis | Understanding codebase organization |
 | [cohesion-check-report.md](cohesion-check-report.md) | Code cohesion analysis and recommendations | Code quality insights |
 
@@ -114,6 +115,8 @@ Start here if you're new to zsh-tool:
 
 ### Epic 3: Advanced Integrations
 
+- [tech-spec-epic-3.md](tech-spec-epic-3.md) - Technical specification
+- [epic-stories.md](epic-stories.md) - Stories 13-14
 - [ATUIN-CTRL-R-FIX.md](ATUIN-CTRL-R-FIX.md) - Atuin integration compatibility
 - [LAZY-COMPLETION-FIX.md](LAZY-COMPLETION-FIX.md) - Performance optimization
 - [README.md](README.md) - Atuin and Amazon Q sections
@@ -131,6 +134,7 @@ docs/
 │   ├── solution-architecture.md     # System architecture
 │   ├── tech-spec-epic-1.md         # Epic 1 technical spec
 │   ├── tech-spec-epic-2.md         # Epic 2 technical spec
+│   ├── tech-spec-epic-3.md         # Epic 3 technical spec
 │   ├── CODEBASE-ANALYSIS.md        # Code structure analysis
 │   └── cohesion-check-report.md    # Code quality analysis
 │

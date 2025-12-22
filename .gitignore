@@ -1,1 +1,4 @@
 .worktrees/
+.claude/github-star-reminder.txt
+.claude/audio/
+logs/status_line.json

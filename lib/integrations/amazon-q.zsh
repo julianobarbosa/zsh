@@ -262,11 +262,14 @@ _amazonq_configure_settings() {
   fi
 
   # Clean up any orphaned temp files from previous failed runs
-  rm -f "${AMAZONQ_SETTINGS_FILE}.tmp."* 2>/dev/null
+  # Use setopt nullglob to avoid "no matches found" error if no temp files exist
+  setopt local_options nullglob
+  rm -f "${AMAZONQ_SETTINGS_FILE}".tmp.* 2>/dev/null
 
   # Initialize settings file if it doesn't exist or has invalid JSON
   if [[ ! -f "$AMAZONQ_SETTINGS_FILE" ]]; then
-    if ! echo '{"disabledClis":[]}' > "$AMAZONQ_SETTINGS_FILE" 2>/dev/null; then
+    # Use umask 077 to ensure settings file is not world-readable (security best practice)
+    if ! (umask 077; echo '{"disabledClis":[]}' > "$AMAZONQ_SETTINGS_FILE") 2>/dev/null; then
       _zsh_tool_log ERROR "Failed to create settings file: $AMAZONQ_SETTINGS_FILE"
       return 1
     fi
@@ -274,7 +277,8 @@ _amazonq_configure_settings() {
     # Validate existing JSON file
     if ! jq empty "$AMAZONQ_SETTINGS_FILE" 2>/dev/null; then
       _zsh_tool_log WARN "Settings file contains invalid JSON, recreating..."
-      if ! echo '{"disabledClis":[]}' > "$AMAZONQ_SETTINGS_FILE" 2>/dev/null; then
+      # Use umask 077 to ensure settings file is not world-readable (security best practice)
+      if ! (umask 077; echo '{"disabledClis":[]}' > "$AMAZONQ_SETTINGS_FILE") 2>/dev/null; then
         _zsh_tool_log ERROR "Failed to recreate settings file: $AMAZONQ_SETTINGS_FILE"
         return 1
       fi
@@ -288,7 +292,8 @@ _amazonq_configure_settings() {
   fi
 
   # Update settings file using jq (safe JSON manipulation)
-  temp_file="${AMAZONQ_SETTINGS_FILE}.tmp.$$"
+  # Use PID + RANDOM + timestamp for unique temp file (handles concurrent subshells)
+  temp_file="${AMAZONQ_SETTINGS_FILE}.tmp.$$.$RANDOM.$(date +%s%N 2>/dev/null || date +%s)"
 
   # Set up trap for cleanup on interrupt/error
   trap '_cleanup_temp' INT TERM

@@ -68,6 +68,9 @@ _amazonq_health_check() {
   - [x] Test with q not executable
   - [x] Verify error messages
 
+### Review Follow-ups (AI)
+- [ ] [AI-Review][LOW] Add fallback guidance if `q doctor` command changes in future CLI versions [lib/integrations/amazon-q.zsh:183]
+
 ## Technical Implementation
 
 ```zsh

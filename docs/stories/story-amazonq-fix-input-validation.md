@@ -58,6 +58,9 @@ _amazonq_configure_settings() {
   - [x] Test with very long names
   - [x] Test with empty strings
 
+### Review Follow-ups (AI)
+- [ ] [AI-Review][MEDIUM] Tighten regex to require alphanumeric start character: `^[a-zA-Z0-9][a-zA-Z0-9_-]*$` [lib/integrations/amazon-q.zsh:212]
+
 ## Technical Implementation
 
 ```zsh

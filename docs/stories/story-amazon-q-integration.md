@@ -83,6 +83,11 @@ Research findings:
   - [x] Add troubleshooting guide for common issues
   - [x] Document performance optimization options
 
+### Review Follow-ups (AI)
+- [x] [AI-Review][HIGH] Add integration test for `amazonq_install_integration()` main flow [tests/test-amazon-q.zsh] **FIXED**
+- [ ] [AI-Review][MEDIUM] Add backup cleanup mechanism - keep only N recent backups [lib/integrations/amazon-q.zsh:379]
+- [ ] [AI-Review][LOW] Fix README test command: change `zsh run-tests.zsh` to `zsh tests/run-all-tests.sh` [README.md:159]
+
 ## Technical Notes
 
 ### Amazon Q CLI Details

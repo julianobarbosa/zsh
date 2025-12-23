@@ -399,11 +399,65 @@ test_config_missing_zshrc() {
   fi
 }
 
+# Test 19: Lazy loading rollback on append failure
+test_config_lazy_loading_rollback() {
+  local test_home="/tmp/test-rollback-$$-$(date +%s)"
+  local result="FAIL"
+
+  # Create test environment with cleanup trap
+  mkdir -p "$test_home"
+  trap "rm -rf '$test_home' 2>/dev/null" EXIT INT TERM
+
+  # Create original .zshrc with content
+  local original_content="# Original zshrc content
+export PATH=/usr/bin
+alias ls='ls -la'"
+  echo "$original_content" > "$test_home/.zshrc"
+
+  # Make .zshrc read-only to force append failure
+  chmod 444 "$test_home/.zshrc"
+
+  # Run test in isolated subshell and capture result
+  result=$(
+    HOME="$test_home"
+    _amazonq_setup_lazy_loading >/dev/null 2>&1
+    func_exit=$?
+
+    # Restore write permission to check content
+    chmod 644 "${HOME}/.zshrc" 2>/dev/null
+
+    # Check that original content is preserved
+    final_content=$(cat "${HOME}/.zshrc")
+
+    # Verify: function should fail AND original content should be preserved
+    if [[ $func_exit -ne 0 ]] && [[ "$final_content" == "$original_content" ]]; then
+      echo "PASS"
+    elif [[ $func_exit -eq 0 ]]; then
+      echo "FAIL_SUCCESS"
+    else
+      echo "FAIL_CONTENT"
+    fi
+  )
+
+  # Cleanup
+  rm -rf "$test_home" 2>/dev/null
+  trap - EXIT INT TERM
+
+  # Verify result
+  if [[ "$result" == "PASS" ]]; then
+    test_result "Config: lazy loading rollback on failure" "PASS"
+  elif [[ "$result" == "FAIL_SUCCESS" ]]; then
+    test_result "Config: lazy loading rollback on failure" "FAIL" "Should fail with read-only .zshrc"
+  else
+    test_result "Config: lazy loading rollback on failure" "FAIL" "Original content should be preserved"
+  fi
+}
+
 # ============================================================================
 # ERROR HANDLING TESTS
 # ============================================================================
 
-# Test 19: Multiple validation errors
+# Test 20: Multiple validation errors
 test_error_multiple_invalid_names() {
   local invalid_names=("test;rm" "app\$var" "cli|pipe")
   local all_rejected=true
@@ -422,7 +476,7 @@ test_error_multiple_invalid_names() {
   fi
 }
 
-# Test 20: Configure with mix of valid and invalid names
+# Test 21: Configure with mix of valid and invalid names
 test_error_mixed_valid_invalid() {
   # Should fail on first invalid name
   _amazonq_configure_settings "atuin" "test;bad" "valid-cli" 2>/dev/null
@@ -439,7 +493,7 @@ test_error_mixed_valid_invalid() {
 # CONCURRENT EXECUTION TESTS (LOW PRIORITY)
 # ============================================================================
 
-# Test 21: Concurrent settings configuration
+# Test 22: Concurrent settings configuration
 test_concurrent_settings_updates() {
   # Reset to clean state
   echo '{"disabledClis":[]}' > "$AMAZONQ_SETTINGS_FILE"
@@ -457,14 +511,27 @@ test_concurrent_settings_updates() {
   done
 
   # Verify file is still valid JSON
-  if jq empty "$AMAZONQ_SETTINGS_FILE" 2>/dev/null; then
-    test_result "Concurrent: parallel settings updates" "PASS"
-  else
+  if ! jq empty "$AMAZONQ_SETTINGS_FILE" 2>/dev/null; then
     test_result "Concurrent: parallel settings updates" "FAIL" "JSON corrupted by concurrent writes"
+    return
+  fi
+
+  # Verify data integrity: at least one cliN should exist (last write wins)
+  # Each concurrent call sets a single CLI, so one will win the race
+  local cli_count=$(jq -r '.disabledClis | length' "$AMAZONQ_SETTINGS_FILE" 2>/dev/null)
+  local cli_value=$(jq -r '.disabledClis[0] // empty' "$AMAZONQ_SETTINGS_FILE" 2>/dev/null)
+
+  # Validate: exactly one entry exists and it matches cli[1-5] pattern
+  if [[ "$cli_count" -eq 1 ]] && [[ "$cli_value" =~ ^cli[1-5]$ ]]; then
+    test_result "Concurrent: parallel settings updates" "PASS"
+  elif [[ "$cli_count" -eq 0 ]]; then
+    test_result "Concurrent: parallel settings updates" "FAIL" "No CLI entries found - data lost"
+  else
+    test_result "Concurrent: parallel settings updates" "FAIL" "Unexpected entries: count=$cli_count value=$cli_value"
   fi
 }
 
-# Test 22: Concurrent file creation
+# Test 23: Concurrent file creation
 test_concurrent_file_creation() {
   # Remove settings file
   rm -f "$AMAZONQ_SETTINGS_FILE"
@@ -489,7 +556,7 @@ test_concurrent_file_creation() {
   fi
 }
 
-# Test 23: Unicode character handling
+# Test 24: Unicode character handling
 test_security_unicode_characters() {
   local unicode_names=("test🚀cli" "café" "日本語" "tëst")
   local all_rejected=true
@@ -508,7 +575,7 @@ test_security_unicode_characters() {
   fi
 }
 
-# Test 24: Newlines and tabs in CLI names
+# Test 25: Newlines and tabs in CLI names
 test_security_whitespace_characters() {
   _amazonq_validate_cli_name "test\nname" 2>/dev/null
   local newline_result=$?
@@ -526,7 +593,7 @@ test_security_whitespace_characters() {
   fi
 }
 
-# Test 25: Unwritable settings file
+# Test 26: Unwritable settings file
 test_filesystem_unwritable_file() {
   # Create settings file and make both directory and file read-only
   echo '{"disabledClis":[]}' > "$AMAZONQ_SETTINGS_FILE"
@@ -550,7 +617,7 @@ test_filesystem_unwritable_file() {
   fi
 }
 
-# Test 26: Partial JSON structure
+# Test 27: Partial JSON structure
 test_filesystem_partial_json() {
   # Create file with empty JSON object (missing disabledClis)
   echo '{}' > "$AMAZONQ_SETTINGS_FILE"
@@ -618,6 +685,7 @@ run_edge_case_tests() {
   test_config_idempotent_lazy_loading
   test_config_backup_creation
   test_config_missing_zshrc
+  test_config_lazy_loading_rollback
 
   echo ""
   echo "${YELLOW}Running Error Handling Tests${NC}"

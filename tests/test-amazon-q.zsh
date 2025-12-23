@@ -294,6 +294,85 @@ test_integration_with_config() {
   fi
 }
 
+# Test 16: Integration test for amazonq_install_integration main flow
+test_amazonq_install_integration_flow() {
+  local test_home="/tmp/test-integration-$$"
+
+  # Create isolated test environment
+  mkdir -p "$test_home"
+  trap "rm -rf '$test_home' 2>/dev/null" EXIT INT TERM
+
+  # Set up isolated environment
+  local old_home="$HOME"
+  local old_config_dir="$AMAZONQ_CONFIG_DIR"
+  local old_settings_file="$AMAZONQ_SETTINGS_FILE"
+
+  export HOME="$test_home"
+  export AMAZONQ_CONFIG_DIR="${test_home}/.aws/amazonq"
+  export AMAZONQ_SETTINGS_FILE="${AMAZONQ_CONFIG_DIR}/settings.json"
+  mkdir -p "$AMAZONQ_CONFIG_DIR"
+  touch "${HOME}/.zshrc"
+
+  # Save original functions
+  local orig_is_installed=$(declare -f _amazonq_is_installed)
+  local orig_detect=$(declare -f _amazonq_detect)
+  local orig_install=$(declare -f _amazonq_install)
+  local orig_health_check=$(declare -f _amazonq_health_check)
+
+  # Mock functions for successful flow
+  _amazonq_is_installed() { return 0; }
+  _amazonq_detect() { return 0; }
+  _amazonq_install() { return 0; }
+  _amazonq_health_check() { return 0; }
+
+  # Test: Full integration flow with all options
+  local test_passed=true
+  local fail_msg=""
+
+  # Test with lazy loading and atuin enabled
+  if ! amazonq_install_integration "true" "true" >/dev/null 2>&1; then
+    test_passed=false
+    fail_msg="Integration flow should succeed"
+  fi
+
+  # Verify atuin was added to settings
+  if [[ "$test_passed" == "true" ]] && [[ -f "$AMAZONQ_SETTINGS_FILE" ]]; then
+    if ! grep -q "atuin" "$AMAZONQ_SETTINGS_FILE" 2>/dev/null; then
+      test_passed=false
+      fail_msg="Atuin not in settings"
+    fi
+  fi
+
+  # Verify lazy loading was added to .zshrc
+  if [[ "$test_passed" == "true" ]]; then
+    if ! grep -q "Amazon Q lazy loading" "${HOME}/.zshrc" 2>/dev/null; then
+      test_passed=false
+      fail_msg="Lazy loading not in zshrc"
+    fi
+  fi
+
+  # Restore original functions
+  eval "$orig_is_installed"
+  eval "$orig_detect"
+  eval "$orig_install"
+  eval "$orig_health_check"
+
+  # Restore environment
+  export HOME="$old_home"
+  export AMAZONQ_CONFIG_DIR="$old_config_dir"
+  export AMAZONQ_SETTINGS_FILE="$old_settings_file"
+
+  # Cleanup
+  rm -rf "$test_home" 2>/dev/null
+  trap - EXIT INT TERM
+
+  if [[ "$test_passed" == "true" ]]; then
+    test_result "Integration: amazonq_install_integration flow" "PASS"
+  else
+    test_result "Integration: amazonq_install_integration flow" "FAIL" "$fail_msg"
+  fi
+}
+
 # Main test runner
 run_tests() {
   echo ""
@@ -322,6 +401,7 @@ run_tests() {
   test_main_integration_function
   test_error_handling_missing_q
   test_integration_with_config
+  test_amazonq_install_integration_flow
 
   # Teardown
   teardown_test_env

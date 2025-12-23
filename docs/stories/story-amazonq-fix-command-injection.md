@@ -40,30 +40,34 @@ settings_content=$(echo "$settings_content" | sed "s/\"disabledClis\":\[.*\]/\"d
 ## Tasks/Subtasks
 
 - [x] **Task 1: Add jq dependency check**
-  - [ ] Add function to check if jq is installed
-  - [ ] Provide clear error message if jq is not available
-  - [ ] Add jq to prerequisites documentation
+  - [x] Add function to check if jq is installed
+  - [x] Provide clear error message if jq is not available
+  - [x] Add jq to prerequisites documentation
 
 - [x] **Task 2: Refactor settings manipulation**
-  - [ ] Replace sed usage with jq for JSON manipulation
-  - [ ] Implement proper error handling for jq operations
-  - [ ] Maintain backwards compatibility with existing settings files
+  - [x] Replace sed usage with jq for JSON manipulation
+  - [x] Implement proper error handling for jq operations
+  - [x] Maintain backwards compatibility with existing settings files
 
 - [x] **Task 3: Add input validation**
-  - [ ] Validate CLI names match expected pattern (alphanumeric + hyphen)
-  - [ ] Add length limits for CLI names
-  - [ ] Reject empty or whitespace-only names
+  - [x] Validate CLI names match expected pattern (alphanumeric + hyphen)
+  - [x] Add length limits for CLI names
+  - [x] Reject empty or whitespace-only names
 
 - [x] **Task 4: Add security tests**
-  - [ ] Test with sed metacharacters
-  - [ ] Test with shell command injection attempts
-  - [ ] Test with special characters and escape sequences
-  - [ ] Test with edge cases (very long names, unicode, etc.)
+  - [x] Test with sed metacharacters
+  - [x] Test with shell command injection attempts
+  - [x] Test with special characters and escape sequences
+  - [x] Test with edge cases (very long names, unicode, etc.)
 
 - [x] **Task 5: Update documentation**
-  - [ ] Document security considerations
-  - [ ] Add jq requirement to README
-  - [ ] Update installation guide
+  - [x] Document security considerations
+  - [x] Add jq requirement to README
+  - [x] Update installation guide
+
+### Review Follow-ups (AI)
+- [x] [AI-Review][HIGH] Add explicit umask for settings file creation: `(umask 077; echo '...' > "$file")` [lib/integrations/amazon-q.zsh:269,277] **FIXED**
+- [ ] [AI-Review][MEDIUM] Tighten input validation to require alphanumeric start: `^[a-zA-Z0-9][a-zA-Z0-9_-]*$` [lib/integrations/amazon-q.zsh:212]
 
 ## Technical Implementation
 

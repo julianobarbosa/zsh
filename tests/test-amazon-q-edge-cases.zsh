@@ -556,6 +556,54 @@ test_concurrent_file_creation() {
   fi
 }
 
+# Test 24: High-volume concurrent access (stress test for temp file collision fix)
+test_concurrent_high_volume_access() {
+  # Use nullglob to avoid "no matches found" errors
+  setopt local_options nullglob
+
+  # Initialize clean state
+  echo '{"disabledClis":[]}' > "$AMAZONQ_SETTINGS_FILE"
+
+  # Clean up any orphaned temp files
+  rm -f "${AMAZONQ_SETTINGS_FILE}".tmp.* 2>/dev/null
+
+  # Launch 10 concurrent processes to stress test the temp file naming
+  local pids=()
+  for i in {1..10}; do
+    (_amazonq_configure_settings "stress$i" >/dev/null 2>&1) &
+    pids+=($!)
+  done
+
+  # Wait for all processes
+  for pid in "${pids[@]}"; do
+    wait $pid 2>/dev/null
+  done
+
+  # Verify no orphaned temp files remain (indicates proper cleanup)
+  local orphaned_temps
+  orphaned_temps=$(echo "${AMAZONQ_SETTINGS_FILE}".tmp.* 2>/dev/null | wc -w | tr -d ' ')
+  # If no files exist, nullglob causes the pattern to expand to empty string
+  [[ -z "${AMAZONQ_SETTINGS_FILE}".tmp.*(N) ]] && orphaned_temps=0
+
+  # Verify final file is valid JSON
+  if ! jq empty "$AMAZONQ_SETTINGS_FILE" 2>/dev/null; then
+    test_result "Concurrent: high-volume access" "FAIL" "JSON corrupted after stress test"
+    return
+  fi
+
+  # Verify one CLI entry exists (last write wins)
+  local cli_count=$(jq -r '.disabledClis | length' "$AMAZONQ_SETTINGS_FILE" 2>/dev/null)
+  local cli_value=$(jq -r '.disabledClis[0] // empty' "$AMAZONQ_SETTINGS_FILE" 2>/dev/null)
+
+  if [[ "$orphaned_temps" -gt 0 ]]; then
+    test_result "Concurrent: high-volume access" "FAIL" "Orphaned temp files: $orphaned_temps"
+  elif [[ "$cli_count" -eq 1 ]] && [[ "$cli_value" =~ ^stress[0-9]+$ ]]; then
+    test_result "Concurrent: high-volume access" "PASS"
+  else
+    test_result "Concurrent: high-volume access" "FAIL" "Unexpected state: count=$cli_count value=$cli_value"
+  fi
+}
+
 # Test 24: Unicode character handling
 test_security_unicode_characters() {
   local unicode_names=("test🚀cli" "café" "日本語" "tëst")
@@ -698,6 +746,7 @@ run_edge_case_tests() {
   echo ""
   test_concurrent_settings_updates
   test_concurrent_file_creation
+  test_concurrent_high_volume_access
 
   # Teardown
   teardown_test_env

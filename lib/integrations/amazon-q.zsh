@@ -243,7 +243,8 @@ _amazonq_configure_settings() {
   fi
 
   # Ensure config directory exists with error checking
-  if ! mkdir -p "$AMAZONQ_CONFIG_DIR" 2>/dev/null; then
+  # Use umask 077 to ensure directory is only accessible by owner (security best practice)
+  if ! (umask 077; mkdir -p "$AMAZONQ_CONFIG_DIR") 2>/dev/null; then
     _zsh_tool_log ERROR "Failed to create config directory: $AMAZONQ_CONFIG_DIR"
     _zsh_tool_log ERROR "Check parent directory permissions and disk space"
     return 1
@@ -298,7 +299,8 @@ _amazonq_configure_settings() {
   # Set up trap for cleanup on interrupt/error
   trap '_cleanup_temp' INT TERM
 
-  if ! jq ".disabledClis = $jq_array" "$AMAZONQ_SETTINGS_FILE" > "$temp_file" 2>/dev/null; then
+  # Use umask 077 to ensure temp file is only accessible by owner (security best practice)
+  if ! (umask 077; jq ".disabledClis = $jq_array" "$AMAZONQ_SETTINGS_FILE" > "$temp_file") 2>/dev/null; then
     _zsh_tool_log ERROR "Failed to update settings with jq"
     _cleanup_temp
     trap - INT TERM

@@ -419,6 +419,7 @@ atuin_install_integration() {
   local import_history="${1:-true}"
   local configure_amazonq="${2:-false}"
   local sync_enabled="${3:-false}"
+  local tab_completion_enabled="${4:-true}"
 
   _zsh_tool_log INFO "Starting Atuin shell history integration..."
 
@@ -447,18 +448,23 @@ atuin_install_integration() {
     _atuin_configure_amazonq_compatibility
   fi
 
-  # Step 7: Health check
+  # Step 7: Configure tab completion if enabled
+  if [[ "$tab_completion_enabled" == "true" ]]; then
+    _atuin_add_completion_to_zshrc
+  fi
+
+  # Step 8: Health check
   if ! _atuin_health_check; then
     _zsh_tool_log WARN "Atuin health check had issues"
     _zsh_tool_log INFO "You may need to complete setup manually"
   fi
 
-  # Step 8: Import existing history
+  # Step 9: Import existing history
   if [[ "$import_history" == "true" ]]; then
     _atuin_import_history
   fi
 
-  # Step 9: Provide sync information
+  # Step 10: Provide sync information
   if [[ "$sync_enabled" == "true" ]]; then
     _atuin_setup_sync
   fi
@@ -473,12 +479,16 @@ atuin_install_integration() {
   echo "  ✓ Atuin installed and configured"
   echo "  ✓ Shell integration added to .zshrc.local"
   echo "  ✓ Ctrl+R bound to Atuin search"
+  if [[ "$tab_completion_enabled" == "true" ]]; then
+    echo "  ✓ Tab completion from Atuin history enabled"
+  fi
   echo ""
   echo "Next steps:"
   echo "  1. Reload shell: exec zsh"
   echo "  2. Press Ctrl+R to search history"
-  echo "  3. View stats: atuin stats"
-  echo "  4. (Optional) Setup sync: atuin register"
+  echo "  3. Type partial command + TAB for history suggestions"
+  echo "  4. View stats: atuin stats"
+  echo "  5. (Optional) Setup sync: atuin register"
   echo ""
   echo "Documentation: https://docs.atuin.sh"
   echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
@@ -489,3 +499,217 @@ atuin_install_integration() {
 
 # Alias for consistency with naming convention
 alias _atuin_install_integration='atuin_install_integration'
+
+# ============================================================================
+# Atuin History Tab Completion Integration
+# ============================================================================
+# This enables TAB completion from Atuin's history database
+# Example: typing "export ELE<TAB>" will suggest "export ELEVENLABS_API_KEY=..."
+
+# Configuration for Atuin completion behavior
+ATUIN_COMPLETE_LIMIT="${ATUIN_COMPLETE_LIMIT:-20}"        # Max suggestions to show
+ATUIN_COMPLETE_MIN_CHARS="${ATUIN_COMPLETE_MIN_CHARS:-2}" # Min chars before suggesting
+ATUIN_COMPLETE_SEARCH_MODE="${ATUIN_COMPLETE_SEARCH_MODE:-prefix}"  # prefix, fuzzy, full-text
+
+# Custom completer function for Atuin history
+# This integrates with Zsh's completion system (_complete, _approximate, etc.)
+_atuin_history_completer() {
+  # Get the current command line buffer
+  local buffer="${BUFFER:-$words[*]}"
+
+  # Skip if buffer is too short
+  if (( ${#buffer} < ATUIN_COMPLETE_MIN_CHARS )); then
+    return 1
+  fi
+
+  # Skip if Atuin is not available
+  if ! command -v atuin &>/dev/null; then
+    return 1
+  fi
+
+  # Query Atuin for matching history entries
+  local -a matches
+  local line
+
+  # Use process substitution to get history matches
+  while IFS= read -r line; do
+    [[ -n "$line" ]] && matches+=("$line")
+  done < <(atuin search --cmd-only --limit "$ATUIN_COMPLETE_LIMIT" \
+    --search-mode "$ATUIN_COMPLETE_SEARCH_MODE" -- "$buffer" 2>/dev/null)
+
+  # If no matches, return failure to try next completer
+  if (( ${#matches} == 0 )); then
+    return 1
+  fi
+
+  # Add matches using compadd
+  # -U: Don't require match with current prefix
+  # -V: Named group for completion display
+  # -Q: Don't quote special characters (preserve as-is)
+  local expl
+  _description -V history-atuin expl "Atuin history"
+  compadd "${expl[@]}" -U -Q -- "${matches[@]}"
+
+  return 0
+}
+
+# Widget function for direct line replacement with Atuin completion
+_atuin_complete_line() {
+  local buffer="$BUFFER"
+
+  # Skip if buffer is too short
+  if (( ${#buffer} < ATUIN_COMPLETE_MIN_CHARS )); then
+    zle expand-or-complete
+    return
+  fi
+
+  # Skip if Atuin is not available
+  if ! command -v atuin &>/dev/null; then
+    zle expand-or-complete
+    return
+  fi
+
+  # Get completions from Atuin
+  local -a matches
+  local line
+
+  while IFS= read -r line; do
+    [[ -n "$line" ]] && matches+=("$line")
+  done < <(atuin search --cmd-only --limit "$ATUIN_COMPLETE_LIMIT" \
+    --search-mode "$ATUIN_COMPLETE_SEARCH_MODE" -- "$buffer" 2>/dev/null)
+
+  if (( ${#matches} == 0 )); then
+    # No Atuin matches, fallback to normal completion
+    zle expand-or-complete
+    return
+  fi
+
+  if (( ${#matches} == 1 )); then
+    # Single match - replace buffer directly
+    BUFFER="${matches[1]}"
+    CURSOR=${#BUFFER}
+  else
+    # Multiple matches - show menu
+    local -a display_matches
+    local i=1
+    for match in "${matches[@]}"; do
+      # Truncate long commands for display
+      if (( ${#match} > 80 )); then
+        display_matches+=("${match:0:77}...")
+      else
+        display_matches+=("$match")
+      fi
+      ((i++))
+    done
+
+    # Use menu-select if available
+    LBUFFER="$buffer"
+    _atuin_history_completer
+    zle menu-select 2>/dev/null || zle expand-or-complete
+  fi
+}
+
+# Alternative: Hybrid completion that checks Atuin first, then falls back
+_atuin_hybrid_complete() {
+  local buffer="$BUFFER"
+
+  # Try Atuin first for any input
+  if command -v atuin &>/dev/null && (( ${#buffer} >= ATUIN_COMPLETE_MIN_CHARS )); then
+    local -a matches
+    local line
+
+    while IFS= read -r line; do
+      [[ -n "$line" ]] && matches+=("$line")
+    done < <(atuin search --cmd-only --limit 5 \
+      --search-mode prefix -- "$buffer" 2>/dev/null)
+
+    if (( ${#matches} > 0 )); then
+      # If we have history matches, use Atuin's interactive search
+      # This gives the best UX - full fuzzy search with preview
+      zle atuin-search 2>/dev/null || zle expand-or-complete
+      return
+    fi
+  fi
+
+  # Fallback to standard completion
+  zle expand-or-complete
+}
+
+# Setup Atuin completion integration
+_atuin_setup_completion() {
+  # Register the completer function
+  # Add to the completer list - runs after _expand but before _complete
+  local current_completers
+  zstyle -g current_completers ':completion:*' completer
+
+  # Only add if not already present
+  if [[ ! " ${current_completers[*]} " =~ " _atuin_history_completer " ]]; then
+    # Insert after _expand (if present) or at the beginning
+    local -a new_completers
+    local found=0
+    for c in "${current_completers[@]}"; do
+      new_completers+=("$c")
+      if [[ "$c" == "_expand" ]]; then
+        new_completers+=("_atuin_history_completer")
+        found=1
+      fi
+    done
+
+    # If _expand wasn't found, prepend
+    if (( ! found )); then
+      new_completers=("_atuin_history_completer" "${current_completers[@]}")
+    fi
+
+    zstyle ':completion:*' completer "${new_completers[@]}"
+  fi
+
+  # Configure Atuin completion display
+  zstyle ':completion:*:history-atuin:*' format '%F{yellow}── Atuin History ──%f'
+  zstyle ':completion:*:history-atuin:*' group-name 'history-atuin'
+
+  # Create ZLE widgets
+  zle -N _atuin_complete_line
+  zle -N _atuin_hybrid_complete
+
+  # Optional: Bind to a key (uncomment to enable)
+  # bindkey '^X^H' _atuin_complete_line  # Ctrl+X Ctrl+H for Atuin line completion
+}
+
+# Add Atuin completion setup to .zshrc.local
+_atuin_add_completion_to_zshrc() {
+  local zshrc_custom="${HOME}/.zshrc.local"
+
+  # Check if already configured
+  if grep -q "_atuin_setup_completion" "$zshrc_custom" 2>/dev/null; then
+    _zsh_tool_log INFO "✓ Atuin completion already configured in .zshrc.local"
+    return 0
+  fi
+
+  _zsh_tool_log INFO "Adding Atuin completion integration to .zshrc.local..."
+
+  cat >> "$zshrc_custom" <<'EOF'
+
+# ===== Atuin Tab Completion Integration =====
+# Enables TAB completion from Atuin's history database
+# Usage: type partial command and press TAB to get suggestions from history
+# Configuration:
+#   ATUIN_COMPLETE_LIMIT=20        # Max suggestions
+#   ATUIN_COMPLETE_MIN_CHARS=2     # Min chars before suggesting
+#   ATUIN_COMPLETE_SEARCH_MODE=prefix  # prefix, fuzzy, full-text
+
+if command -v atuin >/dev/null 2>&1; then
+  # Source the Atuin completion functions
+  source "${ZSH_TOOL_DIR:-$HOME/Repos/github/zsh}/lib/integrations/atuin.zsh" 2>/dev/null
+
+  # Initialize Atuin completion
+  _atuin_setup_completion
+
+  # Optional: Replace default TAB with hybrid completion
+  # Uncomment the next line to try Atuin first, then fallback to standard completion
+  # bindkey '^I' _atuin_hybrid_complete
+fi
+EOF
+
+  _zsh_tool_log INFO "✓ Atuin completion integration added"
+  return 0
+}

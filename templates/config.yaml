@@ -56,8 +56,16 @@ atuin:
   filter_mode: "global"  # Filter mode: global, host, session, directory
   inline_height: 20  # Number of lines in search interface
   style: "auto"  # UI style: auto, compact, full
+  # Tab completion integration - use Atuin history for TAB completions
+  tab_completion:
+    enabled: true  # Enable TAB completion from Atuin history
+    min_chars: 2  # Minimum characters before suggesting
+    limit: 20  # Maximum suggestions to show
+    search_mode: "prefix"  # Search mode for TAB: prefix (fast) or fuzzy
+    bind_tab: false  # Replace default TAB with Atuin hybrid (experimental)
   # Atuin provides enhanced shell history with search, sync, and statistics
   # Press Ctrl+R to open interactive search interface
+  # With tab_completion enabled, typing "export ELE<TAB>" suggests from history
 
 # Amazon Q Developer CLI Integration
 amazon_q:

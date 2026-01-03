@@ -142,10 +142,15 @@ _zsh_tool_setup_integrations() {
 
 # Main install command
 zsh-tool-install() {
+  # Record installation start time
   local start_time=$(date +%s)
+  local start_iso=$(date -Iseconds 2>/dev/null || date -u +%Y-%m-%dT%H:%M:%S%z)
 
   _zsh_tool_log INFO "Starting zsh-tool installation..."
   echo ""
+
+  # Track installation start in state (Story 1.7)
+  _zsh_tool_update_state "installation_start" "\"${start_iso}\""
 
   # Check prerequisites (Story 1.1)
   _zsh_tool_check_prerequisites || return 1
@@ -171,11 +176,20 @@ zsh-tool-install() {
   # Setup integrations (if enabled in config)
   _zsh_tool_setup_integrations
 
+  # Record installation end time (Story 1.7)
+  local end_time=$(date +%s)
+  local end_iso=$(date -Iseconds 2>/dev/null || date -u +%Y-%m-%dT%H:%M:%S%z)
+  local duration=$((end_time - start_time))
+
+  # Track installation end and duration in state (Story 1.7)
+  _zsh_tool_update_state "installation_end" "\"${end_iso}\""
+  _zsh_tool_update_state "installation_duration_seconds" "$duration"
+
   # Verify installation (Story 1.7)
   _zsh_tool_verify_installation
 
-  # Display summary
-  _zsh_tool_display_summary "$start_time"
+  # Display summary (Story 1.7)
+  _zsh_tool_display_summary
 
   # Update state - mark as installed
   _zsh_tool_update_state "installed" "true"

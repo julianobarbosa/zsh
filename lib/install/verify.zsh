@@ -1,152 +1,311 @@
 #!/usr/bin/env zsh
 # Story 1.7: Installation Verification and Summary
-# Verify installation and display summary
+# Module: lib/install/verify.zsh
+# Purpose: Verify installation and display summary
 
-# Verify Oh My Zsh loaded
+# ============================================================================
+# VERIFICATION FUNCTIONS
+# ============================================================================
+
+# Check if Oh My Zsh is loaded
+# Returns: 0 if OMZ is loaded, 1 otherwise
 _zsh_tool_check_omz_loaded() {
-  [[ -n "$ZSH" && -f "$ZSH/oh-my-zsh.sh" ]]
+  _zsh_tool_log DEBUG "Checking if Oh My Zsh is loaded"
+
+  # Check $ZSH variable exists
+  if [[ -z "$ZSH" ]]; then
+    _zsh_tool_log DEBUG "ZSH variable not set"
+    return 1
+  fi
+
+  # Check oh-my-zsh.sh exists
+  if [[ ! -f "$ZSH/oh-my-zsh.sh" ]]; then
+    _zsh_tool_log DEBUG "oh-my-zsh.sh not found at $ZSH"
+    return 1
+  fi
+
+  # Check OMZ functions are defined
+  if ! typeset -f omz >/dev/null 2>&1; then
+    _zsh_tool_log DEBUG "omz function not defined"
+    return 1
+  fi
+
+  _zsh_tool_log DEBUG "Oh My Zsh is loaded successfully"
+  return 0
 }
 
-# Verify plugins loaded (check for plugin-specific indicators)
+# Check if configured plugins are loaded
+# Returns: 0 if all plugins are loaded, 1 otherwise
 _zsh_tool_check_plugins_loaded() {
-  local plugins=$(_zsh_tool_parse_plugins)
-  local loaded=0
-  local total=0
+  _zsh_tool_log DEBUG "Checking if plugins are loaded"
 
-  for plugin in ${(z)plugins}; do
-    ((total++))
+  # Read plugins from config
+  local config_file="${ZSH_TOOL_CONFIG_DIR}/config.yaml"
+  if [[ ! -f "$config_file" ]]; then
+    _zsh_tool_log ERROR "Config file not found: $config_file"
+    return 1
+  fi
 
-    # Check plugin-specific indicators
+  local plugins=($(grep "^  - " "$config_file" | sed 's/^  - //' | grep -v "^#"))
+
+  if [[ ${#plugins[@]} -eq 0 ]]; then
+    _zsh_tool_log DEBUG "No plugins configured"
+    return 0
+  fi
+
+  local failed_plugins=()
+
+  for plugin in "${plugins[@]}"; do
+    _zsh_tool_log DEBUG "Checking plugin: $plugin"
+
+    # Plugin-specific checks
     case "$plugin" in
-      "zsh-syntax-highlighting")
-        [[ -n "$ZSH_HIGHLIGHT_VERSION" ]] && ((loaded++))
+      zsh-syntax-highlighting)
+        if [[ -z "$ZSH_HIGHLIGHT_VERSION" ]]; then
+          failed_plugins+=("$plugin")
+          _zsh_tool_log DEBUG "Plugin check failed: $plugin (ZSH_HIGHLIGHT_VERSION not set)"
+        fi
         ;;
-      "zsh-autosuggestions")
-        [[ -n "$ZSH_AUTOSUGGEST_VERSION" ]] && ((loaded++))
+      zsh-autosuggestions)
+        if [[ -z "$ZSH_AUTOSUGGEST_VERSION" ]]; then
+          failed_plugins+=("$plugin")
+          _zsh_tool_log DEBUG "Plugin check failed: $plugin (ZSH_AUTOSUGGEST_VERSION not set)"
+        fi
         ;;
       *)
-        # For built-in plugins, assume loaded if .zshrc has them
-        ((loaded++))
+        # Generic check: plugin dir exists
+        if [[ ! -d "$ZSH/plugins/$plugin" ]] && [[ ! -d "$ZSH_CUSTOM/plugins/$plugin" ]]; then
+          failed_plugins+=("$plugin")
+          _zsh_tool_log DEBUG "Plugin check failed: $plugin (directory not found)"
+        fi
         ;;
     esac
   done
 
-  echo "${loaded}/${total}"
+  if [[ ${#failed_plugins[@]} -gt 0 ]]; then
+    _zsh_tool_log ERROR "Failed to load plugins: ${failed_plugins[*]}"
+    return 1
+  fi
+
+  _zsh_tool_log DEBUG "All plugins loaded successfully"
+  return 0
 }
 
-# Verify theme applied
+# Check if theme is applied
+# Returns: 0 if theme is applied, 1 otherwise
 _zsh_tool_check_theme_applied() {
-  local configured_theme=$(_zsh_tool_parse_theme)
-  [[ "$ZSH_THEME" == "$configured_theme" ]]
+  _zsh_tool_log DEBUG "Checking if theme is applied"
+
+  # Read theme from config
+  local config_file="${ZSH_TOOL_CONFIG_DIR}/config.yaml"
+  if [[ ! -f "$config_file" ]]; then
+    _zsh_tool_log ERROR "Config file not found: $config_file"
+    return 1
+  fi
+
+  local configured_theme=$(grep "^theme:" "$config_file" | sed 's/^theme: *//' | tr -d '"' | tr -d "'")
+
+  if [[ -z "$configured_theme" ]]; then
+    _zsh_tool_log DEBUG "No theme configured"
+    return 0
+  fi
+
+  # Check $ZSH_THEME matches config
+  if [[ "$ZSH_THEME" != "$configured_theme" ]]; then
+    _zsh_tool_log ERROR "Theme mismatch: configured=$configured_theme, actual=$ZSH_THEME"
+    return 1
+  fi
+
+  # Check theme file exists
+  if [[ ! -f "$ZSH/themes/${configured_theme}.zsh-theme" ]] && \
+     [[ ! -f "$ZSH_CUSTOM/themes/${configured_theme}.zsh-theme" ]]; then
+    _zsh_tool_log ERROR "Theme file not found: $configured_theme"
+    return 1
+  fi
+
+  _zsh_tool_log DEBUG "Theme applied successfully: $configured_theme"
+  return 0
 }
 
 # Display installation summary
+# Returns: 0 on success
 _zsh_tool_display_summary() {
-  local start_time="${1:-unknown}"
-  local end_time=$(date +%s)
-  local duration="unknown"
-
-  if [[ "$start_time" != "unknown" ]]; then
-    duration=$((end_time - start_time))
-    duration="${duration}s"
-  fi
+  _zsh_tool_log DEBUG "Displaying installation summary"
 
   echo ""
-  echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-  echo "✓ zsh-tool Installation Complete!"
-  echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  echo "  ZSH-TOOL INSTALLATION SUMMARY"
+  echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
   echo ""
 
-  # Prerequisites
+  # Prerequisites Section
   echo "Prerequisites:"
-  if _zsh_tool_is_installed brew; then
-    echo "  ✓ Homebrew $(brew --version | head -1 | awk '{print $2}')"
-  fi
-  if _zsh_tool_is_installed git; then
-    echo "  ✓ git $(git --version | awk '{print $3}')"
-  fi
-  if xcode-select -p >/dev/null 2>&1; then
-    echo "  ✓ Xcode Command Line Tools"
+
+  if command -v brew >/dev/null 2>&1; then
+    local brew_version=$(brew --version 2>/dev/null | head -1)
+    echo "  ✓ Homebrew: $brew_version"
   fi
 
-  # Oh My Zsh
-  if [[ -d "${HOME}/.oh-my-zsh" ]]; then
-    local omz_version=$(cd "${HOME}/.oh-my-zsh" && git describe --tags 2>/dev/null || git rev-parse --short HEAD 2>/dev/null || echo "unknown")
-    echo "  ✓ Oh My Zsh ($omz_version)"
+  if command -v git >/dev/null 2>&1; then
+    local git_version=$(git --version 2>/dev/null)
+    echo "  ✓ Git: $git_version"
   fi
+
+  if [[ -n "$ZSH" ]] && [[ -d "$ZSH/.git" ]]; then
+    local omz_hash=$(cd "$ZSH" && git rev-parse --short HEAD 2>/dev/null || echo "unknown")
+    echo "  ✓ Oh My Zsh: commit $omz_hash"
+  fi
+
+  local zsh_version=$(zsh --version 2>/dev/null)
+  echo "  ✓ Zsh: $zsh_version"
+
   echo ""
 
-  # Configuration
+  # Configuration Section
   echo "Configuration:"
-  echo "  ✓ Team .zshrc installed"
 
-  local plugins=$(_zsh_tool_parse_plugins)
-  local plugin_count=$(echo "$plugins" | wc -w | tr -d ' ')
-  echo "  ✓ $plugin_count plugins configured: $plugins"
+  # Read config
+  local config_file="${ZSH_TOOL_CONFIG_DIR}/config.yaml"
+  if [[ -f "$config_file" ]]; then
+    # Plugins
+    local plugins=($(grep "^  - " "$config_file" | sed 's/^  - //' | grep -v "^#"))
+    if [[ ${#plugins[@]} -gt 0 ]]; then
+      echo "  Plugins:"
+      for plugin in "${plugins[@]}"; do
+        echo "    ✓ $plugin"
+      done
+    fi
 
-  local theme=$(_zsh_tool_parse_theme)
-  echo "  ✓ Theme: $theme"
-  echo ""
-
-  # Backup
-  local last_backup=$(_zsh_tool_load_state | grep -o '"last_backup":"[^"]*"' | cut -d'"' -f4)
-  if [[ -n "$last_backup" ]]; then
-    echo "Backup created: ~/.config/zsh-tool/backups/$last_backup/"
-    echo ""
+    # Theme
+    local theme=$(grep "^theme:" "$config_file" | sed 's/^theme: *//' | tr -d '"' | tr -d "'")
+    if [[ -n "$theme" ]]; then
+      echo "  ✓ Theme: $theme"
+    fi
   fi
 
-  # Next steps
-  echo "Next steps:"
-  echo "  1. Reload your shell: exec zsh"
-  echo "  2. (Optional) Customize: edit ~/.zshrc.local"
-  echo "  3. Get help: zsh-tool-help"
-  echo ""
-
-  if [[ "$duration" != "unknown" ]]; then
-    echo "Installation time: $duration"
-    echo ""
+  # Custom layer
+  if [[ -f "${HOME}/.zshrc.local" ]]; then
+    echo "  ✓ Custom layer: ~/.zshrc.local"
   fi
 
-  echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  # Team config
+  echo "  ✓ Team config: ${config_file}"
+
+  echo ""
+
+  # Backup Section
+  local state_file="${ZSH_TOOL_STATE_FILE:-${HOME}/.local/share/zsh-tool/state.json}"
+  if [[ -f "$state_file" ]]; then
+    local backup_location=$(grep '"backup_location"' "$state_file" 2>/dev/null | sed 's/.*: *"\(.*\)".*/\1/')
+    local backup_timestamp=$(grep '"backup_timestamp"' "$state_file" 2>/dev/null | sed 's/.*: *"\(.*\)".*/\1/')
+
+    if [[ -n "$backup_location" ]] && [[ -d "$backup_location" ]]; then
+      echo "Backup:"
+      echo "  ✓ Location: $backup_location"
+      echo "  ✓ Timestamp: $backup_timestamp"
+      local backup_count=$(find "$backup_location" -type f 2>/dev/null | wc -l | tr -d ' ')
+      echo "  ✓ Files backed up: $backup_count"
+      echo ""
+    fi
+
+    # Timing Section
+    local install_start=$(grep '"installation_start"' "$state_file" 2>/dev/null | sed 's/.*: *"\(.*\)".*/\1/')
+    local install_end=$(grep '"installation_end"' "$state_file" 2>/dev/null | sed 's/.*: *"\(.*\)".*/\1/')
+
+    if [[ -n "$install_start" ]] && [[ -n "$install_end" ]]; then
+      echo "Installation Timing:"
+      echo "  ✓ Started: $install_start"
+      echo "  ✓ Completed: $install_end"
+
+      # Calculate duration (simplified - just show timestamps)
+      local duration_seconds=$(grep '"installation_duration_seconds"' "$state_file" 2>/dev/null | sed 's/.*: *\([0-9]*\).*/\1/')
+      if [[ -n "$duration_seconds" ]]; then
+        echo "  ✓ Duration: ${duration_seconds}s"
+      fi
+      echo ""
+    fi
+  fi
+
+  # Next Steps Section
+  echo "Next Steps:"
+  echo "  • Customize: Edit ~/.zshrc.local for personal settings"
+  echo "  • Verify: Run 'zsh-tool-verify' to check installation"
+  echo "  • Docs: See ${ZSH_TOOL_CONFIG_DIR}/README.md"
+  echo ""
+  echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  echo ""
+
+  return 0
 }
 
 # Verify installation
+# Returns: 0 if all checks pass, 1 if any fail
 _zsh_tool_verify_installation() {
-  _zsh_tool_log INFO "Verifying installation..."
+  _zsh_tool_log INFO "Verifying installation"
 
-  local all_ok=true
-
-  # Check prerequisites
-  if ! _zsh_tool_is_installed brew; then
-    _zsh_tool_log WARN "Homebrew not found"
-    all_ok=false
-  fi
-
-  if ! _zsh_tool_is_installed git; then
-    _zsh_tool_log WARN "git not found"
-    all_ok=false
-  fi
+  local failed_checks=()
 
   # Check Oh My Zsh
-  if ! _zsh_tool_verify_omz; then
-    _zsh_tool_log WARN "Oh My Zsh verification failed"
-    all_ok=false
+  if ! _zsh_tool_check_omz_loaded; then
+    failed_checks+=("Oh My Zsh not loaded")
   fi
 
-  # Check .zshrc
-  if [[ ! -f "${HOME}/.zshrc" ]]; then
-    _zsh_tool_log WARN ".zshrc not found"
-    all_ok=false
-  elif ! grep -q "$ZSH_TOOL_MANAGED_BEGIN" "${HOME}/.zshrc"; then
-    _zsh_tool_log WARN ".zshrc missing managed section"
-    all_ok=false
+  # Check plugins
+  if ! _zsh_tool_check_plugins_loaded; then
+    failed_checks+=("Plugins not loaded")
   fi
 
-  if [[ "$all_ok" == true ]]; then
-    _zsh_tool_log INFO "✓ Verification passed"
-    return 0
-  else
-    _zsh_tool_log WARN "Verification completed with warnings"
+  # Check theme
+  if ! _zsh_tool_check_theme_applied; then
+    failed_checks+=("Theme not applied")
+  fi
+
+  # Report results
+  if [[ ${#failed_checks[@]} -gt 0 ]]; then
+    _zsh_tool_log ERROR "Installation verification failed"
+
+    echo ""
+    echo "⚠️  Installation verification failed!"
+    echo ""
+    echo "Failed checks:"
+    for check in "${failed_checks[@]}"; do
+      echo "  ✗ $check"
+    done
+    echo ""
+    echo "Remediation options:"
+    echo "  1. Re-run installation: ./install.sh"
+    echo "  2. Restore from backup: (check ${ZSH_TOOL_STATE_FILE} for backup location)"
+    echo "  3. Check logs: cat ${ZSH_TOOL_LOG_FILE}"
+    echo ""
+
     return 1
   fi
+
+  _zsh_tool_log INFO "Installation verification passed"
+
+  echo ""
+  echo "✓ Installation verification passed!"
+  echo ""
+
+  return 0
+}
+
+# ============================================================================
+# PUBLIC INTERFACE
+# ============================================================================
+
+# Public command: zsh-tool-verify
+# Runs verification and displays summary
+zsh-tool-verify() {
+  _zsh_tool_log INFO "Running installation verification"
+
+  # Run verification
+  if ! _zsh_tool_verify_installation; then
+    return 1
+  fi
+
+  # Display summary
+  _zsh_tool_display_summary
+
+  return 0
 }

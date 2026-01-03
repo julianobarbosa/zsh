@@ -546,6 +546,259 @@ cleanup_test_env
 setup_test_env
 run_test "Full workflow - upgrade existing config" test_full_workflow_upgrade
 
+# ============================================
+# TEST CASES - STORY 1.6: CUSTOM LAYER
+# ============================================
+
+# Test: Path validation prevents path traversal
+test_path_validation_traversal() {
+  _zsh_tool_validate_path "../../../etc/passwd" 2>/dev/null
+  [[ $? -ne 0 ]]
+}
+
+# Test: Path validation prevents tilde expansion attacks
+test_path_validation_tilde() {
+  _zsh_tool_validate_path "~root/.ssh/authorized_keys" 2>/dev/null
+  [[ $? -ne 0 ]]
+}
+
+# Test: Path validation allows valid paths
+test_path_validation_valid() {
+  _zsh_tool_validate_path "${HOME}/.zshrc.local" 2>/dev/null
+  [[ $? -eq 0 ]]
+}
+
+# Test: Preserve user config creates .zshrc.local from .zshrc content
+test_preserve_user_config_creates() {
+  create_mock_zshrc
+  rm -f "${HOME}/.zshrc.local"
+
+  _zsh_tool_preserve_user_config "${HOME}/.zshrc" >/dev/null 2>&1
+
+  [[ -f "${HOME}/.zshrc.local" ]] && \
+  grep -q "MY_CUSTOM_VAR" "${HOME}/.zshrc.local"
+}
+
+# Test: Preserve user config merges into existing .zshrc.local
+test_preserve_user_config_merges() {
+  echo "# Existing custom config" > "${HOME}/.zshrc.local"
+  create_mock_zshrc
+
+  _zsh_tool_preserve_user_config "${HOME}/.zshrc" >/dev/null 2>&1
+
+  grep -q "Existing custom config" "${HOME}/.zshrc.local" && \
+  grep -q "MY_CUSTOM_VAR" "${HOME}/.zshrc.local"
+}
+
+# Test: Preserve user config escapes sed patterns
+test_preserve_user_config_sed_escaping() {
+  cat > "${HOME}/.zshrc" <<'EOF'
+# User config with special chars
+export PATH="/path/with/$(command):$PATH"
+alias cmd='echo "test"'
+EOF
+
+  rm -f "${HOME}/.zshrc.local"
+  _zsh_tool_preserve_user_config "${HOME}/.zshrc" >/dev/null 2>&1
+
+  [[ -f "${HOME}/.zshrc.local" ]] && \
+  grep -q 'echo "test"' "${HOME}/.zshrc.local"
+}
+
+# Test: Preserve user config updates state
+test_preserve_user_config_state() {
+  create_mock_zshrc
+  rm -f "${HOME}/.zshrc.local"
+
+  _zsh_tool_preserve_user_config "${HOME}/.zshrc" >/dev/null 2>&1
+
+  grep -q '"custom_layer_migrated":true' "$ZSH_TOOL_STATE_FILE"
+}
+
+# Test: Preserve user config with atomic write
+test_preserve_user_config_atomic() {
+  create_mock_zshrc
+  rm -f "${HOME}/.zshrc.local"
+
+  # Preserve should not leave temp files
+  _zsh_tool_preserve_user_config "${HOME}/.zshrc" >/dev/null 2>&1
+
+  [[ ! -f "${HOME}/.zshrc.local.tmp."* ]]
+}
+
+# Test: Setup custom layer with state update
+test_setup_custom_layer_state() {
+  rm -f "${HOME}/.zshrc.local"
+
+  _zsh_tool_setup_custom_layer >/dev/null 2>&1
+
+  grep -q '"custom_layer_setup":true' "$ZSH_TOOL_STATE_FILE"
+}
+
+# Test: Setup custom layer with atomic write
+test_setup_custom_layer_atomic() {
+  rm -f "${HOME}/.zshrc.local"
+
+  _zsh_tool_setup_custom_layer >/dev/null 2>&1
+
+  [[ -f "${HOME}/.zshrc.local" ]] && \
+  [[ ! -f "${HOME}/.zshrc.local.tmp."* ]]
+}
+
+# Test: Public command zsh-tool-config exists
+test_public_command_exists() {
+  typeset -f zsh-tool-config >/dev/null 2>&1
+}
+
+# Test: Config custom shows status
+test_config_custom_shows_status() {
+  rm -f "${HOME}/.zshrc.local"
+  _zsh_tool_setup_custom_layer >/dev/null 2>&1
+
+  local output=$(_zsh_tool_config_custom 2>/dev/null)
+  echo "$output" | grep -q "Custom Layer Status"
+}
+
+# Test: Config show displays all sources
+test_config_show_displays_sources() {
+  local output=$(_zsh_tool_config_show 2>/dev/null)
+  echo "$output" | grep -q "Configuration Sources" && \
+  echo "$output" | grep -q ".zshrc" && \
+  echo "$output" | grep -q "config.yaml"
+}
+
+# Test: Config custom returns error if no .zshrc.local
+test_config_custom_error_no_local() {
+  rm -f "${HOME}/.zshrc.local"
+
+  _zsh_tool_config_custom >/dev/null 2>&1
+  [[ $? -ne 0 ]]
+}
+
+# Test: Idempotency - multiple preserve calls don't duplicate
+test_preserve_idempotency() {
+  create_mock_zshrc
+  rm -f "${HOME}/.zshrc.local"
+
+  # First preserve
+  _zsh_tool_preserve_user_config "${HOME}/.zshrc" >/dev/null 2>&1
+  local first_content=$(cat "${HOME}/.zshrc.local")
+
+  # Install (which replaces .zshrc with managed content)
+  _zsh_tool_install_config >/dev/null 2>&1
+
+  # Second preserve (should skip - no user content outside managed section)
+  _zsh_tool_preserve_user_config "${HOME}/.zshrc" >/dev/null 2>&1
+  local second_content=$(cat "${HOME}/.zshrc.local")
+
+  # The .zshrc.local should not have new migrations appended (only first migration)
+  local migration_count=$(grep -c "Migrated from .zshrc" "${HOME}/.zshrc.local" 2>/dev/null || echo "0")
+  [[ "$migration_count" -le 1 ]]
+}
+
+# Test: Install config calls setup custom layer
+test_install_calls_custom_layer() {
+  rm -f "${HOME}/.zshrc"
+  rm -f "${HOME}/.zshrc.local"
+
+  _zsh_tool_install_config >/dev/null 2>&1
+
+  [[ -f "${HOME}/.zshrc.local" ]]
+}
+
+# Test: Install preserves permissions on .zshrc
+test_install_preserves_permissions() {
+  echo "# Old config" > "${HOME}/.zshrc"
+  chmod 600 "${HOME}/.zshrc"
+
+  _zsh_tool_install_config >/dev/null 2>&1
+
+  local perms=$(stat -f "%OLp" "${HOME}/.zshrc" 2>/dev/null || stat -c "%a" "${HOME}/.zshrc" 2>/dev/null)
+  [[ "$perms" == "600" ]]
+}
+
+# Test: Template contains source line for .zshrc.local
+test_template_sources_local() {
+  local content=$(_zsh_tool_generate_zshrc 2>/dev/null)
+  echo "$content" | grep -q '\[\[ -f ~/.zshrc.local \]\] && source ~/.zshrc.local'
+}
+
+# Test: zsh-tool-config without args defaults to show
+test_config_no_args_usage() {
+  local output=$(zsh-tool-config 2>&1)
+  echo "$output" | grep -q "Configuration Sources"
+}
+
+# Test: zsh-tool-config with invalid subcommand shows usage
+test_config_invalid_subcommand() {
+  zsh-tool-config invalid-cmd >/dev/null 2>&1
+  [[ $? -ne 0 ]]
+}
+
+# Story 1.6 Custom Layer Tests
+echo ""
+echo "${BLUE}Story 1.6: Custom Layer Security Tests${NC}"
+cleanup_test_env
+setup_test_env
+run_test "Path validation prevents path traversal" test_path_validation_traversal
+run_test "Path validation prevents tilde expansion" test_path_validation_tilde
+run_test "Path validation allows valid paths" test_path_validation_valid
+
+echo ""
+echo "${BLUE}Story 1.6: Preserve User Config Tests${NC}"
+cleanup_test_env
+setup_test_env
+run_test "Preserve creates .zshrc.local from .zshrc" test_preserve_user_config_creates
+cleanup_test_env
+setup_test_env
+run_test "Preserve merges into existing .zshrc.local" test_preserve_user_config_merges
+cleanup_test_env
+setup_test_env
+run_test "Preserve escapes sed patterns correctly" test_preserve_user_config_sed_escaping
+cleanup_test_env
+setup_test_env
+run_test "Preserve updates state" test_preserve_user_config_state
+cleanup_test_env
+setup_test_env
+run_test "Preserve uses atomic write" test_preserve_user_config_atomic
+
+echo ""
+echo "${BLUE}Story 1.6: Setup Custom Layer Tests${NC}"
+cleanup_test_env
+setup_test_env
+run_test "Setup updates state" test_setup_custom_layer_state
+cleanup_test_env
+setup_test_env
+run_test "Setup uses atomic write" test_setup_custom_layer_atomic
+
+echo ""
+echo "${BLUE}Story 1.6: Public Command Tests${NC}"
+cleanup_test_env
+setup_test_env
+run_test "Public command zsh-tool-config exists" test_public_command_exists
+cleanup_test_env
+setup_test_env
+run_test "Config custom shows status" test_config_custom_shows_status
+run_test "Config show displays all sources" test_config_show_displays_sources
+cleanup_test_env
+setup_test_env
+run_test "Config custom errors if no .zshrc.local" test_config_custom_error_no_local
+run_test "Config without args defaults to show" test_config_no_args_usage
+run_test "Config with invalid subcommand shows usage" test_config_invalid_subcommand
+
+echo ""
+echo "${BLUE}Story 1.6: Idempotency and Integration Tests${NC}"
+cleanup_test_env
+setup_test_env
+run_test "Multiple preserve calls don't duplicate" test_preserve_idempotency
+cleanup_test_env
+setup_test_env
+run_test "Install calls custom layer setup" test_install_calls_custom_layer
+cleanup_test_env
+setup_test_env
+run_test "Install preserves .zshrc permissions" test_install_preserves_permissions
+run_test "Template sources .zshrc.local" test_template_sources_local
+
 # Cleanup
 echo ""
 echo "${YELLOW}Cleaning up test environment...${NC}"

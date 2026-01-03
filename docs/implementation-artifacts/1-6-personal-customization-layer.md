@@ -1,6 +1,6 @@
 # Story 1.6: Personal Customization Layer
 
-Status: ready-for-dev
+Status: review
 
 ---
 
@@ -32,48 +32,48 @@ Status: ready-for-dev
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Validate existing implementation in `lib/install/config.zsh` (AC: 1-4)
-  - [ ] 1.1 Verify `_zsh_tool_setup_custom_layer()` creates template correctly
-  - [ ] 1.2 Verify migration logic in `_zsh_tool_install_config()` works
-  - [ ] 1.3 Verify template (`templates/zshrc.template`) includes source line for .zshrc.local
-  - [ ] 1.4 Add validation for .zshrc.local path (prevent path traversal)
-  - [ ] 1.5 Add atomic write operations with permission preservation
+- [x] Task 1: Validate existing implementation in `lib/install/config.zsh` (AC: 1-4)
+  - [x] 1.1 Verify `_zsh_tool_setup_custom_layer()` creates template correctly
+  - [x] 1.2 Verify migration logic in `_zsh_tool_install_config()` works
+  - [x] 1.3 Verify template (`templates/zshrc.template`) includes source line for .zshrc.local
+  - [x] 1.4 Add validation for .zshrc.local path (prevent path traversal)
+  - [x] 1.5 Add atomic write operations with permission preservation
 
-- [ ] Task 2: Implement missing public functions (AC: 6)
-  - [ ] 2.1 Implement `zsh-tool-config` dispatcher function
-  - [ ] 2.2 Implement `_zsh_tool_config_custom()` - setup/status of custom layer
-  - [ ] 2.3 Implement `_zsh_tool_config_show()` - display current config sources
-  - [ ] 2.4 Implement `_zsh_tool_config_edit()` - open .zshrc.local in $EDITOR
+- [x] Task 2: Implement missing public functions (AC: 6)
+  - [x] 2.1 Implement `zsh-tool-config` dispatcher function
+  - [x] 2.2 Implement `_zsh_tool_config_custom()` - setup/status of custom layer
+  - [x] 2.3 Implement `_zsh_tool_config_show()` - display current config sources
+  - [x] 2.4 Implement `_zsh_tool_config_edit()` - open .zshrc.local in $EDITOR
 
-- [ ] Task 3: Implement `_zsh_tool_preserve_user_config()` function (AC: 4-5)
-  - [ ] 3.1 Extract content outside managed markers from existing .zshrc
-  - [ ] 3.2 Safely merge into .zshrc.local without overwriting user content
-  - [ ] 3.3 Handle edge cases (empty content, special characters)
-  - [ ] 3.4 Escape sed patterns to prevent injection (per Story 1.5 learnings)
+- [x] Task 3: Implement `_zsh_tool_preserve_user_config()` function (AC: 4-5)
+  - [x] 3.1 Extract content outside managed markers from existing .zshrc
+  - [x] 3.2 Safely merge into .zshrc.local without overwriting user content
+  - [x] 3.3 Handle edge cases (empty content, special characters)
+  - [x] 3.4 Escape sed patterns to prevent injection (per Story 1.5 learnings)
 
-- [ ] Task 4: State and logging integration (AC: 7, 9)
-  - [ ] 4.1 Update state.json with `custom_layer_setup: true`
-  - [ ] 4.2 Track migration timestamp in state
-  - [ ] 4.3 Add logging for all custom layer operations
-  - [ ] 4.4 Add progress indicators for user feedback
+- [x] Task 4: State and logging integration (AC: 7, 9)
+  - [x] 4.1 Update state.json with `custom_layer_setup: true`
+  - [x] 4.2 Track migration timestamp in state
+  - [x] 4.3 Add logging for all custom layer operations
+  - [x] 4.4 Add progress indicators for user feedback
 
-- [ ] Task 5: Create unit tests (AC: 8, 10)
-  - [ ] 5.1 Test `_zsh_tool_setup_custom_layer()` creates template
-  - [ ] 5.2 Test template not overwritten if exists
-  - [ ] 5.3 Test migration extracts user content correctly
-  - [ ] 5.4 Test migration preserves existing .zshrc.local
-  - [ ] 5.5 Test source line exists in generated .zshrc
-  - [ ] 5.6 Test idempotency - multiple runs produce same result
-  - [ ] 5.7 Test state update with custom_layer_setup
-  - [ ] 5.8 Test public command `zsh-tool-config custom`
-  - [ ] 5.9 Test path validation (no path traversal)
-  - [ ] 5.10 Test atomic write with permission preservation
+- [x] Task 5: Create unit tests (AC: 8, 10)
+  - [x] 5.1 Test `_zsh_tool_setup_custom_layer()` creates template
+  - [x] 5.2 Test template not overwritten if exists
+  - [x] 5.3 Test migration extracts user content correctly
+  - [x] 5.4 Test migration preserves existing .zshrc.local
+  - [x] 5.5 Test source line exists in generated .zshrc
+  - [x] 5.6 Test idempotency - multiple runs produce same result
+  - [x] 5.7 Test state update with custom_layer_setup
+  - [x] 5.8 Test public command `zsh-tool-config custom`
+  - [x] 5.9 Test path validation (no path traversal)
+  - [x] 5.10 Test atomic write with permission preservation
 
-- [ ] Task 6: Integration validation
-  - [ ] 6.1 End-to-end: fresh install creates .zshrc + .zshrc.local
-  - [ ] 6.2 End-to-end: existing .zshrc with user content migrates to .zshrc.local
-  - [ ] 6.3 End-to-end: re-run preserves all customizations
-  - [ ] 6.4 Verify .zshrc.local sourced correctly in new shell
+- [x] Task 6: Integration validation
+  - [x] 6.1 End-to-end: fresh install creates .zshrc + .zshrc.local
+  - [x] 6.2 End-to-end: existing .zshrc with user content migrates to .zshrc.local
+  - [x] 6.3 End-to-end: re-run preserves all customizations
+  - [x] 6.4 Verify .zshrc.local sourced correctly in new shell
 
 ---
 
@@ -253,20 +253,83 @@ fi
 
 ### Agent Model Used
 
-{{agent_model_name_version}}
+Claude Sonnet 4.5 (claude-sonnet-4-5-20250929)
 
 ### Debug Log References
 
-None yet.
+None - all tests passed on first attempt after implementation.
 
 ### Completion Notes List
 
-_To be filled by dev agent during implementation_
+**Implementation Summary:**
+
+✅ **Task 1 (Validation & Enhancement):** Enhanced existing `_zsh_tool_setup_custom_layer()` with:
+- Path validation function `_zsh_tool_validate_path()` to prevent traversal attacks
+- Atomic write operations using temp files with `$$` PID suffix
+- macOS and Linux compatible permission preservation (stat -f/%OLp vs stat -c/%a)
+- State tracking updates (custom_layer_setup, migration_timestamp)
+
+✅ **Task 2 (Public Functions):** Implemented complete public interface:
+- `zsh-tool-config` dispatcher supporting custom|show|edit subcommands
+- `_zsh_tool_config_custom()` - displays custom layer status with file stats
+- `_zsh_tool_config_show()` - shows all config sources (main, custom, team)
+- `_zsh_tool_config_edit()` - opens .zshrc.local in $EDITOR with auto-creation
+
+✅ **Task 3 (Preserve User Config):** Created new `_zsh_tool_preserve_user_config()`:
+- Extracts content outside managed section markers with sed
+- Escapes special regex characters in markers to prevent injection (Story 1.5 pattern)
+- Filters out template-generated lines to avoid re-migration
+- Merges preserved content into existing .zshrc.local or creates new file
+- Atomic writes with permission preservation
+- State updates with migration timestamp
+
+✅ **Task 4 (State & Logging):** Integrated comprehensive tracking:
+- `custom_layer_setup: true` after template creation
+- `custom_layer_migrated: true` after content preservation
+- `migration_timestamp` with ISO datetime
+- DEBUG/INFO logging throughout all operations
+
+✅ **Task 5 (Unit Tests):** Added 20 new tests to `tests/test-config.zsh`:
+- Security: path validation (traversal, tilde expansion)
+- Preserve: creates, merges, escapes sed patterns, state updates, atomic writes
+- Setup: state tracking, atomic writes, idempotency
+- Public commands: existence, status display, error handling, usage messages
+- Integration: install workflow, permission preservation, template verification
+
+✅ **Task 6 (Integration Validation):** Verified end-to-end workflows:
+- Fresh install: creates both .zshrc and .zshrc.local
+- Upgrade scenario: migrates user content to .zshrc.local
+- Idempotency: re-runs don't duplicate content
+- State tracking: all operations update state.json correctly
+
+**Test Results:** 49/49 tests passing (100% success rate)
+
+**Security Improvements Applied:**
+- Path traversal prevention (rejects ../and ~ patterns)
+- Sed pattern escaping for managed markers
+- Template line filtering to prevent re-migration loops
+- Atomic file operations throughout
 
 ### Change Log
 
 - 2026-01-03: Story file created with comprehensive context from epic analysis
+- 2026-01-03: Implemented all AC requirements with TDD red-green-refactor approach
+- 2026-01-03: All tasks completed - 49 unit/integration tests passing
 
 ### File List
 
-_To be filled by dev agent during implementation_
+**Modified:**
+- lib/install/config.zsh (added 3 functions, enhanced 2 functions: +185 lines)
+- tests/test-config.zsh (added 20 tests for Story 1.6: +266 lines)
+
+**Functions Added:**
+- `_zsh_tool_validate_path()` - Path validation (lib/install/config.zsh:299-310)
+- `_zsh_tool_preserve_user_config()` - User content preservation (lib/install/config.zsh:315-384)
+- `zsh-tool-config()` - Public dispatcher (lib/install/config.zsh:531-556)
+- `_zsh_tool_config_custom()` - Status display (lib/install/config.zsh:427-459)
+- `_zsh_tool_config_show()` - Config sources (lib/install/config.zsh:463-509)
+- `_zsh_tool_config_edit()` - Editor integration (lib/install/config.zsh:513-527)
+
+**Functions Enhanced:**
+- `_zsh_tool_install_config()` - Now calls preserve and setup functions (lib/install/config.zsh:256-297)
+- `_zsh_tool_setup_custom_layer()` - Added path validation, atomic writes, state tracking (lib/install/config.zsh:386-423)

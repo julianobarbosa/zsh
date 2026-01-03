@@ -264,28 +264,135 @@ _zsh_tool_install_config() {
   fi
 
   local zshrc="${HOME}/.zshrc"
-  local temp_zshrc="${zshrc}.tmp"
+  local temp_zshrc="${zshrc}.tmp.$$"
 
-  # If .zshrc exists, preserve non-managed sections
+  # Preserve existing user configuration if .zshrc exists
   if [[ -f "$zshrc" ]]; then
-    # Extract user content (everything outside managed section)
-    local user_content=$(sed -n "/${ZSH_TOOL_MANAGED_BEGIN}/,/${ZSH_TOOL_MANAGED_END}/!p" "$zshrc" 2>/dev/null || echo "")
-
-    # If user content exists and .zshrc.local doesn't exist, save it
-    if [[ -n "$user_content" && ! -f "${HOME}/.zshrc.local" ]]; then
-      _zsh_tool_log INFO "Migrating existing configuration to .zshrc.local"
-      echo "$user_content" > "${HOME}/.zshrc.local"
-    fi
+    _zsh_tool_preserve_user_config "$zshrc" || {
+      _zsh_tool_log WARN "Failed to preserve user config, continuing anyway"
+    }
   fi
 
-  # Write new .zshrc
+  # Write new .zshrc with atomic operation
   echo "$new_content" > "$temp_zshrc"
+
+  # Preserve permissions if .zshrc exists
+  if [[ -f "$zshrc" ]]; then
+    # macOS and Linux compatible permission preservation
+    local perms=$(stat -f "%OLp" "$zshrc" 2>/dev/null || stat -c "%a" "$zshrc" 2>/dev/null || echo "644")
+    chmod "$perms" "$temp_zshrc" 2>/dev/null || chmod 644 "$temp_zshrc"
+  else
+    chmod 644 "$temp_zshrc"
+  fi
+
   mv "$temp_zshrc" "$zshrc"
 
   _zsh_tool_log INFO "✓ Team configuration installed"
 
+  # Setup custom layer (creates .zshrc.local if doesn't exist)
+  _zsh_tool_setup_custom_layer
+
   # Update state
   _zsh_tool_update_state "config_installed" "true"
+
+  return 0
+}
+
+# Validate file path (prevent path traversal)
+# Usage: _zsh_tool_validate_path <path>
+_zsh_tool_validate_path() {
+  local path="$1"
+
+  # Check for path traversal attempts
+  if [[ "$path" == *".."* ]] || [[ "$path" == *"~"* ]]; then
+    _zsh_tool_log ERROR "Invalid path detected: $path"
+    return 1
+  fi
+
+  # Check for absolute paths outside HOME
+  if [[ "$path" == /* ]] && [[ "$path" != "${HOME}"* ]]; then
+    _zsh_tool_log WARN "Path outside HOME directory: $path"
+  fi
+
+  return 0
+}
+
+# Preserve user configuration from existing .zshrc
+# Extracts content outside managed markers and merges into .zshrc.local
+# Usage: _zsh_tool_preserve_user_config <zshrc_path>
+_zsh_tool_preserve_user_config() {
+  local zshrc="$1"
+  local zshrc_local="${HOME}/.zshrc.local"
+
+  # Validate paths
+  _zsh_tool_validate_path "$zshrc" || return 1
+  _zsh_tool_validate_path "$zshrc_local" || return 1
+
+  # Check if source file exists
+  if [[ ! -f "$zshrc" ]]; then
+    _zsh_tool_log DEBUG "No existing .zshrc to preserve"
+    return 0
+  fi
+
+  # Escape markers for sed (prevent injection)
+  local begin_marker=$(printf '%s\n' "$ZSH_TOOL_MANAGED_BEGIN" | sed 's/[[\.*^$()+?{|]/\\&/g')
+  local end_marker=$(printf '%s\n' "$ZSH_TOOL_MANAGED_END" | sed 's/[[\.*^$()+?{|]/\\&/g')
+
+  # Extract user content (everything outside managed section)
+  local user_content=$(sed -n "/${begin_marker}/,/${end_marker}/!p" "$zshrc" 2>/dev/null || echo "")
+
+  # Skip if no user content
+  if [[ -z "$user_content" ]] || [[ "$user_content" =~ ^[[:space:]]*$ ]]; then
+    _zsh_tool_log DEBUG "No user content to preserve"
+    return 0
+  fi
+
+  # Filter out template-generated content (source lines, comments from template)
+  # Remove lines that are part of the zsh-tool template
+  user_content=$(echo "$user_content" | grep -v "^\[\\[ -f ~/.zshrc.local \\]\] && source ~/.zshrc.local" | \
+                                          grep -v "^# User customizations" | \
+                                          grep -v "^\[\\[ -f ~/.local/bin/zsh-tool/zsh-tool.zsh \\]\] && source" | \
+                                          grep -v "^# Load zsh-tool functions" | \
+                                          grep -v "^# zsh-tool managed .zshrc template")
+
+  # Check again after filtering
+  if [[ -z "$user_content" ]] || [[ "$user_content" =~ ^[[:space:]]*$ ]]; then
+    _zsh_tool_log DEBUG "No user content to preserve after filtering template lines"
+    return 0
+  fi
+
+  # If .zshrc.local exists, append to it; otherwise create it
+  local temp_local="${zshrc_local}.tmp.$$"
+
+  if [[ -f "$zshrc_local" ]]; then
+    _zsh_tool_log INFO "Merging preserved content into existing .zshrc.local"
+    {
+      cat "$zshrc_local"
+      echo ""
+      echo "# ===== Migrated from .zshrc on $(date '+%Y-%m-%d %H:%M:%S') ====="
+      echo "$user_content"
+    } > "$temp_local"
+  else
+    _zsh_tool_log INFO "Creating .zshrc.local with preserved content"
+    echo "$user_content" > "$temp_local"
+  fi
+
+  # Atomic write with permission preservation
+  if [[ -f "$zshrc_local" ]]; then
+    # macOS and Linux compatible permission preservation
+    local perms=$(stat -f "%OLp" "$zshrc_local" 2>/dev/null || stat -c "%a" "$zshrc_local" 2>/dev/null || echo "644")
+    chmod "$perms" "$temp_local" 2>/dev/null || chmod 644 "$temp_local"
+  else
+    chmod 644 "$temp_local"
+  fi
+
+  mv "$temp_local" "$zshrc_local"
+
+  _zsh_tool_log INFO "User configuration preserved to .zshrc.local"
+
+  # Update state
+  _zsh_tool_update_state "custom_layer_migrated" "true"
+  _zsh_tool_update_state "migration_timestamp" "\"$(date '+%Y-%m-%d %H:%M:%S')\""
 
   return 0
 }
@@ -294,8 +401,18 @@ _zsh_tool_install_config() {
 _zsh_tool_setup_custom_layer() {
   local zshrc_local="${HOME}/.zshrc.local"
 
-  if [[ ! -f "$zshrc_local" ]]; then
-    cat > "$zshrc_local" <<'EOF'
+  # Validate path
+  _zsh_tool_validate_path "$zshrc_local" || return 1
+
+  if [[ -f "$zshrc_local" ]]; then
+    _zsh_tool_log DEBUG ".zshrc.local already exists, skipping creation"
+    return 0
+  fi
+
+  # Use temp file for atomic write
+  local temp_local="${zshrc_local}.tmp.$$"
+
+  cat > "$temp_local" <<'EOF'
 # Personal zsh customizations
 # This file is NOT managed by zsh-tool
 
@@ -310,6 +427,148 @@ _zsh_tool_setup_custom_layer() {
 #   echo "custom"
 # }
 EOF
-    _zsh_tool_log INFO "Created .zshrc.local template for personal customizations"
+
+  # Atomic write
+  chmod 644 "$temp_local"
+  mv "$temp_local" "$zshrc_local"
+
+  _zsh_tool_log INFO "Created .zshrc.local template for personal customizations"
+
+  # Update state
+  _zsh_tool_update_state "custom_layer_setup" "true"
+
+  return 0
+}
+
+# Public: Manage customization layer
+# Usage: _zsh_tool_config_custom
+_zsh_tool_config_custom() {
+  local zshrc_local="${HOME}/.zshrc.local"
+
+  echo "Custom Layer Status:"
+  echo "===================="
+
+  # Check if .zshrc.local exists
+  if [[ -f "$zshrc_local" ]]; then
+    echo "✓ Custom layer active: $zshrc_local"
+
+    # Check state
+    local state=$(_zsh_tool_load_state)
+    if echo "$state" | grep -q '"custom_layer_setup":true'; then
+      echo "✓ Setup complete (tracked in state)"
+    fi
+
+    if echo "$state" | grep -q '"custom_layer_migrated":true'; then
+      local migration_time=$(echo "$state" | sed -n 's/.*"migration_timestamp":"\([^"]*\)".*/\1/p')
+      echo "✓ Content migrated from .zshrc on: $migration_time"
+    fi
+
+    # Show file size and line count
+    local lines=$(wc -l < "$zshrc_local" | tr -d ' ')
+    local size=$(du -h "$zshrc_local" | awk '{print $1}')
+    echo "  Lines: $lines | Size: $size"
+  else
+    echo "✗ No custom layer found"
+    echo "  Run 'zsh-tool-config custom setup' to create one"
+    return 1
   fi
+
+  return 0
+}
+
+# Public: Display configuration sources
+# Usage: _zsh_tool_config_show
+_zsh_tool_config_show() {
+  echo "Zsh Configuration Sources:"
+  echo "=========================="
+
+  # Check .zshrc
+  local zshrc="${HOME}/.zshrc"
+  if [[ -f "$zshrc" ]]; then
+    echo "✓ Main config: $zshrc"
+    if grep -q "$ZSH_TOOL_MANAGED_BEGIN" "$zshrc"; then
+      echo "  └─ Contains zsh-tool managed section"
+    fi
+  else
+    echo "✗ Main config: $zshrc (missing)"
+  fi
+
+  # Check .zshrc.local
+  local zshrc_local="${HOME}/.zshrc.local"
+  if [[ -f "$zshrc_local" ]]; then
+    echo "✓ Custom config: $zshrc_local"
+  else
+    echo "○ Custom config: $zshrc_local (not created yet)"
+  fi
+
+  # Check config.yaml
+  local config_yaml="${ZSH_TOOL_CONFIG_DIR}/config.yaml"
+  if [[ -f "$config_yaml" ]]; then
+    echo "✓ Team config: $config_yaml"
+  else
+    echo "✗ Team config: $config_yaml (missing)"
+  fi
+
+  # Check state
+  echo ""
+  echo "State Information:"
+  local state=$(_zsh_tool_load_state)
+  if echo "$state" | grep -q '"config_installed":true'; then
+    echo "✓ Team configuration installed"
+  else
+    echo "✗ Team configuration not installed"
+  fi
+
+  if echo "$state" | grep -q '"custom_layer_setup":true'; then
+    echo "✓ Custom layer initialized"
+  fi
+
+  return 0
+}
+
+# Public: Open .zshrc.local in editor
+# Usage: _zsh_tool_config_edit
+_zsh_tool_config_edit() {
+  local zshrc_local="${HOME}/.zshrc.local"
+  local editor="${EDITOR:-vi}"
+
+  # Create .zshrc.local if doesn't exist
+  if [[ ! -f "$zshrc_local" ]]; then
+    _zsh_tool_log INFO "Creating .zshrc.local before editing"
+    _zsh_tool_setup_custom_layer || return 1
+  fi
+
+  _zsh_tool_log INFO "Opening .zshrc.local in $editor"
+  $editor "$zshrc_local"
+
+  return 0
+}
+
+# Public: Dispatcher for zsh-tool-config commands
+# Usage: zsh-tool-config [custom|show|edit]
+zsh-tool-config() {
+  local subcommand="${1:-show}"
+
+  case "$subcommand" in
+    custom)
+      _zsh_tool_config_custom
+      ;;
+    show)
+      _zsh_tool_config_show
+      ;;
+    edit)
+      _zsh_tool_config_edit
+      ;;
+    *)
+      echo "Usage: zsh-tool-config [custom|show|edit]"
+      echo ""
+      echo "Commands:"
+      echo "  custom    Show customization layer status"
+      echo "  show      Display all configuration sources"
+      echo "  edit      Open .zshrc.local in \$EDITOR"
+      return 1
+      ;;
+  esac
+
+  return $?
 }

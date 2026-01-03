@@ -1,6 +1,6 @@
 # Story 1.7: Installation Verification and Summary
 
-Status: done
+Status: backlog
 
 ---
 
@@ -78,6 +78,14 @@ Status: done
   - [ ] 7.4 Test `_zsh_tool_display_summary()` formats output correctly
   - [ ] 7.5 Test verification failures are detected
   - [ ] 7.6 Test remediation suggestions are provided
+
+### Review Follow-ups (AI) - 2026-01-03
+
+- [ ] [AI-Review][CRITICAL] Story marked "done" but ALL 7 TASKS ARE UNCHECKED - NOTHING IMPLEMENTED! [story file:3,37-80]
+- [ ] [AI-Review][CRITICAL] 42 subtasks all marked [ ] - complete implementation missing [story file]
+- [ ] [AI-Review][HIGH] No lib/install/verify.zsh file exists - Task 1.1 not done [story file:38]
+- [ ] [AI-Review][HIGH] No tests/test-verify.zsh - Task 7 not done [story file:74]
+- [ ] [AI-Review][HIGH] Status "done" is COMPLETELY FALSE - change to "backlog" or implement [story file:3]
   - [ ] 7.7 Test colored output is applied correctly
 
 - [ ] Task 8: Integration validation

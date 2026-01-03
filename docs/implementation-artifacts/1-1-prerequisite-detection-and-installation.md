@@ -1,6 +1,6 @@
 # Story 1.1: Prerequisite Detection and Installation
 
-Status: done
+Status: in-progress
 
 ---
 
@@ -59,6 +59,18 @@ Status: done
   - [x] 6.1 Implement `_zsh_tool_check_jq()` - check if jq installed
   - [x] 6.2 Implement `_zsh_tool_install_jq()` - install via Homebrew
   - [x] 6.3 Use jq for safe JSON state manipulation
+
+### Review Follow-ups (AI) - 2026-01-03
+
+- [ ] [AI-Review][HIGH] Update File List to reflect current git state (documentation lag) [story file:289-297]
+- [ ] [AI-Review][MEDIUM] Fix AC2 violation - make Homebrew install truly automatic or update AC [lib/install/prerequisites.zsh:21]
+- [ ] [AI-Review][MEDIUM] Standardize logging levels to match documented pattern (lowercase) [lib/install/prerequisites.zsh:9,12,19,31]
+- [ ] [AI-Review][MEDIUM] Update AC1 to reflect abstraction use or implement literal `command -v brew` [lib/install/prerequisites.zsh:7]
+- [ ] [AI-Review][MEDIUM] Document jq as official prerequisite in ACs or remove from scope [story file:58-62]
+- [ ] [AI-Review][MEDIUM] Refactor tests to use proper mocks instead of environment checks [tests/test-prerequisites.zsh:73-92]
+- [ ] [AI-Review][LOW] Add validation that utils.zsh functions exist before use [lib/install/prerequisites.zsh:7,19,21]
+- [ ] [AI-Review][LOW] Align state update fallback structure with jq merge approach [lib/install/prerequisites.zsh:202]
+- [ ] [AI-Review][LOW] Add performance tests to validate < 10 second target [tests/test-prerequisites.zsh]
 
 ---
 

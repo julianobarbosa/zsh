@@ -1,6 +1,6 @@
 # Story 1.5: Theme Installation and Selection
 
-Status: done
+Status: in-progress
 
 ---
 
@@ -73,11 +73,16 @@ Status: done
   - [x] 6.2 Verify .zshrc theme update via managed section
   - [x] 6.3 End-to-end test: apply theme, verify ZSH_THEME
 
-### Review Follow-ups (AI)
+### Review Follow-ups (AI) - Previous Review
 
 - [x] [AI-Review][CRITICAL] Fix sed injection risk - escape theme name in sed replacement [themes.zsh:190]
 - [x] [AI-Review][HIGH] Add state update to `_zsh_tool_apply_theme()` for AC9 compliance [themes.zsh:56-76]
 - [x] [AI-Review][HIGH] Add progress spinner for git clone operations (AC10) [themes.zsh:39-52]
+
+### Review Follow-ups (AI) - 2026-01-03
+
+- [ ] [AI-Review][HIGH] Update File List to reflect current git state [story file]
+- [ ] [AI-Review][MEDIUM] Verify all previous review fixes still applied [lib/install/themes.zsh]
 - [x] [AI-Review][HIGH] Stage test file: `git add tests/test-themes.zsh`
 - [x] [AI-Review][MEDIUM] Stage story directory: `git add docs/implementation-artifacts/`
 - [x] [AI-Review][MEDIUM] Handle empty theme from config - fallback to default [themes.zsh:57-59]

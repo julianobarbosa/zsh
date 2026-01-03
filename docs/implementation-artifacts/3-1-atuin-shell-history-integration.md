@@ -72,6 +72,12 @@ Status: review
   - [x] 7.5 Test history import functionality
   - [x] 7.6 Test health check validation
 
+### Review Follow-ups (AI) - 2026-01-03
+
+- [ ] [AI-Review][HIGH] Test reporting bug - says "11 run, 18 passed" impossible [tests/test-atuin.zsh]
+- [ ] [AI-Review][MEDIUM] Fix test counter logic to match actual test count [tests/test-atuin.zsh]
+- [ ] [AI-Review][LOW] Git status shows new files - commit or document untracked files [story file, tests]
+
 ---
 
 ## Dev Notes

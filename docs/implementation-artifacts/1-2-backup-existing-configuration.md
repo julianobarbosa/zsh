@@ -1,6 +1,6 @@
 # Story 1.2: Backup Existing Configuration
 
-Status: done
+Status: in-progress
 
 ---
 
@@ -55,7 +55,7 @@ Status: done
   - [x] 4.2 Verify state updates use `_zsh_tool_update_state` pattern
   - [x] 4.3 Verify backup triggers use consistent trigger names ("pre-install", "manual")
 
-- [ ] Review Follow-ups (AI)
+- [ ] Review Follow-ups (AI) - Previous Review (2026-01-01)
   - [x] [AI-Review][HIGH] Add explicit chmod 700 for backup directory security [lib/install/backup.zsh:18]
   - [x] [AI-Review][HIGH] Fix unsafe cd without error handling - use subshell [lib/install/backup.zsh:44-46]
   - [x] [AI-Review][MEDIUM] Update test to verify actual 0700 permission bits [tests/test-backup.zsh:424]
@@ -63,6 +63,19 @@ Status: done
   - [ ] [AI-Review][MEDIUM] Add disk full simulation test [tests/test-backup.zsh]
   - [ ] [AI-Review][LOW] Read tool_version from central constant [lib/install/backup.zsh:87]
   - [ ] [AI-Review][LOW] Add test for OMZ version detection logic [tests/test-backup.zsh]
+
+### Review Follow-ups (AI) - 2026-01-03
+
+- [ ] [AI-Review][HIGH] Story marked "done" but has 3 uncompleted review items above - resolve before marking done [story file:3]
+- [ ] [AI-Review][HIGH] Update File List to reflect current git state (documentation lag) [story file:271-274]
+- [ ] [AI-Review][MEDIUM] Add exit code verification for all cp commands [lib/install/backup.zsh:25,31,37,114,129]
+- [ ] [AI-Review][MEDIUM] Add -p flag to cp commands to preserve file metadata [lib/install/backup.zsh:25,31,37]
+- [ ] [AI-Review][MEDIUM] Implement disk full simulation test or uncheck Task 3.7 [tests/test-backup.zsh + story:51]
+- [ ] [AI-Review][MEDIUM] Review item #60 marked fixed but cd still used - clarify or re-fix [lib/install/backup.zsh:44]
+- [ ] [AI-Review][MEDIUM] Sort manifest files array for deterministic output [lib/install/backup.zsh:71-76]
+- [ ] [AI-Review][LOW] Replace hardcoded tool_version with VERSION file read [lib/install/backup.zsh:85]
+- [ ] [AI-Review][LOW] Replace ls with find or zsh globs for pruning robustness [lib/install/backup.zsh:94,100]
+- [ ] [AI-Review][LOW] Validate backup_dir exists before writing manifest [lib/install/backup.zsh:48]
 
 ---
 

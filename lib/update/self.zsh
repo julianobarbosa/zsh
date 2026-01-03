@@ -10,17 +10,73 @@ _zsh_tool_is_git_repo() {
   [[ -d "${ZSH_TOOL_INSTALL_DIR}/.git" ]]
 }
 
-# Get current version (git tag or commit SHA)
-_zsh_tool_get_current_version() {
-  if ! _zsh_tool_is_git_repo; then
-    echo "unknown"
-    return 1
+# Get local version from VERSION file or git
+_zsh_tool_get_local_version() {
+  # Try VERSION file first
+  if [[ -f "${ZSH_TOOL_INSTALL_DIR}/VERSION" ]]; then
+    cat "${ZSH_TOOL_INSTALL_DIR}/VERSION"
+    return 0
   fi
 
-  cd "$ZSH_TOOL_INSTALL_DIR"
-  local version=$(git describe --tags 2>/dev/null || git rev-parse --short HEAD 2>/dev/null || echo "unknown")
-  cd - >/dev/null
-  echo "$version"
+  # Fall back to git
+  if _zsh_tool_is_git_repo; then
+    cd "$ZSH_TOOL_INSTALL_DIR"
+    local version=$(git describe --tags 2>/dev/null || git rev-parse --short HEAD 2>/dev/null || echo "unknown")
+    cd - >/dev/null
+    echo "$version"
+    return 0
+  fi
+
+  echo "unknown"
+  return 1
+}
+
+# Get current version (alias for backward compatibility)
+_zsh_tool_get_current_version() {
+  _zsh_tool_get_local_version
+}
+
+# Compare two semantic versions
+# Returns: 0 if v1 < v2 (update available), 1 otherwise
+_zsh_tool_compare_versions() {
+  local v1="$1"
+  local v2="$2"
+
+  # Handle non-semver versions
+  if [[ ! "$v1" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || [[ ! "$v2" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+    # If either is not semver, do string comparison
+    [[ "$v1" != "$v2" ]] && return 0 || return 1
+  fi
+
+  # Split versions into components (zsh arrays are 1-indexed)
+  local v1_major=$(echo "$v1" | cut -d. -f1)
+  local v1_minor=$(echo "$v1" | cut -d. -f2)
+  local v1_patch=$(echo "$v1" | cut -d. -f3)
+
+  local v2_major=$(echo "$v2" | cut -d. -f1)
+  local v2_minor=$(echo "$v2" | cut -d. -f2)
+  local v2_patch=$(echo "$v2" | cut -d. -f3)
+
+  # Compare major
+  if [[ $v1_major -lt $v2_major ]]; then
+    return 0  # Update available
+  elif [[ $v1_major -gt $v2_major ]]; then
+    return 1  # Current is newer
+  fi
+
+  # Compare minor
+  if [[ $v1_minor -lt $v2_minor ]]; then
+    return 0  # Update available
+  elif [[ $v1_minor -gt $v2_minor ]]; then
+    return 1  # Current is newer
+  fi
+
+  # Compare patch
+  if [[ $v1_patch -lt $v2_patch ]]; then
+    return 0  # Update available
+  else
+    return 1  # Same or current is newer
+  fi
 }
 
 # Check for available updates
@@ -57,6 +113,36 @@ _zsh_tool_check_for_updates() {
     _zsh_tool_log INFO "Updates available!"
     return 0  # Updates available
   fi
+}
+
+# Create backup before update with timestamped directory
+_zsh_tool_backup_before_update() {
+  local backup_reason="${1:-update}"
+  local timestamp=$(date '+%Y-%m-%d-%H%M%S')
+  local backup_dir="${ZSH_TOOL_CONFIG_DIR}/backups/backup-${timestamp}"
+
+  _zsh_tool_log INFO "Creating backup: ${backup_dir}"
+
+  # Create backup directory
+  mkdir -p "$backup_dir"
+
+  # If create_backup function exists (from backup.zsh), use it
+  if type _zsh_tool_create_backup &>/dev/null; then
+    _zsh_tool_create_backup "$backup_reason"
+    return $?
+  fi
+
+  # Otherwise, simple file copy
+  if [[ -d "$ZSH_TOOL_INSTALL_DIR" ]]; then
+    cp -R "$ZSH_TOOL_INSTALL_DIR"/* "$backup_dir/" 2>/dev/null || {
+      _zsh_tool_log ERROR "Backup failed"
+      return 1
+    }
+    _zsh_tool_log INFO "Backup created successfully"
+    return 0
+  fi
+
+  return 1
 }
 
 # Display changelog between versions

@@ -1,6 +1,6 @@
 # Story 1.6: Personal Customization Layer
 
-Status: done
+Status: in-progress
 
 ---
 
@@ -75,9 +75,14 @@ Status: done
   - [x] 6.3 End-to-end: re-run preserves all customizations
   - [x] 6.4 Verify .zshrc.local sourced correctly in new shell
 
-### Review Follow-ups (AI)
+### Review Follow-ups (AI) - Previous Review
 
 - [x] [AI-Review][HIGH] #1: Add progress indicators using _zsh_tool_with_spinner (AC9 violation) [lib/install/config.zsh:293,271]
+
+### Review Follow-ups (AI) - 2026-01-03
+
+- [ ] [AI-Review][HIGH] Update File List to reflect current git state [story file]
+- [ ] [AI-Review][MEDIUM] Verify previous review fix still applied [lib/install/config.zsh]
 - [x] [AI-Review][HIGH] #2: Fix "custom setup" subcommand - implement or remove from error message [lib/install/config.zsh:472]
 - [x] [AI-Review][HIGH] #3: Add symlink validation to _zsh_tool_validate_path [lib/install/config.zsh:303-333]
 - [x] [AI-Review][HIGH] #4: Replace $$ with mktemp for atomic writes (race condition) [lib/install/config.zsh:267,380,428]

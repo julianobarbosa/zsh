@@ -1,6 +1,6 @@
 # Story 1.4: Plugin Management System
 
-Status: done
+Status: in-progress
 
 ---
 
@@ -83,6 +83,13 @@ Status: done
   - [x] [AI-Review][MEDIUM] Fixed mv permissions - preserve original .zshrc permissions after sed [lib/install/plugins.zsh:347-352]
   - [x] [AI-Review][MEDIUM] Fixed inconsistent state - only add to config.yaml AFTER successful install [lib/install/plugins.zsh:256-293]
   - [x] [AI-Review][LOW] Removed dead code - useless empty string assignment [lib/install/plugins.zsh:99]
+
+### Review Follow-ups (AI) - 2026-01-03
+
+- [ ] [AI-Review][HIGH] Story marked "done" but has 1 uncompleted item from Round 1 [story file:3]
+- [ ] [AI-Review][HIGH] Update File List to reflect current git state [story file]
+- [ ] [AI-Review][MEDIUM] Two review rounds suggests rework - verify all fixes applied correctly [lib/install/plugins.zsh]
+- [ ] [AI-Review][LOW] Complete Round 1 item: grep exact match pattern [lib/install/plugins.zsh:196,248]
 
 ---
 

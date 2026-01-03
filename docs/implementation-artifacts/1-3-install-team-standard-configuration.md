@@ -1,6 +1,6 @@
 # Story 1.3: Install Team-Standard Configuration
 
-Status: done
+Status: in-progress
 
 ---
 
@@ -66,12 +66,23 @@ Status: done
   - [x] 5.2 Verify state updates use `_zsh_tool_update_state` pattern
   - [x] 5.3 Verify idempotency - multiple runs produce consistent results
 
-- [ ] Review Follow-ups (AI)
+- [ ] Review Follow-ups (AI) - Previous Review (2026-01-01)
   - [x] [AI-Review][HIGH] Remove unsafe eval in PATH expansion [lib/install/config.zsh:110]
   - [x] [AI-Review][MEDIUM] Fix theme parsing to use section extraction [lib/install/config.zsh:43]
   - [ ] [AI-Review][LOW] Add error handling for temp file write/mv [lib/install/config.zsh:278-279]
   - [ ] [AI-Review][LOW] Add test for special characters in aliases [tests/test-config.zsh]
   - [ ] [AI-Review][LOW] Consider caching config file reads for efficiency [lib/install/config.zsh]
+
+### Review Follow-ups (AI) - 2026-01-03
+
+- [ ] [AI-Review][HIGH] Story marked "done" but has 3 uncompleted review items above [story file:3]
+- [ ] [AI-Review][HIGH] Update File List to reflect current git state [story file:347-351]
+- [ ] [AI-Review][MEDIUM] Add error handling for malformed YAML in all parse functions [lib/install/config.zsh:22-117]
+- [ ] [AI-Review][MEDIUM] Add safety check for regex match array access [lib/install/config.zsh:34,64,66,88,90,110]
+- [ ] [AI-Review][MEDIUM] Expand PATH variable substitution beyond $HOME/$USER [lib/install/config.zsh:111-114]
+- [ ] [AI-Review][MEDIUM] Validate managed section markers exist before replacement [lib/install/config.zsh]
+- [ ] [AI-Review][LOW] Add performance tests to validate < 2s installation target [tests/test-config.zsh]
+- [ ] [AI-Review][LOW] Document or remove 50-line limit in YAML section extraction [lib/install/config.zsh:120]
 
 ---
 

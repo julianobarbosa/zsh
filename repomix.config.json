@@ -1,0 +1,48 @@
+{
+  "output": {
+    "filePath": "pai-zsh-export.txt",
+    "style": "plain",
+    "headerText": "PAI Repository Export for Zsh Analysis",
+    "removeComments": false,
+    "removeEmptyLines": false,
+    "topFilesLength": 50,
+    "showLineNumbers": true
+  },
+  "include": [
+    "**/*.zsh",
+    "**/*.sh",
+    "**/*.bash",
+    "**/*.md",
+    "**/*.json",
+    "**/*.yaml",
+    "**/*.yml",
+    "**/*.ts",
+    "**/*.js",
+    "**/*.py",
+    "**/.zshrc",
+    "**/.bashrc",
+    "**/.profile",
+    "**/zshrc*",
+    "**/bashrc*"
+  ],
+  "ignore": {
+    "useGitignore": true,
+    "useDefaultPatterns": true,
+    "customPatterns": [
+      ".DS_Store",
+      ".git/**",
+      ".github/**",
+      "node_modules/**",
+      ".vscode/**",
+      ".claude/**",
+      ".gemini/**",
+      "logs/**",
+      "tmp/**",
+      "test_*",
+      "*.log"
+    ]
+  },
+  "security": {
+    "enableSecurityCheck": true
+  }
+}

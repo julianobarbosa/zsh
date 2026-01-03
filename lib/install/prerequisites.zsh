@@ -55,9 +55,12 @@ _zsh_tool_check_git() {
   fi
 }
 
-# Install git via Homebrew
+# Install git via Homebrew with rollback support
 _zsh_tool_install_git() {
   _zsh_tool_log INFO "Installing git..."
+
+  # Save pre-installation state for potential rollback
+  local pre_install_state=$(_zsh_tool_load_state)
 
   brew install git
   local exit_code=$?
@@ -67,6 +70,13 @@ _zsh_tool_install_git() {
     return 0
   else
     _zsh_tool_log ERROR "git installation failed"
+    _zsh_tool_log INFO "Rolling back state changes..."
+
+    # Rollback: restore pre-installation state
+    _zsh_tool_save_state "$pre_install_state"
+    _zsh_tool_log INFO "State rolled back to pre-installation"
+
+    _zsh_tool_log ERROR "Please try: brew install git manually"
     return 1
   fi
 }
@@ -175,10 +185,23 @@ _zsh_tool_check_prerequisites() {
     _zsh_tool_install_xcode_cli
   fi
 
-  # Update state
-  local state=$(_zsh_tool_load_state)
-  state=$(echo "$state" | sed 's/}/,"prerequisites":{"homebrew":true,"git":true,"jq":'$(command -v jq >/dev/null 2>&1 && echo "true" || echo "false")',"xcode_cli":'$(xcode-select -p >/dev/null 2>&1 && echo "true" || echo "false")'}}/')
-  _zsh_tool_save_state "$state"
+  # Update state with prerequisites status
+  local jq_installed=$(command -v jq >/dev/null 2>&1 && echo "true" || echo "false")
+  local xcode_installed=$(xcode-select -p >/dev/null 2>&1 && echo "true" || echo "false")
+
+  if command -v jq >/dev/null 2>&1; then
+    # Safe JSON manipulation with jq
+    local state=$(_zsh_tool_load_state)
+    local updated_state=$(echo "$state" | jq --argjson hb true --argjson git true \
+      --argjson jq "$jq_installed" --argjson xcode "$xcode_installed" \
+      '. + {prerequisites: {homebrew: $hb, git: $git, jq: $jq, xcode_cli: $xcode}}')
+    _zsh_tool_save_state "$updated_state"
+  else
+    # Fallback: Create clean state file when jq unavailable
+    _zsh_tool_log WARN "jq not available - using simplified state update"
+    local simple_state='{"version":"1.0.0","installed":true,"prerequisites":{"homebrew":true,"git":true,"jq":'$jq_installed',"xcode_cli":'$xcode_installed'}}'
+    _zsh_tool_save_state "$simple_state"
+  fi
 
   _zsh_tool_log INFO "✓ Prerequisites check complete"
   return 0

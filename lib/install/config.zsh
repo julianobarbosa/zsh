@@ -21,13 +21,28 @@ _zsh_tool_load_config() {
 # Parse plugins from config
 _zsh_tool_parse_plugins() {
   local config=$(_zsh_tool_load_config)
-  echo "$config" | awk '/^plugins:/,/^[a-z]/ {if ($1 == "-") print $2}' | tr -d '\n' | sed 's/ / /g'
+  local in_plugins=false
+
+  while IFS= read -r line; do
+    if [[ "$line" =~ ^plugins: ]]; then
+      in_plugins=true
+      continue
+    elif [[ "$line" =~ ^[a-z]+: ]] && [[ "$in_plugins" == true ]]; then
+      break
+    fi
+
+    if [[ "$in_plugins" == true && "$line" =~ -\ ([a-zA-Z0-9_-]+) ]]; then
+      echo -n "${match[1]} "
+    fi
+  done <<< "$config"
 }
 
 # Parse theme from config
 _zsh_tool_parse_theme() {
   local config=$(_zsh_tool_load_config)
-  echo "$config" | grep 'default:' | head -1 | awk '{print $2}' | tr -d '"'
+  # Extract theme section first, then get default
+  local section=$(_zsh_tool_extract_yaml_section "themes" "$config")
+  echo "$section" | grep '^\s*default:' | head -1 | awk '{print $2}' | tr -d '"'
 }
 
 # Parse aliases from config
@@ -93,8 +108,10 @@ _zsh_tool_parse_paths() {
 
     if [[ "$in_paths" == true && "$line" =~ -\ \"(.+)\" ]]; then
       local path="${match[1]}"
-      # Expand variables
-      path=$(eval echo "$path")
+      # Expand only safe shell variables ($HOME, $USER) - no arbitrary eval
+      path="${path//\$HOME/$HOME}"
+      path="${path//\$USER/$USER}"
+      path="${path//\~/$HOME}"
       echo "export PATH=\"${path}:\$PATH\""
     fi
   done <<< "$config"

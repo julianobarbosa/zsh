@@ -14,8 +14,8 @@ _zsh_tool_create_backup() {
 
   _zsh_tool_log INFO "Creating backup (trigger: ${trigger})..."
 
-  # Create backup directory
-  mkdir -p "$backup_dir" || {
+  # Create backup directory with secure permissions (0700)
+  mkdir -p "$backup_dir" && chmod 700 "$backup_dir" || {
     _zsh_tool_log ERROR "Failed to create backup directory"
     return 1
   }
@@ -38,12 +38,10 @@ _zsh_tool_create_backup() {
     _zsh_tool_log DEBUG "Backed up Oh My Zsh custom directory"
   fi
 
-  # Get Oh My Zsh version if installed
+  # Get Oh My Zsh version if installed (using subshell for safety)
   local omz_version="none"
   if [[ -d "${HOME}/.oh-my-zsh" ]]; then
-    cd "${HOME}/.oh-my-zsh"
-    omz_version=$(git describe --tags 2>/dev/null || git rev-parse --short HEAD 2>/dev/null || echo "unknown")
-    cd - >/dev/null
+    omz_version=$(cd "${HOME}/.oh-my-zsh" 2>/dev/null && git describe --tags 2>/dev/null || git rev-parse --short HEAD 2>/dev/null || echo "unknown")
   fi
 
   # Generate manifest
@@ -68,8 +66,13 @@ _zsh_tool_generate_manifest() {
   local manifest_file="${backup_dir}/manifest.json"
 
   local files_list=""
+  # Use nullglob and dotglob to handle empty directories and hidden files
+  setopt local_options null_glob dot_glob
   for file in "$backup_dir"/*; do
-    [[ -f "$file" || -d "$file" ]] && files_list="${files_list}\"$(basename $file)\","
+    local fname=$(basename "$file")
+    # Skip . and ..
+    [[ "$fname" == "." || "$fname" == ".." ]] && continue
+    [[ -f "$file" || -d "$file" ]] && files_list="${files_list}\"${fname}\","
   done
   files_list=${files_list%,}  # Remove trailing comma
 
@@ -94,9 +97,9 @@ _zsh_tool_prune_old_backups() {
     local to_delete=$((backup_count - ZSH_TOOL_BACKUP_RETENTION))
     _zsh_tool_log INFO "Pruning $to_delete old backup(s)..."
 
-    ls -1dt "${ZSH_TOOL_BACKUP_DIR}"/*/ | tail -n "$to_delete" | while read dir; do
+    ls -1dt "${ZSH_TOOL_BACKUP_DIR}"/*/ | tail -n "$to_delete" | while IFS= read -r dir; do
       rm -rf "$dir"
-      _zsh_tool_log DEBUG "Deleted old backup: $(basename $dir)"
+      _zsh_tool_log DEBUG "Deleted old backup: $(basename "$dir")"
     done
   fi
 }

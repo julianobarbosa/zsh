@@ -155,8 +155,7 @@ function my_function() {
 
 ### Running Tests
 ```bash
-cd tests
-zsh run-tests.zsh
+zsh tests/run-all-tests.sh
 ```
 
 ### Development Mode

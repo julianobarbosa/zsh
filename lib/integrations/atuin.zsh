@@ -212,6 +212,44 @@ _atuin_configure_keybindings() {
   return 0
 }
 
+# Update state.json with Atuin installation info
+_atuin_update_state() {
+  local installed="${1:-false}"
+  local version="${2:-unknown}"
+  local sync_enabled="${3:-false}"
+  local history_imported="${4:-false}"
+
+  _zsh_tool_log DEBUG "Updating Atuin state in state.json..."
+
+  # Load current state
+  local state=$(_zsh_tool_load_state)
+
+  # Create Atuin integration entry
+  local atuin_state=$(cat <<EOF
+{
+  "installed": $installed,
+  "version": "$version",
+  "sync_enabled": $sync_enabled,
+  "history_imported": $history_imported,
+  "config_path": "$ATUIN_CONFIG_FILE"
+}
+EOF
+)
+
+  # Update state - simplified approach for nested JSON
+  # In production, this would use jq, but keeping dependencies minimal
+  if echo "$state" | grep -q '"integrations"'; then
+    # integrations section exists, update it
+    local updated=$(echo "$state" | sed 's/"integrations":[^}]*}/"integrations":{"atuin":'"${atuin_state//\//\\/}"'}/')
+  else
+    # Add integrations section
+    local updated=$(echo "$state" | sed 's/}$/,"integrations":{"atuin":'"${atuin_state//\//\\/}"'}}/')
+  fi
+
+  _zsh_tool_save_state "$updated"
+  _zsh_tool_log DEBUG "Atuin state updated successfully"
+}
+
 # Run Atuin health check
 _atuin_health_check() {
   _zsh_tool_log INFO "Running Atuin health check..."
@@ -469,6 +507,10 @@ atuin_install_integration() {
     _atuin_setup_sync
   fi
 
+  # Step 11: Update state.json with installation info
+  local atuin_version=$(atuin --version 2>/dev/null | awk '{print $2}')
+  _atuin_update_state "true" "$atuin_version" "$sync_enabled" "$import_history"
+
   _zsh_tool_log INFO "✓ Atuin shell history integration complete"
 
   echo ""
@@ -499,6 +541,63 @@ atuin_install_integration() {
 
 # Alias for consistency with naming convention
 alias _atuin_install_integration='atuin_install_integration'
+
+# ============================================================================
+# Public Commands (zsh-tool naming convention)
+# ============================================================================
+
+# Public command for Atuin installation
+# This provides the user-facing command following zsh-tool naming conventions
+# Usage: zsh-tool-install-atuin [options]
+zsh-tool-install-atuin() {
+  local import_history="true"
+  local configure_amazonq="false"
+  local sync_enabled="false"
+  local tab_completion_enabled="true"
+
+  # Parse command-line options
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --no-import)
+        import_history="false"
+        shift
+        ;;
+      --amazonq)
+        configure_amazonq="true"
+        shift
+        ;;
+      --sync)
+        sync_enabled="true"
+        shift
+        ;;
+      --no-completion)
+        tab_completion_enabled="false"
+        shift
+        ;;
+      --help)
+        echo "Usage: zsh-tool-install-atuin [options]"
+        echo ""
+        echo "Options:"
+        echo "  --no-import         Skip importing existing zsh history"
+        echo "  --amazonq           Configure Amazon Q keybinding compatibility"
+        echo "  --sync              Enable Atuin sync (requires account setup)"
+        echo "  --no-completion     Disable tab completion integration"
+        echo "  --help              Show this help message"
+        echo ""
+        echo "Example:"
+        echo "  zsh-tool-install-atuin --amazonq --sync"
+        return 0
+        ;;
+      *)
+        _zsh_tool_log WARN "Unknown option: $1"
+        shift
+        ;;
+    esac
+  done
+
+  # Call the main installation function
+  atuin_install_integration "$import_history" "$configure_amazonq" "$sync_enabled" "$tab_completion_enabled"
+}
 
 # ============================================================================
 # Atuin History Tab Completion Integration

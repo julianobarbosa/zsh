@@ -52,8 +52,8 @@ development_status:
   epic-1-retrospective: optional
 
   # Epic 2: Maintenance & Lifecycle Management (5 stories, 17 points)
-  epic-2: backlog
-  2-1-self-update-mechanism: backlog
+  epic-2: in-progress
+  2-1-self-update-mechanism: review
   2-2-bulk-plugin-and-theme-updates: backlog
   2-3-configuration-backup-management: backlog
   2-4-configuration-restore-from-backup: backlog
@@ -61,7 +61,7 @@ development_status:
   epic-2-retrospective: optional
 
   # Epic 3: Advanced Integrations (2 stories, 13 points)
-  epic-3: backlog
-  3-1-atuin-shell-history-integration: backlog
+  epic-3: in-progress
+  3-1-atuin-shell-history-integration: review
   3-2-amazon-q-cli-integration: backlog
   epic-3-retrospective: optional

@@ -1,6 +1,6 @@
 # Story 1.5: Theme Installation and Selection
 
-Status: in-progress
+Status: done
 
 ---
 
@@ -81,14 +81,14 @@ Status: in-progress
 
 ### Review Follow-ups (AI) - 2026-01-03
 
-- [ ] [AI-Review][HIGH] Update File List to reflect current git state [story file]
-- [ ] [AI-Review][MEDIUM] Verify all previous review fixes still applied [lib/install/themes.zsh]
+- [x] [AI-Review][HIGH] Update File List to reflect current git state [story file] - Updated with accurate dates
+- [x] [AI-Review][MEDIUM] Verify all previous review fixes still applied [lib/install/themes.zsh] - All fixes validated in code
 - [x] [AI-Review][HIGH] Stage test file: `git add tests/test-themes.zsh`
 - [x] [AI-Review][MEDIUM] Stage story directory: `git add docs/implementation-artifacts/`
 - [x] [AI-Review][MEDIUM] Handle empty theme from config - fallback to default [themes.zsh:57-59]
 - [x] [AI-Review][MEDIUM] Add error handling for stat permission preservation failure [themes.zsh:188-192]
-- [ ] [AI-Review][LOW] Consider dynamic built-in theme list from OMZ themes dir [themes.zsh:105]
-- [ ] [AI-Review][LOW] Add more custom themes to THEME_URLS registry [themes.zsh:10-12]
+- [ ] [AI-Review][LOW] Consider dynamic built-in theme list from OMZ themes dir [themes.zsh:105] - DEFERRED: Static list covers common themes, dynamic detection would add complexity and potential errors without clear benefit
+- [ ] [AI-Review][LOW] Add more custom themes to THEME_URLS registry [themes.zsh:10-12] - DEFERRED: Registry extensible when team needs additional themes, premature to add unused themes
 
 ---
 
@@ -279,6 +279,12 @@ None yet.
 
 ### File List
 
-- `lib/install/themes.zsh` (modified) - Extended with 5 new functions (~280 lines total)
-- `tests/test-themes.zsh` (created) - Comprehensive test suite with 38 tests
-- `docs/implementation-artifacts/1-5-theme-installation-and-selection.md` (modified) - Story tracking
+**Implementation:**
+- `lib/install/themes.zsh` - Theme management system with built-in/custom theme detection, installation, and switching capabilities (Last modified: 2026-01-03)
+- `lib/core/utils.zsh` - Core utilities dependency (validated)
+
+**Tests:**
+- `tests/test-themes.zsh` - 38 comprehensive tests covering theme detection, installation, switching, and public commands, all passing (Last modified: 2026-01-01)
+
+**Documentation:**
+- `docs/implementation-artifacts/1-5-theme-installation-and-selection.md` - This story file

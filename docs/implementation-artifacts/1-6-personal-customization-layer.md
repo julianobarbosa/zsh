@@ -1,6 +1,6 @@
 # Story 1.6: Personal Customization Layer
 
-Status: in-progress
+Status: done
 
 ---
 
@@ -81,8 +81,8 @@ Status: in-progress
 
 ### Review Follow-ups (AI) - 2026-01-03
 
-- [ ] [AI-Review][HIGH] Update File List to reflect current git state [story file]
-- [ ] [AI-Review][MEDIUM] Verify previous review fix still applied [lib/install/config.zsh]
+- [x] [AI-Review][HIGH] Update File List to reflect current git state [story file] - Updated with accurate dates
+- [x] [AI-Review][MEDIUM] Verify previous review fix still applied [lib/install/config.zsh] - All fixes validated in code
 - [x] [AI-Review][HIGH] #2: Fix "custom setup" subcommand - implement or remove from error message [lib/install/config.zsh:472]
 - [x] [AI-Review][HIGH] #3: Add symlink validation to _zsh_tool_validate_path [lib/install/config.zsh:303-333]
 - [x] [AI-Review][HIGH] #4: Replace $$ with mktemp for atomic writes (race condition) [lib/install/config.zsh:267,380,428]
@@ -354,18 +354,22 @@ None - all tests passed on first attempt after implementation.
 
 ### File List
 
-**Modified:**
-- lib/install/config.zsh (added 3 functions, enhanced 2 functions: +185 lines)
-- tests/test-config.zsh (added 20 tests for Story 1.6: +266 lines)
+**Implementation:**
+- `lib/install/config.zsh` - Team configuration management with personal customization layer support, including user content migration and .zshrc.local management (Last modified: 2026-01-03)
+- `lib/core/utils.zsh` - Core utilities dependency (validated)
 
-**Functions Added:**
-- `_zsh_tool_validate_path()` - Path validation (lib/install/config.zsh:299-310)
-- `_zsh_tool_preserve_user_config()` - User content preservation (lib/install/config.zsh:315-384)
-- `zsh-tool-config()` - Public dispatcher (lib/install/config.zsh:531-556)
-- `_zsh_tool_config_custom()` - Status display (lib/install/config.zsh:427-459)
-- `_zsh_tool_config_show()` - Config sources (lib/install/config.zsh:463-509)
-- `_zsh_tool_config_edit()` - Editor integration (lib/install/config.zsh:513-527)
+**Tests:**
+- `tests/test-config.zsh` - 49 comprehensive tests covering config parsing, template generation, migration, and customization layer (Stories 1.3 & 1.6), all passing (Last modified: 2026-01-03)
 
-**Functions Enhanced:**
-- `_zsh_tool_install_config()` - Now calls preserve and setup functions (lib/install/config.zsh:256-297)
-- `_zsh_tool_setup_custom_layer()` - Added path validation, atomic writes, state tracking (lib/install/config.zsh:386-423)
+**Documentation:**
+- `docs/implementation-artifacts/1-6-personal-customization-layer.md` - This story file
+
+**Functions Implemented for Story 1.6:**
+- `_zsh_tool_validate_path()` - Path validation with traversal and symlink protection
+- `_zsh_tool_preserve_user_config()` - User content preservation with atomic writes
+- `zsh-tool-config()` - Public dispatcher for customization commands
+- `_zsh_tool_config_custom()` - Customization layer status display
+- `_zsh_tool_config_show()` - Configuration sources overview
+- `_zsh_tool_config_edit()` - Safe editor integration for .zshrc.local
+- Enhanced `_zsh_tool_install_config()` - Integrated migration and setup
+- Enhanced `_zsh_tool_setup_custom_layer()` - Path validation and atomic operations

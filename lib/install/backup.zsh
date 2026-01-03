@@ -22,19 +22,28 @@ _zsh_tool_create_backup() {
 
   # Backup .zshrc if exists
   if [[ -f "${HOME}/.zshrc" ]]; then
-    cp "${HOME}/.zshrc" "${backup_dir}/.zshrc"
+    if ! cp -p "${HOME}/.zshrc" "${backup_dir}/.zshrc"; then
+      _zsh_tool_log ERROR "Failed to backup .zshrc"
+      return 1
+    fi
     _zsh_tool_log DEBUG "Backed up .zshrc"
   fi
 
   # Backup .zsh_history if exists
   if [[ -f "${HOME}/.zsh_history" ]]; then
-    cp "${HOME}/.zsh_history" "${backup_dir}/.zsh_history"
+    if ! cp -p "${HOME}/.zsh_history" "${backup_dir}/.zsh_history"; then
+      _zsh_tool_log ERROR "Failed to backup .zsh_history"
+      return 1
+    fi
     _zsh_tool_log DEBUG "Backed up .zsh_history"
   fi
 
   # Backup Oh My Zsh custom directory if exists
   if [[ -d "${HOME}/.oh-my-zsh/custom" ]]; then
-    cp -R "${HOME}/.oh-my-zsh/custom" "${backup_dir}/oh-my-zsh-custom"
+    if ! cp -Rp "${HOME}/.oh-my-zsh/custom" "${backup_dir}/oh-my-zsh-custom"; then
+      _zsh_tool_log ERROR "Failed to backup Oh My Zsh custom directory"
+      return 1
+    fi
     _zsh_tool_log DEBUG "Backed up Oh My Zsh custom directory"
   fi
 
@@ -111,7 +120,10 @@ _zsh_tool_backup_file() {
   local dest="$2"
 
   if [[ -f "$source" ]]; then
-    cp "$source" "$dest"
+    if ! cp -p "$source" "$dest"; then
+      _zsh_tool_log ERROR "Failed to backup file: $source"
+      return 1
+    fi
     return 0
   else
     _zsh_tool_log WARN "File not found: $source"
@@ -126,7 +138,10 @@ _zsh_tool_backup_directory() {
   local dest="$2"
 
   if [[ -d "$source" ]]; then
-    cp -R "$source" "$dest"
+    if ! cp -Rp "$source" "$dest"; then
+      _zsh_tool_log ERROR "Failed to backup directory: $source"
+      return 1
+    fi
     return 0
   else
     _zsh_tool_log WARN "Directory not found: $source"

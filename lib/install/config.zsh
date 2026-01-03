@@ -264,11 +264,11 @@ _zsh_tool_install_config() {
   fi
 
   local zshrc="${HOME}/.zshrc"
-  local temp_zshrc="${zshrc}.tmp.$$"
+  local temp_zshrc=$(mktemp "${zshrc}.tmp.XXXXXX" 2>/dev/null || echo "${zshrc}.tmp.$$")
 
   # Preserve existing user configuration if .zshrc exists
   if [[ -f "$zshrc" ]]; then
-    _zsh_tool_preserve_user_config "$zshrc" || {
+    _zsh_tool_with_spinner "Preserving user customizations" _zsh_tool_preserve_user_config "$zshrc" || {
       _zsh_tool_log WARN "Failed to preserve user config, continuing anyway"
     }
   fi
@@ -285,12 +285,16 @@ _zsh_tool_install_config() {
     chmod 644 "$temp_zshrc"
   fi
 
-  mv "$temp_zshrc" "$zshrc"
+  if ! mv "$temp_zshrc" "$zshrc"; then
+    _zsh_tool_log ERROR "Failed to install .zshrc"
+    rm -f "$temp_zshrc"
+    return 1
+  fi
 
   _zsh_tool_log INFO "✓ Team configuration installed"
 
   # Setup custom layer (creates .zshrc.local if doesn't exist)
-  _zsh_tool_setup_custom_layer
+  _zsh_tool_with_spinner "Setting up personal customization layer" _zsh_tool_setup_custom_layer
 
   # Update state
   _zsh_tool_update_state "config_installed" "true"
@@ -298,7 +302,7 @@ _zsh_tool_install_config() {
   return 0
 }
 
-# Validate file path (prevent path traversal)
+# Validate file path (prevent path traversal and symlink attacks)
 # Usage: _zsh_tool_validate_path <path>
 _zsh_tool_validate_path() {
   local path="$1"
@@ -307,6 +311,21 @@ _zsh_tool_validate_path() {
   if [[ "$path" == *".."* ]] || [[ "$path" == *"~"* ]]; then
     _zsh_tool_log ERROR "Invalid path detected: $path"
     return 1
+  fi
+
+  # Resolve symlinks and validate real path
+  if [[ -e "$path" ]] || [[ -L "$path" ]]; then
+    local real_path=$(readlink -f "$path" 2>/dev/null || realpath "$path" 2>/dev/null || echo "$path")
+    # Check if resolved path contains traversal patterns
+    if [[ "$real_path" == *".."* ]]; then
+      _zsh_tool_log ERROR "Symlink resolves to invalid path: $real_path"
+      return 1
+    fi
+    # Validate resolved path is under HOME
+    if [[ "$real_path" == /* ]] && [[ "$real_path" != "${HOME}"* ]]; then
+      _zsh_tool_log ERROR "Symlink points outside HOME directory: $real_path"
+      return 1
+    fi
   fi
 
   # Check for absolute paths outside HOME
@@ -347,13 +366,9 @@ _zsh_tool_preserve_user_config() {
     return 0
   fi
 
-  # Filter out template-generated content (source lines, comments from template)
+  # Filter out template-generated content (optimized single grep with extended regex)
   # Remove lines that are part of the zsh-tool template
-  user_content=$(echo "$user_content" | grep -v "^\[\\[ -f ~/.zshrc.local \\]\] && source ~/.zshrc.local" | \
-                                          grep -v "^# User customizations" | \
-                                          grep -v "^\[\\[ -f ~/.local/bin/zsh-tool/zsh-tool.zsh \\]\] && source" | \
-                                          grep -v "^# Load zsh-tool functions" | \
-                                          grep -v "^# zsh-tool managed .zshrc template")
+  user_content=$(echo "$user_content" | grep -vE "^(\[\[ -f ~/.zshrc.local \]\] && source|# User customizations|# Load zsh-tool functions|# zsh-tool managed .zshrc template|\[\[ -f ~/.local/bin/zsh-tool/zsh-tool.zsh \]\] && source)")
 
   # Check again after filtering
   if [[ -z "$user_content" ]] || [[ "$user_content" =~ ^[[:space:]]*$ ]]; then
@@ -362,7 +377,7 @@ _zsh_tool_preserve_user_config() {
   fi
 
   # If .zshrc.local exists, append to it; otherwise create it
-  local temp_local="${zshrc_local}.tmp.$$"
+  local temp_local=$(mktemp "${zshrc_local}.tmp.XXXXXX" 2>/dev/null || echo "${zshrc_local}.tmp.$$")
 
   if [[ -f "$zshrc_local" ]]; then
     _zsh_tool_log INFO "Merging preserved content into existing .zshrc.local"
@@ -386,7 +401,11 @@ _zsh_tool_preserve_user_config() {
     chmod 644 "$temp_local"
   fi
 
-  mv "$temp_local" "$zshrc_local"
+  if ! mv "$temp_local" "$zshrc_local"; then
+    _zsh_tool_log ERROR "Failed to create .zshrc.local during preservation"
+    rm -f "$temp_local"
+    return 1
+  fi
 
   _zsh_tool_log INFO "User configuration preserved to .zshrc.local"
 
@@ -410,7 +429,7 @@ _zsh_tool_setup_custom_layer() {
   fi
 
   # Use temp file for atomic write
-  local temp_local="${zshrc_local}.tmp.$$"
+  local temp_local=$(mktemp "${zshrc_local}.tmp.XXXXXX" 2>/dev/null || echo "${zshrc_local}.tmp.$$")
 
   cat > "$temp_local" <<'EOF'
 # Personal zsh customizations
@@ -430,7 +449,11 @@ EOF
 
   # Atomic write
   chmod 644 "$temp_local"
-  mv "$temp_local" "$zshrc_local"
+  if ! mv "$temp_local" "$zshrc_local"; then
+    _zsh_tool_log ERROR "Failed to create .zshrc.local template"
+    rm -f "$temp_local"
+    return 1
+  fi
 
   _zsh_tool_log INFO "Created .zshrc.local template for personal customizations"
 
@@ -469,7 +492,7 @@ _zsh_tool_config_custom() {
     echo "  Lines: $lines | Size: $size"
   else
     echo "✗ No custom layer found"
-    echo "  Run 'zsh-tool-config custom setup' to create one"
+    echo "  Run 'zsh-tool-config edit' to create and edit it"
     return 1
   fi
 
@@ -531,6 +554,14 @@ _zsh_tool_config_show() {
 _zsh_tool_config_edit() {
   local zshrc_local="${HOME}/.zshrc.local"
   local editor="${EDITOR:-vi}"
+
+  # Validate editor exists and is executable
+  if ! command -v "$editor" >/dev/null 2>&1; then
+    _zsh_tool_log ERROR "Editor not found: $editor"
+    echo "Error: Editor '$editor' not found or not executable"
+    echo "Set EDITOR environment variable to a valid editor (e.g., vi, vim, nano)"
+    return 1
+  fi
 
   # Create .zshrc.local if doesn't exist
   if [[ ! -f "$zshrc_local" ]]; then

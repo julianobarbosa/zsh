@@ -1,6 +1,8 @@
 #!/usr/bin/env zsh
-# Story 1.3: Install Team-Standard Configuration Tests
+# Stories 1.3 & 1.6: Configuration and Customization Layer Tests
 # Tests for lib/install/config.zsh
+# Story 1.3: Team configuration installation
+# Story 1.6: Personal customization layer
 
 # Note: Not using set -e as we need to capture test failures
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
-# Story 2.2: Plugin Updates
-# Update all custom plugins
+# Story 1.4: Plugin Management System - Update Module
+# Update all custom plugins (AC9: plugin update command)
 
 # Source shared component manager
 # Calculate lib directory if not set

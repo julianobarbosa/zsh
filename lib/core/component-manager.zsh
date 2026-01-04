@@ -137,6 +137,8 @@ _zsh_tool_install_git_component() {
 
     return 0
   else
+    # Clean up partial clone on failure
+    [[ -d "$target_dir" ]] && rm -rf "$target_dir"
     _zsh_tool_log ERROR "Failed to install ${component_type}: $component_name"
     return 1
   fi

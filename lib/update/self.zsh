@@ -25,11 +25,12 @@ _zsh_tool_get_local_version() {
     return 0
   fi
 
-  # Fall back to git
+  # Fall back to git (use subshell to avoid cd pollution)
   if _zsh_tool_is_git_repo; then
-    cd "$ZSH_TOOL_INSTALL_DIR"
-    local version=$(git describe --tags 2>/dev/null || git rev-parse --short HEAD 2>/dev/null || echo "unknown")
-    cd - >/dev/null
+    local version=$(
+      cd "$ZSH_TOOL_INSTALL_DIR" || exit 1
+      git describe --tags 2>/dev/null || git rev-parse --short HEAD 2>/dev/null || echo "unknown"
+    )
     echo "$version"
     return 0
   fi
@@ -95,31 +96,53 @@ _zsh_tool_check_for_updates() {
 
   _zsh_tool_log INFO "Checking for updates..."
 
-  cd "$ZSH_TOOL_INSTALL_DIR"
+  # Use subshell to avoid cd pollution
+  local check_result
+  check_result=$(
+    cd "$ZSH_TOOL_INSTALL_DIR" || { echo "cd_failed"; exit 1; }
 
-  # Fetch latest changes
-  git fetch origin 2>&1 | tee -a "$ZSH_TOOL_LOG_FILE" >/dev/null
-  local fetch_status=${PIPESTATUS[1]}
+    # Fetch latest changes
+    git fetch origin 2>&1 | tee -a "$ZSH_TOOL_LOG_FILE" >/dev/null
+    local fetch_status=${pipestatus[1]}
 
-  if [[ $fetch_status -ne 0 ]]; then
-    _zsh_tool_log WARN "Failed to fetch updates (network issue?)"
-    cd - >/dev/null
-    return 1
-  fi
+    if [[ $fetch_status -ne 0 ]]; then
+      echo "fetch_failed"
+      exit 1
+    fi
 
-  # Compare local vs remote
-  local current_sha=$(git rev-parse HEAD 2>/dev/null)
-  local remote_sha=$(git rev-parse origin/main 2>/dev/null || git rev-parse origin/master 2>/dev/null)
+    # Compare local vs remote
+    local current_sha=$(git rev-parse HEAD 2>/dev/null)
+    local remote_sha=$(git rev-parse origin/main 2>/dev/null || git rev-parse origin/master 2>/dev/null)
 
-  cd - >/dev/null
+    if [[ "$current_sha" == "$remote_sha" ]]; then
+      echo "up_to_date"
+    else
+      echo "updates_available"
+    fi
+  )
 
-  if [[ "$current_sha" == "$remote_sha" ]]; then
-    _zsh_tool_log INFO "✓ Tool is up to date"
-    return 1  # No updates available
-  else
-    _zsh_tool_log INFO "Updates available!"
-    return 0  # Updates available
-  fi
+  case "$check_result" in
+    cd_failed)
+      _zsh_tool_log ERROR "Failed to access install directory"
+      return 1
+      ;;
+    fetch_failed)
+      _zsh_tool_log WARN "Failed to fetch updates (network issue?)"
+      return 1
+      ;;
+    up_to_date)
+      _zsh_tool_log INFO "✓ Tool is up to date"
+      return 1  # No updates available
+      ;;
+    updates_available)
+      _zsh_tool_log INFO "Updates available!"
+      return 0  # Updates available
+      ;;
+    *)
+      _zsh_tool_log WARN "Unknown check result"
+      return 1
+      ;;
+  esac
 }
 
 # Create backup before update with timestamped directory
@@ -203,7 +226,7 @@ _zsh_tool_apply_update() {
 
   # Pull latest changes
   git pull origin $remote_branch 2>&1 | tee -a "$ZSH_TOOL_LOG_FILE" >/dev/null
-  local pull_status=${PIPESTATUS[1]}
+  local pull_status=${pipestatus[1]}
 
   if [[ $pull_status -ne 0 ]]; then
     _zsh_tool_log ERROR "Update failed, rolling back..."
@@ -242,7 +265,7 @@ _zsh_tool_rollback_update() {
   cd "$ZSH_TOOL_INSTALL_DIR"
 
   git checkout "$target_version" 2>&1 | tee -a "$ZSH_TOOL_LOG_FILE" >/dev/null
-  local checkout_status=${PIPESTATUS[1]}
+  local checkout_status=${pipestatus[1]}
 
   cd - >/dev/null
 

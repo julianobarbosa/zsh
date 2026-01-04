@@ -187,8 +187,8 @@ _zsh_tool_update_zshrc_theme() {
     return 1
   fi
 
-  # Update the ZSH_THEME line
-  local temp_zshrc="${zshrc}.tmp.$$"
+  # Update the ZSH_THEME line - use mktemp for secure temp file creation
+  local temp_zshrc=$(mktemp "${zshrc}.tmp.XXXXXX" 2>/dev/null || echo "${zshrc}.tmp.$$")
 
   # Preserve original file permissions (handle both BSD and GNU stat)
   local orig_perms=$(stat -f "%OLp" "$zshrc" 2>/dev/null || stat -c "%a" "$zshrc" 2>/dev/null)
@@ -248,6 +248,23 @@ _zsh_tool_theme_set() {
   else
     _zsh_tool_log WARN "Theme '$theme' not found, falling back to $ZSH_TOOL_DEFAULT_THEME"
     theme="$ZSH_TOOL_DEFAULT_THEME"
+  fi
+
+  # Verify theme file exists before committing
+  local theme_file=""
+  if _zsh_tool_is_builtin_theme "$theme"; then
+    theme_file="${HOME}/.oh-my-zsh/themes/${theme}.zsh-theme"
+  elif _zsh_tool_is_custom_theme_installed "$theme"; then
+    # Custom themes use directory structure - look for .zsh-theme file or init file
+    if [[ -f "${OMZ_CUSTOM_THEMES}/${theme}/${theme}.zsh-theme" ]]; then
+      theme_file="${OMZ_CUSTOM_THEMES}/${theme}/${theme}.zsh-theme"
+    elif [[ -f "${OMZ_CUSTOM_THEMES}/${theme}/${theme}.plugin.zsh" ]]; then
+      theme_file="${OMZ_CUSTOM_THEMES}/${theme}/${theme}.plugin.zsh"
+    fi
+  fi
+
+  if [[ -n "$theme_file" && ! -s "$theme_file" ]]; then
+    _zsh_tool_log WARN "Theme file exists but is empty: $theme_file"
   fi
 
   # Update .zshrc

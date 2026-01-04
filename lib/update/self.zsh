@@ -50,10 +50,36 @@ _zsh_tool_compare_versions() {
   local v1="$1"
   local v2="$2"
 
-  # Handle non-semver versions
-  if [[ ! "$v1" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || [[ ! "$v2" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-    # If either is not semver, do string comparison
-    [[ "$v1" != "$v2" ]] && return 0 || return 1
+  # Helper function to validate semver bounds (max 999 per component)
+  _is_valid_semver() {
+    local ver="$1"
+    if [[ ! "$ver" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+      return 1
+    fi
+    local major=$(echo "$ver" | cut -d. -f1)
+    local minor=$(echo "$ver" | cut -d. -f2)
+    local patch=$(echo "$ver" | cut -d. -f3)
+    # Check bounds (0-999 for each component)
+    if [[ $major -gt 999 ]] || [[ $minor -gt 999 ]] || [[ $patch -gt 999 ]]; then
+      return 1
+    fi
+    return 0
+  }
+
+  # Handle non-semver versions (git hashes, tags, etc.)
+  if ! _is_valid_semver "$v1" || ! _is_valid_semver "$v2"; then
+    # For non-semver, only report update available if versions are different
+    # AND local is not "unknown" (which would indicate a problem)
+    if [[ "$v1" == "unknown" ]]; then
+      # Can't determine local version, don't suggest update
+      return 1
+    fi
+    # Different versions - but for non-semver we can't determine which is newer
+    # Only return update available if they differ (caller should use git SHA comparison)
+    if [[ "$v1" != "$v2" ]] && [[ -n "$v2" ]]; then
+      return 0
+    fi
+    return 1
   fi
 
   # Split versions into components (zsh arrays are 1-indexed)
@@ -235,6 +261,44 @@ _zsh_tool_apply_update() {
     return 1
   fi
 
+  # Post-update validation: verify critical files exist and update succeeded
+  local validation_failed=false
+  local new_sha=$(git rev-parse HEAD)
+
+  # Check 1: Verify HEAD actually changed (update was applied)
+  if [[ "$current_sha" == "$new_sha" ]]; then
+    _zsh_tool_log WARN "Update did not change HEAD - may already be up to date"
+  fi
+
+  # Check 2: Verify VERSION file exists and is readable
+  if [[ ! -f "${ZSH_TOOL_INSTALL_DIR}/VERSION" ]]; then
+    _zsh_tool_log ERROR "Post-update validation failed: VERSION file missing"
+    validation_failed=true
+  elif [[ ! -r "${ZSH_TOOL_INSTALL_DIR}/VERSION" ]]; then
+    _zsh_tool_log ERROR "Post-update validation failed: VERSION file not readable"
+    validation_failed=true
+  fi
+
+  # Check 3: Verify critical library files exist
+  local critical_files=(
+    "lib/update/self.zsh"
+    "lib/core/utils.zsh"
+  )
+  for file in "${critical_files[@]}"; do
+    if [[ ! -f "${ZSH_TOOL_INSTALL_DIR}/${file}" ]]; then
+      _zsh_tool_log ERROR "Post-update validation failed: critical file missing: ${file}"
+      validation_failed=true
+    fi
+  done
+
+  # If validation failed, rollback
+  if [[ "$validation_failed" == true ]]; then
+    _zsh_tool_log ERROR "Post-update validation failed, rolling back..."
+    git reset --hard $current_sha 2>&1 | tee -a "$ZSH_TOOL_LOG_FILE" >/dev/null
+    cd - >/dev/null
+    return 1
+  fi
+
   cd - >/dev/null
 
   # Update state
@@ -243,7 +307,8 @@ _zsh_tool_apply_update() {
   _zsh_tool_update_state "tool_version.previous" "\"$current_sha\""
   _zsh_tool_update_state "tool_version.last_update" "\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\""
 
-  _zsh_tool_log INFO "✓ Update complete: $new_version"
+  _zsh_tool_log INFO "Post-update validation passed"
+  _zsh_tool_log INFO "Update complete: $new_version"
   echo ""
   echo "Reload shell to apply updates: exec zsh"
   echo ""

@@ -488,6 +488,9 @@ test_verification_passes() {
   # Set theme
   export ZSH_THEME="robbyrussell"
 
+  # Skip subshell verification for this test (we're in a mock environment)
+  export ZSH_TOOL_SKIP_SUBSHELL_VERIFY=1
+
   _zsh_tool_verify_installation >/dev/null 2>&1
   local result=$?
 
@@ -497,6 +500,7 @@ test_verification_passes() {
   unset ZSH_HIGHLIGHT_VERSION
   unset ZSH_AUTOSUGGEST_VERSION
   unset ZSH_THEME
+  unset ZSH_TOOL_SKIP_SUBSHELL_VERIFY
   [[ -n "$orig_zsh" ]] && export ZSH="$orig_zsh" || unset ZSH
 
   return $result
@@ -627,6 +631,9 @@ test_public_command_runs() {
   export ZSH_AUTOSUGGEST_VERSION="0.7.0"
   export ZSH_THEME="robbyrussell"
 
+  # Skip subshell verification for this test (we're in a mock environment)
+  export ZSH_TOOL_SKIP_SUBSHELL_VERIFY=1
+
   zsh-tool-verify >/dev/null 2>&1
   local result=$?
 
@@ -636,6 +643,7 @@ test_public_command_runs() {
   unset ZSH_HIGHLIGHT_VERSION
   unset ZSH_AUTOSUGGEST_VERSION
   unset ZSH_THEME
+  unset ZSH_TOOL_SKIP_SUBSHELL_VERIFY
   [[ -n "$orig_zsh" ]] && export ZSH="$orig_zsh" || unset ZSH
 
   return $result

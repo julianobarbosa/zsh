@@ -284,6 +284,41 @@ _zsh_tool_parse_atuin_style() {
   echo "$section" | grep '^\s*style:' | head -1 | awk '{print $2}' | tr -d ' "'
 }
 
+# HIGH-4: Remove duplicate source lines from content
+# Ensures only one instance of each source line exists
+# Usage: _zsh_tool_dedupe_source_lines <content>
+_zsh_tool_dedupe_source_lines() {
+  local content="$1"
+  local seen_sources=""
+  local result=""
+  local line=""
+
+  while IFS= read -r line || [[ -n "$line" ]]; do
+    # Check if this is a source line for .zshrc.local (various formats)
+    if [[ "$line" =~ source[[:space:]]+~/.zshrc.local ]] || \
+       [[ "$line" =~ source[[:space:]]+\$HOME/.zshrc.local ]] || \
+       [[ "$line" =~ source[[:space:]]+\"\$HOME/.zshrc.local\" ]] || \
+       [[ "$line" =~ '\[\[.*\.zshrc\.local.*\]\].*source' ]]; then
+      # Check if we've seen a source for .zshrc.local before
+      if [[ "$seen_sources" == *"zshrc.local"* ]]; then
+        # Skip duplicate source line
+        continue
+      fi
+      seen_sources="${seen_sources}zshrc.local:"
+    fi
+
+    # Build result with preserved newlines
+    if [[ -n "$result" ]]; then
+      result="${result}
+${line}"
+    else
+      result="$line"
+    fi
+  done <<< "$content"
+
+  echo "$result"
+}
+
 # Generate .zshrc content from template
 _zsh_tool_generate_zshrc() {
   local template_file="${ZSH_TOOL_TEMPLATE_DIR}/zshrc.template"
@@ -324,6 +359,9 @@ _zsh_tool_generate_zshrc() {
   content="${content//\{\{aliases\}\}/$aliases}"
   content="${content//\{\{exports\}\}/$exports}"
   content="${content//\{\{paths\}\}/$paths}"
+
+  # HIGH-4: Remove any duplicate source lines for .zshrc.local
+  content=$(_zsh_tool_dedupe_source_lines "$content")
 
   echo "$content"
 }
@@ -398,7 +436,39 @@ _zsh_tool_validate_path() {
 
   # Resolve symlinks and validate real path
   if [[ -e "$path" ]] || [[ -L "$path" ]]; then
-    local real_path=$(readlink -f "$path" 2>/dev/null || realpath "$path" 2>/dev/null || echo "$path")
+    # HIGH-5: Improved symlink resolution with proper macOS support
+    # Try multiple methods: readlink -f (Linux), greadlink -f (macOS with coreutils),
+    # realpath, or manual resolution as last resort
+    local real_path=""
+    if real_path=$(readlink -f "$path" 2>/dev/null); then
+      : # success
+    elif real_path=$(greadlink -f "$path" 2>/dev/null); then
+      : # success with GNU coreutils on macOS
+    elif real_path=$(realpath "$path" 2>/dev/null); then
+      : # success with realpath
+    else
+      # Manual resolution: follow symlink chain (up to 10 levels to prevent infinite loops)
+      real_path="$path"
+      local count=0
+      while [[ -L "$real_path" && $count -lt 10 ]]; do
+        local link_target=$(readlink "$real_path" 2>/dev/null)
+        if [[ -z "$link_target" ]]; then
+          break
+        fi
+        # Handle relative symlinks
+        if [[ "$link_target" != /* ]]; then
+          link_target="$(dirname "$real_path")/$link_target"
+        fi
+        real_path="$link_target"
+        ((count++))
+      done
+      # If we hit the limit, treat as suspicious
+      if [[ $count -ge 10 ]]; then
+        _zsh_tool_log error "Symlink chain too deep (possible loop): $path"
+        return 1
+      fi
+    fi
+
     # Check if resolved path contains traversal patterns
     if [[ "$real_path" == *".."* ]]; then
       _zsh_tool_log error "Symlink resolves to invalid path: $real_path"
@@ -436,9 +506,22 @@ _zsh_tool_preserve_user_config() {
     return 0
   fi
 
+  # HIGH-3: Create backup of .zshrc.local before any modification (rollback mechanism)
+  local backup_file=""
+  if [[ -f "$zshrc_local" ]]; then
+    backup_file="${zshrc_local}.backup.$(date '+%Y%m%d_%H%M%S')"
+    if ! cp -p "$zshrc_local" "$backup_file" 2>/dev/null; then
+      _zsh_tool_log WARN "Failed to create backup of .zshrc.local, proceeding anyway"
+      backup_file=""
+    else
+      _zsh_tool_log DEBUG "Created backup: $backup_file"
+    fi
+  fi
+
   # Escape markers for sed (prevent injection)
-  local begin_marker=$(printf '%s\n' "$ZSH_TOOL_MANAGED_BEGIN" | sed 's/[[\.*^$()+?{|]/\\&/g')
-  local end_marker=$(printf '%s\n' "$ZSH_TOOL_MANAGED_END" | sed 's/[[\.*^$()+?{|]/\\&/g')
+  # HIGH-6: Complete sed pattern escaping - escape [], /, and & characters
+  local begin_marker=$(printf '%s\n' "$ZSH_TOOL_MANAGED_BEGIN" | sed 's/[][\\.*^$()+?{|/&]/\\&/g')
+  local end_marker=$(printf '%s\n' "$ZSH_TOOL_MANAGED_END" | sed 's/[][\\.*^$()+?{|/&]/\\&/g')
 
   # Extract user content (everything outside managed section)
   local user_content=$(sed -n "/${begin_marker}/,/${end_marker}/!p" "$zshrc" 2>/dev/null || echo "")
@@ -487,10 +570,22 @@ _zsh_tool_preserve_user_config() {
   if ! mv "$temp_local" "$zshrc_local"; then
     _zsh_tool_log error "Failed to create .zshrc.local during preservation"
     rm -f "$temp_local"
+    # HIGH-3: Rollback - restore backup on failure
+    if [[ -n "$backup_file" && -f "$backup_file" ]]; then
+      if mv "$backup_file" "$zshrc_local" 2>/dev/null; then
+        _zsh_tool_log INFO "Rolled back to backup: $backup_file"
+      else
+        _zsh_tool_log WARN "Failed to rollback, backup remains at: $backup_file"
+      fi
+    fi
     return 1
   fi
 
   _zsh_tool_log INFO "User configuration preserved to .zshrc.local"
+  # HIGH-3: On success, keep backup for safety but log its location
+  if [[ -n "$backup_file" && -f "$backup_file" ]]; then
+    _zsh_tool_log INFO "Backup preserved at: $backup_file"
+  fi
 
   # Update state
   _zsh_tool_update_state "custom_layer_migrated" "true"

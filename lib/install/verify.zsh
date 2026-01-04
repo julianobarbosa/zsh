@@ -105,6 +105,107 @@ _zsh_tool_parse_theme() {
 # VERIFICATION FUNCTIONS
 # ============================================================================
 
+# Validate backup location path for safety
+# Only allows paths under expected directories (HOME, /tmp, or system temp directories)
+# Returns: 0 if valid, 1 if invalid
+_zsh_tool_validate_backup_location() {
+  local backup_location="$1"
+
+  # Check for empty path
+  if [[ -z "$backup_location" ]]; then
+    _zsh_tool_log DEBUG "Empty backup location"
+    return 1
+  fi
+
+  # CRITICAL: Normalize the path to resolve any symlinks and relative components
+  local resolved_path
+  resolved_path=$(cd "$backup_location" 2>/dev/null && pwd -P) || {
+    _zsh_tool_log DEBUG "Cannot resolve backup location: $backup_location"
+    return 1
+  }
+
+  # CRITICAL: Check for path traversal attempts in the original path
+  if [[ "$backup_location" == *".."* ]]; then
+    _zsh_tool_log ERROR "Path traversal attempt detected in backup location: $backup_location"
+    return 1
+  fi
+
+  # CRITICAL: Validate the resolved path is under allowed directories
+  # Allow paths under:
+  # - HOME directory
+  # - /tmp or /private/tmp (common temp locations)
+  # - /var/folders or /private/var/folders (macOS temp directories from mktemp)
+  local home_real
+  home_real=$(cd "$HOME" 2>/dev/null && pwd -P)
+
+  local allowed=false
+  if [[ "$resolved_path" == "${home_real}"* ]]; then
+    allowed=true
+  elif [[ "$resolved_path" == "/tmp"* || "$resolved_path" == "/private/tmp"* ]]; then
+    allowed=true
+  elif [[ "$resolved_path" == "/var/folders"* || "$resolved_path" == "/private/var/folders"* ]]; then
+    # macOS mktemp creates dirs under /var/folders (symlinked to /private/var/folders)
+    allowed=true
+  fi
+
+  if [[ "$allowed" != "true" ]]; then
+    _zsh_tool_log ERROR "Backup location outside allowed directories: $resolved_path"
+    return 1
+  fi
+
+  # CRITICAL: Check for shell metacharacters that could cause command injection
+  if [[ "$backup_location" =~ [\;\|\&\$\`\<\>\(\)\{\}\[\]\'\"] ]]; then
+    _zsh_tool_log ERROR "Invalid characters in backup location: $backup_location"
+    return 1
+  fi
+
+  return 0
+}
+
+# Verify installation in a subshell (as specified in story requirements)
+# This tests that ~/.zshrc can be sourced correctly in a fresh shell
+# Returns: 0 if subshell verification passes, 1 otherwise
+_zsh_tool_verify_in_subshell() {
+  _zsh_tool_log DEBUG "Running subshell verification"
+
+  local zshrc="${HOME}/.zshrc"
+
+  # Check if .zshrc exists
+  if [[ ! -f "$zshrc" ]]; then
+    _zsh_tool_log ERROR "~/.zshrc does not exist"
+    return 1
+  fi
+
+  # Run verification in a subshell as specified in the story:
+  # zsh -c 'source ~/.zshrc && typeset -f omz'
+  local subshell_output
+  local subshell_result
+
+  # Use timeout to prevent hanging if there are issues
+  if command -v timeout >/dev/null 2>&1; then
+    subshell_output=$(timeout 30 zsh -c 'source ~/.zshrc && typeset -f omz' 2>&1)
+    subshell_result=$?
+  else
+    # Fallback without timeout (macOS may not have timeout by default)
+    subshell_output=$(zsh -c 'source ~/.zshrc && typeset -f omz' 2>&1)
+    subshell_result=$?
+  fi
+
+  if [[ $subshell_result -ne 0 ]]; then
+    _zsh_tool_log ERROR "Subshell verification failed: $subshell_output"
+    return 1
+  fi
+
+  # Verify the output contains the omz function definition
+  if [[ "$subshell_output" != *"omz"* ]]; then
+    _zsh_tool_log ERROR "omz function not found in subshell"
+    return 1
+  fi
+
+  _zsh_tool_log DEBUG "Subshell verification passed"
+  return 0
+}
+
 # Check if Oh My Zsh is loaded
 # Returns: 0 if OMZ is loaded, 1 otherwise
 _zsh_tool_check_omz_loaded() {
@@ -329,12 +430,18 @@ _zsh_tool_display_summary() {
     local backup_timestamp=$(grep '"backup_timestamp"' "$state_file" 2>/dev/null | sed 's/.*: *"\(.*\)".*/\1/')
 
     if [[ -n "$backup_location" ]] && [[ -d "$backup_location" ]]; then
-      echo "Backup:"
-      echo "  ✓ Location: $backup_location"
-      echo "  ✓ Timestamp: $backup_timestamp"
-      local backup_count=$(find "$backup_location" -type f 2>/dev/null | wc -l | tr -d ' ')
-      echo "  ✓ Files backed up: $backup_count"
-      echo ""
+      # SECURITY FIX (HIGH-6): Validate backup_location before using with find
+      if _zsh_tool_validate_backup_location "$backup_location"; then
+        echo "Backup:"
+        echo "  ✓ Location: $backup_location"
+        echo "  ✓ Timestamp: $backup_timestamp"
+        # Safe to use find now that backup_location is validated
+        local backup_count=$(find "$backup_location" -type f 2>/dev/null | wc -l | tr -d ' ')
+        echo "  ✓ Files backed up: $backup_count"
+        echo ""
+      else
+        _zsh_tool_log WARN "Skipping backup display: invalid backup location"
+      fi
     fi
 
     # Timing Section
@@ -387,6 +494,17 @@ _zsh_tool_verify_installation() {
   # Check theme
   if ! _zsh_tool_check_theme_applied; then
     failed_checks+=("Theme not applied")
+  fi
+
+  # HIGH-3 FIX: Run subshell verification as specified in story requirements
+  # This verifies that ~/.zshrc can be sourced in a fresh shell
+  # Skip subshell verification if ZSH_TOOL_SKIP_SUBSHELL_VERIFY is set (for testing)
+  if [[ -z "$ZSH_TOOL_SKIP_SUBSHELL_VERIFY" ]]; then
+    if ! _zsh_tool_verify_in_subshell; then
+      failed_checks+=("Subshell verification failed")
+    fi
+  else
+    _zsh_tool_log DEBUG "Skipping subshell verification (ZSH_TOOL_SKIP_SUBSHELL_VERIFY set)"
   fi
 
   # Report results

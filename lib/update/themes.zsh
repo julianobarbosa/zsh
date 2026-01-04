@@ -11,6 +11,7 @@ OMZ_CUSTOM_THEMES="${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}/themes"
 
 # Get theme version (wrapper for component-manager's generic function)
 # Usage: _zsh_tool_get_theme_version <theme_name>
+# Returns: version string, exit code 1 if not a git repo
 _zsh_tool_get_theme_version() {
   local theme="$1"
   local theme_dir="${OMZ_CUSTOM_THEMES}/${theme}"

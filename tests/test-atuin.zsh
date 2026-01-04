@@ -14,23 +14,43 @@ TEST_STATE_FILE="${HOME}/.config/zsh-tool/test-state.json"
 TEST_ATUIN_CONFIG="${HOME}/.config/atuin/test-config.toml"
 
 # Test counters
+# HIGH-4 FIX: Separate test count from assertion count for accurate reporting
 TESTS_RUN=0
 TESTS_PASSED=0
 TESTS_FAILED=0
+ASSERTIONS_PASSED=0
+ASSERTIONS_FAILED=0
+_CURRENT_TEST_FAILED=0
+
+# HIGH-5 FIX: Save original PATH for restoration
+_ORIGINAL_PATH="$PATH"
 
 # Test helpers
 test_start() {
   TESTS_RUN=$((TESTS_RUN + 1))
+  _CURRENT_TEST_FAILED=0
   echo "\n🧪 Test $TESTS_RUN: $1"
 }
 
+# Mark test as complete (call at end of each test function)
+test_end() {
+  if [[ $_CURRENT_TEST_FAILED -eq 0 ]]; then
+    TESTS_PASSED=$((TESTS_PASSED + 1))
+  else
+    TESTS_FAILED=$((TESTS_FAILED + 1))
+  fi
+  # HIGH-5 FIX: Restore PATH after each test
+  PATH="$_ORIGINAL_PATH"
+}
+
 test_pass() {
-  TESTS_PASSED=$((TESTS_PASSED + 1))
+  ASSERTIONS_PASSED=$((ASSERTIONS_PASSED + 1))
   echo "  ✅ PASS: $1"
 }
 
 test_fail() {
-  TESTS_FAILED=$((TESTS_FAILED + 1))
+  ASSERTIONS_FAILED=$((ASSERTIONS_FAILED + 1))
+  _CURRENT_TEST_FAILED=1
   echo "  ❌ FAIL: $1"
   [[ -n "$2" ]] && echo "     Expected: $2"
   [[ -n "$3" ]] && echo "     Got: $3"
@@ -108,11 +128,13 @@ test_atuin_detection_installed() {
 
   # Cleanup
   unfunction atuin 2>/dev/null
+  test_end
 }
 
 test_atuin_detection_not_installed() {
   test_start "AC1: Atuin detection when not installed"
 
+  # HIGH-5 FIX: PATH is saved by test_start and restored by test_end
   # Ensure atuin is not in PATH for this test
   PATH="/usr/bin:/bin"
 
@@ -121,6 +143,7 @@ test_atuin_detection_not_installed() {
   else
     test_fail "Should detect Atuin not installed"
   fi
+  test_end
 }
 
 # =============================================================================
@@ -153,6 +176,7 @@ test_atuin_config_generation() {
 
   # Cleanup
   rm -rf "$test_config_dir"
+  test_end
 }
 
 test_atuin_config_preserves_existing() {
@@ -178,6 +202,7 @@ test_atuin_config_preserves_existing() {
 
   # Cleanup
   rm -rf "$test_config_dir"
+  test_end
 }
 
 # =============================================================================
@@ -192,6 +217,7 @@ test_atuin_keybinding_configuration() {
   local result=$?
 
   test_assert_equals "$result" "0" "Keybinding configuration succeeds"
+  test_end
 }
 
 # =============================================================================
@@ -205,6 +231,7 @@ test_atuin_amazonq_compatibility() {
   local result=$?
 
   test_assert_equals "$result" "0" "Amazon Q compatibility setup succeeds"
+  test_end
 }
 
 test_atuin_zshrc_amazonq_fix() {
@@ -243,6 +270,7 @@ EOF
 
   # Cleanup
   rm -f "$test_zshrc"
+  test_end
 }
 
 # =============================================================================
@@ -278,11 +306,13 @@ test_atuin_health_check_passes() {
   # Cleanup
   unfunction atuin 2>/dev/null
   rm -rf "$test_db_dir"
+  test_end
 }
 
 test_atuin_health_check_fails() {
   test_start "AC9: Health check when Atuin not installed"
 
+  # HIGH-5 FIX: PATH is saved by test_start and restored by test_end
   # Ensure atuin is not available
   PATH="/usr/bin:/bin"
 
@@ -291,6 +321,7 @@ test_atuin_health_check_fails() {
   else
     test_fail "Health check should fail without Atuin"
   fi
+  test_end
 }
 
 # =============================================================================
@@ -305,6 +336,7 @@ test_public_command_exists() {
   else
     test_fail "Public command zsh-tool-install-atuin should exist"
   fi
+  test_end
 }
 
 # =============================================================================
@@ -332,6 +364,7 @@ test_state_tracking_atuin() {
 
   # Cleanup
   rm -f "$TEST_STATE_FILE"
+  test_end
 }
 
 # =============================================================================
@@ -374,16 +407,19 @@ run_all_tests() {
   echo "================================================================================"
   echo "Test Summary"
   echo "================================================================================"
-  echo "Tests run:    $TESTS_RUN"
-  echo "Tests passed: $TESTS_PASSED"
-  echo "Tests failed: $TESTS_FAILED"
+  echo "Tests run:        $TESTS_RUN"
+  echo "Tests passed:     $TESTS_PASSED"
+  echo "Tests failed:     $TESTS_FAILED"
+  echo ""
+  echo "Assertions passed: $ASSERTIONS_PASSED"
+  echo "Assertions failed: $ASSERTIONS_FAILED"
   echo ""
 
   if [[ $TESTS_FAILED -eq 0 ]]; then
-    echo "✅ All tests passed!"
+    echo "All tests passed!"
     return 0
   else
-    echo "❌ Some tests failed"
+    echo "Some tests failed"
     return 1
   fi
 }

@@ -2,11 +2,11 @@
 # Core utilities for zsh-tool
 # Logging, prompts, error handling, idempotency checks
 
-# Configuration
-ZSH_TOOL_CONFIG_DIR="${HOME}/.config/zsh-tool"
-ZSH_TOOL_LOG_FILE="${ZSH_TOOL_CONFIG_DIR}/logs/zsh-tool.log"
-ZSH_TOOL_STATE_FILE="${ZSH_TOOL_CONFIG_DIR}/state.json"
-ZSH_TOOL_LOG_LEVEL="${ZSH_TOOL_LOG_LEVEL:-INFO}"
+# Configuration (use defaults only if not already set)
+: ${ZSH_TOOL_CONFIG_DIR:="${HOME}/.config/zsh-tool"}
+: ${ZSH_TOOL_LOG_FILE:="${ZSH_TOOL_CONFIG_DIR}/logs/zsh-tool.log"}
+: ${ZSH_TOOL_STATE_FILE:="${ZSH_TOOL_CONFIG_DIR}/state.json"}
+: ${ZSH_TOOL_LOG_LEVEL:=INFO}
 
 # Logging levels
 typeset -A ZSH_TOOL_LOG_LEVELS

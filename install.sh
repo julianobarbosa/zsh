@@ -187,13 +187,37 @@ zsh-tool-install() {
   _zsh_tool_update_state "installation_duration_seconds" "$duration"
 
   # Verify installation (Story 1.7)
-  _zsh_tool_verify_installation
+  # HIGH-4 FIX: Only mark as installed if verification passes
+  if ! _zsh_tool_verify_installation; then
+    _zsh_tool_log ERROR "Installation verification failed"
+    _zsh_tool_update_state "installed" "false"
+    _zsh_tool_update_state "verification_failed" "true"
+    _zsh_tool_update_state "verification_timestamp" "\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\""
+
+    echo ""
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo "  INSTALLATION VERIFICATION FAILED"
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo ""
+    echo "The installation completed but verification failed."
+    echo ""
+    echo "Rollback options:"
+    echo "  1. Restore from backup: zsh-tool-restore apply <backup-id>"
+    echo "  2. List available backups: zsh-tool-restore list"
+    echo "  3. Re-run installation: zsh-tool-install"
+    echo ""
+    echo "Check logs for details: \$ZSH_TOOL_LOG_FILE"
+    echo ""
+
+    return 1
+  fi
 
   # Display summary (Story 1.7)
   _zsh_tool_display_summary
 
-  # Update state - mark as installed
+  # Update state - mark as installed (only after successful verification)
   _zsh_tool_update_state "installed" "true"
+  _zsh_tool_update_state "verification_failed" "false"
   _zsh_tool_update_state "install_timestamp" "\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\""
 
   return 0

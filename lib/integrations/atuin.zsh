@@ -354,10 +354,28 @@ _atuin_import_history() {
   echo ""
 
   if _zsh_tool_prompt_confirm "Import existing zsh history?"; then
+    # HIGH-1 FIX: Backup database before import for rollback capability
+    local backup_path=""
+    if [[ -f "$ATUIN_DB_PATH" ]]; then
+      backup_path="${ATUIN_DB_PATH}.backup.$(date +%Y%m%d%H%M%S)"
+      _zsh_tool_log INFO "Creating database backup: $backup_path"
+      if ! cp "$ATUIN_DB_PATH" "$backup_path"; then
+        _zsh_tool_log ERROR "Failed to create backup. Aborting import for safety."
+        return 1
+      fi
+      _zsh_tool_log INFO "✓ Database backup created"
+    fi
+
     _zsh_tool_log INFO "Running: atuin import auto"
 
     if atuin import auto; then
       _zsh_tool_log INFO "✓ History imported successfully"
+
+      # Remove backup on success (optional - keep for safety)
+      if [[ -n "$backup_path" && -f "$backup_path" ]]; then
+        _zsh_tool_log INFO "Backup retained at: $backup_path"
+        _zsh_tool_log INFO "To rollback: cp '$backup_path' '$ATUIN_DB_PATH'"
+      fi
 
       # Show stats after import
       echo ""
@@ -365,6 +383,17 @@ _atuin_import_history() {
       echo ""
     else
       _zsh_tool_log WARN "History import failed or had issues"
+      # Offer rollback if backup exists
+      if [[ -n "$backup_path" && -f "$backup_path" ]]; then
+        _zsh_tool_log INFO "Rollback available: cp '$backup_path' '$ATUIN_DB_PATH'"
+        if _zsh_tool_prompt_confirm "Restore database from backup?"; then
+          if cp "$backup_path" "$ATUIN_DB_PATH"; then
+            _zsh_tool_log INFO "✓ Database restored from backup"
+          else
+            _zsh_tool_log ERROR "Failed to restore from backup"
+          fi
+        fi
+      fi
       _zsh_tool_log INFO "You can manually import later with: atuin import auto"
     fi
   else
@@ -462,9 +491,20 @@ EOF
 
 # Restore Atuin keybindings after Amazon Q (Amazon Q overrides Ctrl+R)
 # This ensures Ctrl+R opens Atuin search instead of just redisplaying the prompt
+# HIGH-2 FIX: Check if widgets exist before binding, add vicmd mode handling
 if command -v atuin &>/dev/null; then
-    bindkey -M emacs '^r' atuin-search
-    bindkey -M viins '^r' atuin-search-viins
+    # Check if atuin-search widget exists before binding (emacs mode)
+    if zle -la | grep -q '^atuin-search$'; then
+        bindkey -M emacs '^r' atuin-search
+    fi
+    # Check if atuin-search-viins widget exists before binding (vi insert mode)
+    if zle -la | grep -q '^atuin-search-viins$'; then
+        bindkey -M viins '^r' atuin-search-viins
+    fi
+    # Check if atuin-search-vicmd widget exists before binding (vi command mode)
+    if zle -la | grep -q '^atuin-search-vicmd$'; then
+        bindkey -M vicmd '^r' atuin-search-vicmd
+    fi
 fi
 EOF
 

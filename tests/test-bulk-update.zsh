@@ -10,10 +10,12 @@ ZSH_TOOL_CONFIG_DIR="/tmp/zsh-tool-test-$$"
 ZSH_TOOL_LOG_FILE="${ZSH_TOOL_CONFIG_DIR}/logs/zsh-tool.log"
 ZSH_TOOL_STATE_FILE="${ZSH_TOOL_CONFIG_DIR}/state.json"
 OMZ_INSTALL_DIR="${ZSH_TOOL_CONFIG_DIR}/.oh-my-zsh"
-OMZ_CUSTOM_PLUGINS="${OMZ_INSTALL_DIR}/custom/plugins"
-OMZ_CUSTOM_THEMES="${OMZ_INSTALL_DIR}/custom/themes"
+# Set ZSH_CUSTOM before sourcing modules so they use test paths
+ZSH_CUSTOM="${OMZ_INSTALL_DIR}/custom"
+OMZ_CUSTOM_PLUGINS="${ZSH_CUSTOM}/plugins"
+OMZ_CUSTOM_THEMES="${ZSH_CUSTOM}/themes"
 
-# Load modules
+# Load modules (they will use ZSH_CUSTOM to determine paths)
 source "${LIB_DIR}/core/utils.zsh"
 source "${LIB_DIR}/update/omz.zsh"
 source "${LIB_DIR}/update/plugins.zsh"
@@ -48,6 +50,8 @@ create_mock_git_plugin() {
   git init >/dev/null 2>&1
   git config user.name "Test" >/dev/null 2>&1
   git config user.email "test@test.com" >/dev/null 2>&1
+  git config commit.gpgsign false >/dev/null 2>&1
+  git config tag.gpgsign false >/dev/null 2>&1
   echo "# $plugin_name" > README.md
   git add . >/dev/null 2>&1
   git commit -m "Initial commit" >/dev/null 2>&1
@@ -64,6 +68,8 @@ create_mock_git_theme() {
   git init >/dev/null 2>&1
   git config user.name "Test" >/dev/null 2>&1
   git config user.email "test@test.com" >/dev/null 2>&1
+  git config commit.gpgsign false >/dev/null 2>&1
+  git config tag.gpgsign false >/dev/null 2>&1
   echo "# $theme_name" > theme.zsh
   git add . >/dev/null 2>&1
   git commit -m "Initial commit" >/dev/null 2>&1
@@ -148,7 +154,9 @@ test_non_git_theme() {
   setup_test_env
 
   mkdir -p "${OMZ_CUSTOM_THEMES}/non-git-theme"
-  local version=$(_zsh_tool_get_theme_version "non-git-theme" 2>/dev/null)
+  # Capture version and exit code separately to avoid local masking exit code
+  local version
+  version=$(_zsh_tool_get_theme_version "non-git-theme" 2>/dev/null)
   local exit_code=$?
 
   assert_equals "1" "$exit_code" "Should return error for non-git theme"
@@ -467,33 +475,33 @@ test_log_file_creation() {
   teardown_test_env
 }
 
-# Test 20: Error handling - network failure simulation
+# Test 20: Error handling - repos without remotes
 test_network_failure_handling() {
   echo ""
-  echo "TEST 20: Handle network failures gracefully"
+  echo "TEST 20: Handle repos without remotes gracefully"
   setup_test_env
 
   create_mock_git_theme "test-theme"
 
-  # Remove git remote to simulate network failure
+  # Remove git remote to simulate a local-only repo
   (
     cd "${OMZ_CUSTOM_THEMES}/test-theme"
     git remote remove origin 2>/dev/null
   )
 
-  # Should fail but not crash
+  # Should succeed - local-only repos are considered up-to-date
   _zsh_tool_update_theme "test-theme" 2>/dev/null
   local exit_code=$?
 
-  # We expect failure, but the function should handle it
-  if [[ $exit_code -ne 0 ]]; then
+  # Local-only repos should be handled gracefully (succeed, not crash)
+  if [[ $exit_code -eq 0 ]]; then
     ((TESTS_RUN++))
     ((TESTS_PASSED++))
-    echo "✓ PASS: Should handle git errors gracefully"
+    echo "✓ PASS: Should handle local-only repos gracefully"
   else
     ((TESTS_RUN++))
     ((TESTS_FAILED++))
-    echo "✗ FAIL: Should detect git errors"
+    echo "✗ FAIL: Local-only repos should succeed"
   fi
 
   teardown_test_env

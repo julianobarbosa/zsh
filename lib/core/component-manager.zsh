@@ -75,6 +75,13 @@ _zsh_tool_update_component() {
       return 1
     }
 
+    # Check if there's a remote configured
+    if ! git remote 2>/dev/null | grep -q .; then
+      # No remote configured - component is local-only, consider it up to date
+      _zsh_tool_log DEBUG "${(C)component_type} $component_name has no remote configured, skipping pull"
+      return 0
+    fi
+
     # Pull latest changes
     git pull 2>&1 | tee -a "$ZSH_TOOL_LOG_FILE" >/dev/null
     local pull_status=${pipestatus[1]}
@@ -84,6 +91,11 @@ _zsh_tool_update_component() {
       return 1
     fi
   )
+
+  # Check if subshell failed (git pull or cd failed)
+  if [[ $? -ne 0 ]]; then
+    return 1
+  fi
 
   local new_version=$(_zsh_tool_get_component_version "$component_dir")
 
@@ -185,6 +197,10 @@ _zsh_tool_update_components_parallel() {
   # Temp dir for parallel results
   local temp_dir=$(mktemp -d)
 
+  # Ensure temp directory cleanup on exit, error, or signal
+  # Using a trap to clean up temp_dir on EXIT, INT, TERM, HUP
+  trap "rm -rf '$temp_dir' 2>/dev/null" EXIT INT TERM HUP
+
   # Launch updates in parallel (background jobs)
   for component_dir in ${components_dir}/*(N); do
     if [[ ! -d "$component_dir" ]]; then
@@ -230,8 +246,10 @@ _zsh_tool_update_components_parallel() {
     fi
   done
 
-  # Cleanup
-  rm -rf "$temp_dir"
+  # Cleanup (also handled by trap, but explicit cleanup is good practice)
+  rm -rf "$temp_dir" 2>/dev/null
+  # Reset trap to avoid affecting caller
+  trap - EXIT INT TERM HUP
 
   _zsh_tool_log INFO "✓ ${(C)component_type}s: $updated_count updated, $skipped_count skipped, $failed_count failed (parallel execution)"
 

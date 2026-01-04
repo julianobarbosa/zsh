@@ -5,6 +5,13 @@
 # Get tool installation directory
 ZSH_TOOL_INSTALL_DIR="${ZSH_TOOL_INSTALL_DIR:-${HOME}/.local/bin/zsh-tool}"
 
+# Source backup utilities for pre-update backups
+# Use script directory to locate backup.zsh relative to this file
+_ZSH_TOOL_SELF_DIR="${0:A:h}"
+source "${_ZSH_TOOL_SELF_DIR}/../install/backup.zsh" 2>/dev/null || {
+  _zsh_tool_log WARN "Failed to source backup.zsh - backup functionality may be limited"
+}
+
 # Check if tool is in a git repository
 _zsh_tool_is_git_repo() {
   [[ -d "${ZSH_TOOL_INSTALL_DIR}/.git" ]]

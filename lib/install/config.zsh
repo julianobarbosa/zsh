@@ -638,12 +638,24 @@ _zsh_tool_config_edit() {
   local zshrc_local="${HOME}/.zshrc.local"
   local editor="${EDITOR:-vi}"
 
+  # Sanitize editor: only allow alphanumeric, hyphens, underscores, forward slashes, and dots
+  # This prevents command injection via shell metacharacters in EDITOR
+  if [[ ! "$editor" =~ ^[a-zA-Z0-9/_.-]+$ ]]; then
+    _zsh_tool_log WARN "EDITOR contains invalid characters ('$editor'), falling back to vi"
+    editor="vi"
+  fi
+
   # Validate editor exists and is executable
   if ! command -v "$editor" >/dev/null 2>&1; then
-    _zsh_tool_log error "Editor not found: $editor"
-    echo "Error: Editor '$editor' not found or not executable"
-    echo "Set EDITOR environment variable to a valid editor (e.g., vi, vim, nano)"
-    return 1
+    _zsh_tool_log WARN "Editor '$editor' not found, falling back to vi"
+    editor="vi"
+    # Final check for vi
+    if ! command -v "$editor" >/dev/null 2>&1; then
+      _zsh_tool_log error "No valid editor found (tried '$EDITOR' and 'vi')"
+      echo "Error: No valid editor found"
+      echo "Set EDITOR environment variable to a valid editor (e.g., vi, vim, nano)"
+      return 1
+    fi
   fi
 
   # Create .zshrc.local if doesn't exist
@@ -653,7 +665,7 @@ _zsh_tool_config_edit() {
   fi
 
   _zsh_tool_log INFO "Opening .zshrc.local in $editor"
-  $editor "$zshrc_local"
+  "$editor" "$zshrc_local"
 
   return 0
 }

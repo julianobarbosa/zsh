@@ -658,6 +658,190 @@ test_public_command_fails_on_error() {
 }
 
 # ============================================
+# TEST CASES - Security Validation
+# ============================================
+
+# Test: Validate name rejects empty names
+test_validate_name_rejects_empty() {
+  _zsh_tool_validate_name "" "test" >/dev/null 2>&1
+  local result=$?
+  # Should have failed
+  [[ $result -ne 0 ]]
+}
+
+# Test: Validate name accepts valid alphanumeric names
+test_validate_name_accepts_valid() {
+  _zsh_tool_validate_name "git" "plugin" >/dev/null 2>&1 && \
+  _zsh_tool_validate_name "zsh-syntax-highlighting" "plugin" >/dev/null 2>&1 && \
+  _zsh_tool_validate_name "my_plugin_123" "plugin" >/dev/null 2>&1
+}
+
+# Test: Validate name rejects path traversal attempts
+test_validate_name_rejects_path_traversal() {
+  _zsh_tool_validate_name "../etc/passwd" "theme" >/dev/null 2>&1
+  local result=$?
+  # Should have failed
+  [[ $result -ne 0 ]]
+}
+
+# Test: Validate name rejects command injection characters
+test_validate_name_rejects_command_injection() {
+  # Test various injection attempts
+  _zsh_tool_validate_name "plugin;rm -rf /" "plugin" >/dev/null 2>&1
+  local result1=$?
+
+  _zsh_tool_validate_name 'plugin$(whoami)' "plugin" >/dev/null 2>&1
+  local result2=$?
+
+  _zsh_tool_validate_name 'plugin`id`' "plugin" >/dev/null 2>&1
+  local result3=$?
+
+  _zsh_tool_validate_name 'plugin|cat /etc/passwd' "plugin" >/dev/null 2>&1
+  local result4=$?
+
+  # All should have failed
+  [[ $result1 -ne 0 && $result2 -ne 0 && $result3 -ne 0 && $result4 -ne 0 ]]
+}
+
+# Test: Validate name rejects special characters
+test_validate_name_rejects_special_chars() {
+  _zsh_tool_validate_name "plugin&echo" "plugin" >/dev/null 2>&1
+  local result1=$?
+
+  _zsh_tool_validate_name "plugin>file" "plugin" >/dev/null 2>&1
+  local result2=$?
+
+  _zsh_tool_validate_name "plugin<file" "plugin" >/dev/null 2>&1
+  local result3=$?
+
+  # All should have failed
+  [[ $result1 -ne 0 && $result2 -ne 0 && $result3 -ne 0 ]]
+}
+
+# Test: Safe YAML parser skips malicious plugin names
+test_yaml_parser_skips_malicious_plugins() {
+  # Create config with malicious plugin names (use single quotes to prevent expansion)
+  cat > "${ZSH_TOOL_CONFIG_DIR}/config.yaml" <<'ENDCONFIG'
+plugins:
+  - git
+  - ../etc/passwd
+  - plugin&echo
+  - zsh-autosuggestions
+  - bad>file
+
+theme: robbyrussell
+ENDCONFIG
+
+  # Parse plugins - should only return safe ones
+  local plugins=()
+  while IFS= read -r plugin; do
+    [[ -n "$plugin" ]] && plugins+=("$plugin")
+  done < <(_zsh_tool_parse_yaml_list "${ZSH_TOOL_CONFIG_DIR}/config.yaml" "plugins" 2>/dev/null)
+
+  # Restore config for other tests
+  setup_test_env
+
+  # Should only have git and zsh-autosuggestions (the 2 valid ones)
+  [[ ${#plugins[@]} -eq 2 ]] && \
+  [[ "${plugins[1]}" == "git" ]] && \
+  [[ "${plugins[2]}" == "zsh-autosuggestions" ]]
+}
+
+# Test: Safe theme parser rejects path traversal in theme
+test_theme_parser_rejects_path_traversal() {
+  # Create config with malicious theme
+  cat > "${ZSH_TOOL_CONFIG_DIR}/config.yaml" <<EOF
+plugins:
+  - git
+
+theme: ../../../etc/passwd
+EOF
+
+  local theme
+  theme=$(_zsh_tool_parse_theme "${ZSH_TOOL_CONFIG_DIR}/config.yaml" 2>/dev/null)
+  local result=$?
+
+  # Restore config
+  setup_test_env
+
+  # Should have failed or returned empty
+  [[ $result -ne 0 || -z "$theme" ]]
+}
+
+# Test: Safe theme parser rejects command injection in theme
+test_theme_parser_rejects_command_injection() {
+  # Create config with malicious theme
+  cat > "${ZSH_TOOL_CONFIG_DIR}/config.yaml" <<EOF
+plugins:
+  - git
+
+theme: "robbyrussell;rm -rf /"
+EOF
+
+  local theme
+  theme=$(_zsh_tool_parse_theme "${ZSH_TOOL_CONFIG_DIR}/config.yaml" 2>/dev/null)
+  local result=$?
+
+  # Restore config
+  setup_test_env
+
+  # Should have failed or returned empty
+  [[ $result -ne 0 || -z "$theme" ]]
+}
+
+# Test: Theme check fails with path traversal attempt
+test_theme_check_rejects_path_traversal() {
+  # Create config with path traversal theme
+  cat > "${ZSH_TOOL_CONFIG_DIR}/config.yaml" <<EOF
+plugins:
+  - git
+
+theme: "../../../etc/passwd"
+EOF
+
+  export ZSH_THEME="../../../etc/passwd"
+
+  _zsh_tool_check_theme_applied >/dev/null 2>&1
+  local result=$?
+
+  unset ZSH_THEME
+  # Restore config
+  setup_test_env
+
+  # Check should have failed
+  [[ $result -ne 0 ]]
+}
+
+# Test: Plugin check handles malicious config gracefully
+test_plugin_check_handles_malicious_config() {
+  local orig_zsh="$ZSH"
+  export ZSH="${PROJECT_ROOT}/.oh-my-zsh-test-security"
+  mkdir -p "$ZSH/plugins/git"
+
+  # Create config with mix of valid and malicious plugins (use quoted heredoc)
+  cat > "${ZSH_TOOL_CONFIG_DIR}/config.yaml" <<'ENDCONFIG'
+plugins:
+  - git
+  - ../malicious
+  - plugin&echo
+
+theme: robbyrussell
+ENDCONFIG
+
+  # Should not crash and should skip malicious plugins
+  _zsh_tool_check_plugins_loaded >/dev/null 2>&1
+  local result=$?
+
+  rm -rf "$ZSH"
+  [[ -n "$orig_zsh" ]] && export ZSH="$orig_zsh" || unset ZSH
+  # Restore config
+  setup_test_env
+
+  # Should succeed (git plugin exists, malicious ones skipped)
+  return $result
+}
+
+# ============================================
 # RUN TESTS
 # ============================================
 
@@ -717,6 +901,19 @@ echo "${BLUE}Public Command Tests:${NC}"
 run_test "zsh-tool-verify command exists" test_public_command_exists
 run_test "zsh-tool-verify runs without errors" test_public_command_runs
 run_test "zsh-tool-verify returns 1 on verification failure" test_public_command_fails_on_error
+
+echo ""
+echo "${BLUE}Security Validation Tests:${NC}"
+run_test "Validate name rejects empty names" test_validate_name_rejects_empty
+run_test "Validate name accepts valid alphanumeric names" test_validate_name_accepts_valid
+run_test "Validate name rejects path traversal" test_validate_name_rejects_path_traversal
+run_test "Validate name rejects command injection" test_validate_name_rejects_command_injection
+run_test "Validate name rejects special characters" test_validate_name_rejects_special_chars
+run_test "YAML parser skips malicious plugins" test_yaml_parser_skips_malicious_plugins
+run_test "Theme parser rejects path traversal" test_theme_parser_rejects_path_traversal
+run_test "Theme parser rejects command injection" test_theme_parser_rejects_command_injection
+run_test "Theme check rejects path traversal" test_theme_check_rejects_path_traversal
+run_test "Plugin check handles malicious config" test_plugin_check_handles_malicious_config
 
 # Cleanup
 echo ""

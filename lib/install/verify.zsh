@@ -4,6 +4,104 @@
 # Purpose: Verify installation and display summary
 
 # ============================================================================
+# SECURITY VALIDATION FUNCTIONS
+# ============================================================================
+
+# Validate a name (plugin, theme) against safe characters
+# Only allows alphanumeric, hyphens, and underscores
+# Returns: 0 if valid, 1 if invalid
+# Note: Warnings sent to stderr to avoid polluting function output
+_zsh_tool_validate_name() {
+  local name="$1"
+  local type="${2:-item}"
+
+  # Check for empty name
+  if [[ -z "$name" ]]; then
+    echo "[WARN] Empty ${type} name detected" >&2
+    return 1
+  fi
+
+  # CRITICAL: Validate name - only allow safe characters (alphanumeric, hyphens, underscores)
+  if [[ ! "$name" =~ ^[a-zA-Z0-9_-]+$ ]]; then
+    echo "[WARN] Invalid ${type} name detected (unsafe characters): $name" >&2
+    return 1
+  fi
+
+  # CRITICAL: Check for path traversal attempts
+  if [[ "$name" == *".."* || "$name" == *"/"* || "$name" == *"\\"* ]]; then
+    echo "[ERROR] Path traversal attempt detected in ${type} name: $name" >&2
+    return 1
+  fi
+
+  return 0
+}
+
+# Safely parse YAML list items from config file
+# Only returns items with valid names (alphanumeric, hyphens, underscores)
+# Arguments: config_file section_name
+# Returns: Prints valid items, one per line
+_zsh_tool_parse_yaml_list() {
+  local config_file="$1"
+  local section="$2"
+  local items=()
+
+  if [[ ! -f "$config_file" ]]; then
+    _zsh_tool_log ERROR "Config file not found: $config_file"
+    return 1
+  fi
+
+  while IFS= read -r line; do
+    # Skip empty lines and comments
+    [[ -z "$line" || "$line" =~ ^[[:space:]]*# ]] && continue
+
+    # Extract item name - remove leading "- " and any trailing whitespace
+    local item="${line##*- }"
+    item="${item%%[[:space:]]*}"  # Remove trailing whitespace
+    item="${item//[[:space:]]/}"  # Remove any remaining whitespace
+
+    # Skip empty items
+    [[ -z "$item" ]] && continue
+
+    # CRITICAL: Validate item name - only allow safe characters
+    if ! _zsh_tool_validate_name "$item" "plugin/theme"; then
+      echo "[WARN] Skipping invalid item name in config: $item" >&2
+      continue
+    fi
+
+    items+=("$item")
+  done < <(grep "^  - " "$config_file" 2>/dev/null | sed 's/^  - //' | grep -v "^#")
+
+  # Output valid items
+  printf '%s\n' "${items[@]}"
+}
+
+# Safely parse theme from config file
+# Returns: Prints validated theme name or empty string
+_zsh_tool_parse_theme() {
+  local config_file="$1"
+
+  if [[ ! -f "$config_file" ]]; then
+    _zsh_tool_log ERROR "Config file not found: $config_file"
+    return 1
+  fi
+
+  local theme=$(grep "^theme:" "$config_file" | sed 's/^theme: *//' | tr -d '"' | tr -d "'" | tr -d '[:space:]')
+
+  # If no theme configured, return empty (valid case)
+  if [[ -z "$theme" ]]; then
+    return 0
+  fi
+
+  # CRITICAL: Validate theme name
+  if ! _zsh_tool_validate_name "$theme" "theme"; then
+    _zsh_tool_log ERROR "Invalid theme name in config: $theme"
+    return 1
+  fi
+
+  echo "$theme"
+}
+
+# ============================================================================
 # VERIFICATION FUNCTIONS
 # ============================================================================
 
@@ -46,7 +144,11 @@ _zsh_tool_check_plugins_loaded() {
     return 1
   fi
 
-  local plugins=($(grep "^  - " "$config_file" | sed 's/^  - //' | grep -v "^#"))
+  # SECURITY FIX: Use safe YAML parser with validation
+  local plugins=()
+  while IFS= read -r plugin; do
+    [[ -n "$plugin" ]] && plugins+=("$plugin")
+  done < <(_zsh_tool_parse_yaml_list "$config_file" "plugins")
 
   if [[ ${#plugins[@]} -eq 0 ]]; then
     _zsh_tool_log DEBUG "No plugins configured"
@@ -58,6 +160,7 @@ _zsh_tool_check_plugins_loaded() {
   for plugin in "${plugins[@]}"; do
     _zsh_tool_log DEBUG "Checking plugin: $plugin"
 
+    # SECURITY: Plugin name already validated by _zsh_tool_parse_yaml_list
     # Plugin-specific checks
     case "$plugin" in
       zsh-syntax-highlighting)
@@ -103,11 +206,32 @@ _zsh_tool_check_theme_applied() {
     return 1
   fi
 
-  local configured_theme=$(grep "^theme:" "$config_file" | sed 's/^theme: *//' | tr -d '"' | tr -d "'")
+  # SECURITY FIX: Use safe theme parser with validation
+  local configured_theme
+  configured_theme=$(_zsh_tool_parse_theme "$config_file")
+  local parse_result=$?
+
+  # Check if parsing failed (invalid theme name detected)
+  if [[ $parse_result -ne 0 ]]; then
+    _zsh_tool_log ERROR "Failed to parse theme from config (possible security issue)"
+    return 1
+  fi
 
   if [[ -z "$configured_theme" ]]; then
     _zsh_tool_log DEBUG "No theme configured"
     return 0
+  fi
+
+  # SECURITY FIX: Additional validation - theme name already validated by _zsh_tool_parse_theme
+  # but double-check for path traversal before file operations
+  if [[ ! "$configured_theme" =~ ^[a-zA-Z0-9_-]+$ ]]; then
+    _zsh_tool_log ERROR "Invalid theme name detected: $configured_theme"
+    return 1
+  fi
+
+  if [[ "$configured_theme" == *".."* || "$configured_theme" == *"/"* ]]; then
+    _zsh_tool_log ERROR "Path traversal attempt detected in theme name"
+    return 1
   fi
 
   # Check $ZSH_THEME matches config
@@ -116,7 +240,7 @@ _zsh_tool_check_theme_applied() {
     return 1
   fi
 
-  # Check theme file exists
+  # Check theme file exists (now safe after validation)
   if [[ ! -f "$ZSH/themes/${configured_theme}.zsh-theme" ]] && \
      [[ ! -f "$ZSH_CUSTOM/themes/${configured_theme}.zsh-theme" ]]; then
     _zsh_tool_log ERROR "Theme file not found: $configured_theme"
@@ -167,8 +291,12 @@ _zsh_tool_display_summary() {
   # Read config
   local config_file="${ZSH_TOOL_CONFIG_DIR}/config.yaml"
   if [[ -f "$config_file" ]]; then
-    # Plugins
-    local plugins=($(grep "^  - " "$config_file" | sed 's/^  - //' | grep -v "^#"))
+    # SECURITY FIX: Use safe YAML parser with validation for plugins
+    local plugins=()
+    while IFS= read -r plugin; do
+      [[ -n "$plugin" ]] && plugins+=("$plugin")
+    done < <(_zsh_tool_parse_yaml_list "$config_file" "plugins")
+
     if [[ ${#plugins[@]} -gt 0 ]]; then
       echo "  Plugins:"
       for plugin in "${plugins[@]}"; do
@@ -176,8 +304,9 @@ _zsh_tool_display_summary() {
       done
     fi
 
-    # Theme
-    local theme=$(grep "^theme:" "$config_file" | sed 's/^theme: *//' | tr -d '"' | tr -d "'")
+    # SECURITY FIX: Use safe theme parser with validation
+    local theme
+    theme=$(_zsh_tool_parse_theme "$config_file")
     if [[ -n "$theme" ]]; then
       echo "  ✓ Theme: $theme"
     fi

@@ -219,8 +219,8 @@ _zsh_tool_update_components_parallel() {
   # Collect results
   for component in ${component_names[@]}; do
     if [[ -f "${temp_dir}/${component}.status" ]]; then
-      local status=$(cat "${temp_dir}/${component}.status")
-      if [[ "$status" == "success" ]]; then
+      local component_status=$(cat "${temp_dir}/${component}.status")
+      if [[ "$component_status" == "success" ]]; then
         ((updated_count++))
       else
         ((failed_count++))

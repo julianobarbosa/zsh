@@ -101,9 +101,47 @@ _zsh_tool_save_state() {
   echo "$content" > "$temp_file" && mv "$temp_file" "$ZSH_TOOL_STATE_FILE"
 }
 
-# Update state field
+# Update state field with file locking to prevent TOCTOU race conditions
 # Usage: _zsh_tool_update_state <key> <value>
 _zsh_tool_update_state() {
+  local key="$1"
+  local value="$2"
+  local state_file="$ZSH_TOOL_STATE_FILE"
+  local lock_dir="${state_file}.lock"
+
+  # Use mkdir-based atomic locking (works on all platforms including macOS)
+  # mkdir is atomic on POSIX systems, making it safe for locking
+  local max_attempts=10
+  local attempt=0
+  while ! mkdir "$lock_dir" 2>/dev/null; do
+    attempt=$((attempt + 1))
+    if [[ $attempt -ge $max_attempts ]]; then
+      _zsh_tool_log ERROR "Failed to acquire state lock after $max_attempts attempts"
+      return 1
+    fi
+    sleep 0.1
+  done
+
+  # Ensure lock is released on exit (normal or error)
+  # Use a cleanup function to handle all cases
+  _zsh_tool_release_state_lock() {
+    rmdir "$lock_dir" 2>/dev/null
+  }
+  trap '_zsh_tool_release_state_lock' EXIT INT TERM HUP
+
+  _zsh_tool_update_state_internal "$key" "$value"
+  local result=$?
+
+  # Release lock and reset trap
+  _zsh_tool_release_state_lock
+  trap - EXIT INT TERM HUP
+
+  return $result
+}
+
+# Internal function to perform the actual state update (called within lock)
+# Usage: _zsh_tool_update_state_internal <key> <value>
+_zsh_tool_update_state_internal() {
   local key="$1"
   local value="$2"
   local state=$(_zsh_tool_load_state)

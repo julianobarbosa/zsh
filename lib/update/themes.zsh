@@ -9,6 +9,22 @@ source "${ZSH_TOOL_LIB_DIR}/core/component-manager.zsh"
 
 OMZ_CUSTOM_THEMES="${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}/themes"
 
+# Get theme version (wrapper for component-manager's generic function)
+# Usage: _zsh_tool_get_theme_version <theme_name>
+_zsh_tool_get_theme_version() {
+  local theme="$1"
+  local theme_dir="${OMZ_CUSTOM_THEMES}/${theme}"
+  _zsh_tool_get_component_version "$theme_dir"
+}
+
+# Check single theme for updates (wrapper for component-manager's generic function)
+# Usage: _zsh_tool_check_theme_updates <theme_name>
+_zsh_tool_check_theme_updates() {
+  local theme="$1"
+  local theme_dir="${OMZ_CUSTOM_THEMES}/${theme}"
+  _zsh_tool_check_component_updates "$theme_dir"
+}
+
 # Update single theme (thin wrapper around component-manager)
 _zsh_tool_update_theme() {
   local theme=$1

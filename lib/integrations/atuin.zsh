@@ -59,6 +59,11 @@ _atuin_install() {
   echo "     cargo install atuin"
   echo ""
   echo "  3. Installation script:"
+  echo ""
+  echo "     ⚠️  SECURITY NOTE: This option downloads and executes a remote script."
+  echo "     Review the script first: curl -sSf https://setup.atuin.sh | less"
+  echo "     Only proceed if you trust the source."
+  echo ""
   echo "     bash <(curl --proto '=https' --tlsv1.2 -sSf https://setup.atuin.sh)"
   echo ""
   echo "  4. Package managers:"
@@ -236,14 +241,32 @@ _atuin_update_state() {
 EOF
 )
 
-  # Update state - simplified approach for nested JSON
-  # In production, this would use jq, but keeping dependencies minimal
-  if echo "$state" | grep -q '"integrations"'; then
-    # integrations section exists, update it
-    local updated=$(echo "$state" | sed 's/"integrations":[^}]*}/"integrations":{"atuin":'"${atuin_state//\//\\/}"'}/')
+  # Update state - use jq if available for safe JSON manipulation,
+  # otherwise fall back to sed with comprehensive escaping
+  if command -v jq &>/dev/null; then
+    # Use jq for safe JSON manipulation (preferred)
+    local updated=$(echo "$state" | jq --argjson val "$atuin_state" '.integrations.atuin = $val')
   else
-    # Add integrations section
-    local updated=$(echo "$state" | sed 's/}$/,"integrations":{"atuin":'"${atuin_state//\//\\/}"'}}/')
+    # Fallback: Escape ALL sed special characters in the replacement string
+    # Characters to escape: \ & / [ ] . * ^ $
+    local escaped_state="$atuin_state"
+    escaped_state="${escaped_state//\\/\\\\}"  # Escape backslashes first
+    escaped_state="${escaped_state//&/\\&}"     # Escape ampersand
+    escaped_state="${escaped_state//\//\\/}"    # Escape forward slashes
+    escaped_state="${escaped_state//\[/\\[}"    # Escape open bracket
+    escaped_state="${escaped_state//\]/\\]}"    # Escape close bracket
+    escaped_state="${escaped_state//./\\.}"     # Escape dots
+    escaped_state="${escaped_state//\*/\\*}"    # Escape asterisks
+    escaped_state="${escaped_state//^/\\^}"     # Escape caret
+    escaped_state="${escaped_state//\$/\\$}"    # Escape dollar sign
+
+    if echo "$state" | grep -q '"integrations"'; then
+      # integrations section exists, update it
+      local updated=$(echo "$state" | sed 's/"integrations":[^}]*}/"integrations":{"atuin":'"${escaped_state}"'}/')
+    else
+      # Add integrations section
+      local updated=$(echo "$state" | sed 's/}$/,"integrations":{"atuin":'"${escaped_state}"'}}/')
+    fi
   fi
 
   _zsh_tool_save_state "$updated"

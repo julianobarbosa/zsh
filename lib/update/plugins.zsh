@@ -9,6 +9,22 @@ source "${ZSH_TOOL_LIB_DIR}/core/component-manager.zsh"
 
 OMZ_CUSTOM_PLUGINS="${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}/plugins"
 
+# Get plugin version (wrapper for component-manager's generic function)
+# Usage: _zsh_tool_get_plugin_version <plugin_name>
+_zsh_tool_get_plugin_version() {
+  local plugin="$1"
+  local plugin_dir="${OMZ_CUSTOM_PLUGINS}/${plugin}"
+  _zsh_tool_get_component_version "$plugin_dir"
+}
+
+# Check single plugin for updates (wrapper for component-manager's generic function)
+# Usage: _zsh_tool_check_plugin_updates <plugin_name>
+_zsh_tool_check_plugin_updates() {
+  local plugin="$1"
+  local plugin_dir="${OMZ_CUSTOM_PLUGINS}/${plugin}"
+  _zsh_tool_check_component_updates "$plugin_dir"
+}
+
 # Update single plugin (thin wrapper around component-manager)
 _zsh_tool_update_plugin() {
   local plugin=$1

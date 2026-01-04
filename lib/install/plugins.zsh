@@ -2,6 +2,11 @@
 # Story 1.4: Plugin Management System
 # Install and manage Oh My Zsh plugins
 
+# Source shared component manager
+# Calculate lib directory if not set
+: ${ZSH_TOOL_LIB_DIR:="${0:A:h:h}"}
+source "${ZSH_TOOL_LIB_DIR}/core/component-manager.zsh"
+
 OMZ_CUSTOM_PLUGINS="${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}/plugins"
 
 # Plugin URL registry (for custom plugins)
@@ -24,30 +29,20 @@ _zsh_tool_is_custom_plugin_installed() {
   [[ -d "${OMZ_CUSTOM_PLUGINS}/${plugin}" ]]
 }
 
-# Install single custom plugin
+# Install single custom plugin (thin wrapper around component-manager)
 _zsh_tool_install_custom_plugin() {
   local plugin=$1
   local url="${PLUGIN_URLS[$plugin]}"
+  local target_dir="${OMZ_CUSTOM_PLUGINS}/${plugin}"
 
   if [[ -z "$url" ]]; then
     _zsh_tool_log WARN "No URL configured for plugin: $plugin"
     return 1
   fi
 
-  _zsh_tool_log INFO "Installing plugin: $plugin"
-
   mkdir -p "$OMZ_CUSTOM_PLUGINS"
 
-  git clone --depth=1 "$url" "${OMZ_CUSTOM_PLUGINS}/${plugin}" 2>&1 | tee -a "$ZSH_TOOL_LOG_FILE" >/dev/null
-  local exit_code=${pipestatus[1]}  # zsh uses lowercase pipestatus
-
-  if [[ $exit_code -eq 0 ]]; then
-    _zsh_tool_log INFO "✓ Plugin installed: $plugin"
-    return 0
-  else
-    _zsh_tool_log ERROR "Failed to install plugin: $plugin"
-    return 1
-  fi
+  _zsh_tool_install_git_component "plugin" "$plugin" "$url" "$target_dir"
 }
 
 # Install all plugins from configuration
@@ -101,68 +96,6 @@ _zsh_tool_install_plugins() {
   # Update .zshrc plugins array (AC5)
   _zsh_tool_update_zshrc_plugins
 
-  return 0
-}
-
-# Update single plugin
-_zsh_tool_update_plugin() {
-  local plugin=$1
-
-  if ! _zsh_tool_is_custom_plugin_installed "$plugin"; then
-    _zsh_tool_log WARN "Plugin not installed: $plugin"
-    return 1
-  fi
-
-  _zsh_tool_log INFO "Updating plugin: $plugin"
-
-  # Use subshell for safe directory change
-  (
-    cd "${OMZ_CUSTOM_PLUGINS}/${plugin}" || exit 1
-    git pull 2>&1 | tee -a "$ZSH_TOOL_LOG_FILE" >/dev/null
-  )
-  local exit_code=$?
-
-  if [[ $exit_code -eq 0 ]]; then
-    _zsh_tool_log INFO "✓ Plugin updated: $plugin"
-    return 0
-  else
-    _zsh_tool_log ERROR "Failed to update plugin: $plugin"
-    return 1
-  fi
-}
-
-# Update all custom plugins
-_zsh_tool_update_all_plugins() {
-  _zsh_tool_log INFO "Updating all plugins..."
-
-  local updated_count=0
-  local failed_count=0
-  local skipped_count=0
-
-  # Get list of installed custom plugins
-  if [[ ! -d "$OMZ_CUSTOM_PLUGINS" ]]; then
-    _zsh_tool_log INFO "No custom plugins directory found"
-    return 0
-  fi
-
-  for plugin_dir in "${OMZ_CUSTOM_PLUGINS}"/*(/N); do
-    local plugin="${plugin_dir:t}"
-
-    # Skip if not a git repo
-    if [[ ! -d "${plugin_dir}/.git" ]]; then
-      _zsh_tool_log DEBUG "Skipping non-git plugin: $plugin"
-      ((skipped_count++))
-      continue
-    fi
-
-    if _zsh_tool_update_plugin "$plugin"; then
-      ((updated_count++))
-    else
-      ((failed_count++))
-    fi
-  done
-
-  _zsh_tool_log INFO "✓ Plugins: $updated_count updated, $skipped_count skipped, $failed_count failed"
   return 0
 }
 
@@ -418,6 +351,7 @@ zsh-tool-plugin() {
       _zsh_tool_plugin_remove "$plugin"
       ;;
     update)
+      # Delegate to update module
       if [[ -z "$plugin" ]] || [[ "$plugin" == "all" ]]; then
         _zsh_tool_update_all_plugins
       else

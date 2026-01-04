@@ -1,6 +1,6 @@
 # Story 1.1: Prerequisite Detection and Installation
 
-Status: done
+Status: in-progress
 
 ---
 
@@ -71,6 +71,21 @@ Status: done
 - [ ] [AI-Review][LOW] Add validation that utils.zsh functions exist before use [lib/install/prerequisites.zsh:7,19,21] - Deferred: dependency validated at runtime
 - [ ] [AI-Review][LOW] Align state update fallback structure with jq merge approach [lib/install/prerequisites.zsh:202] - Deferred: current fallback works correctly
 - [ ] [AI-Review][LOW] Add performance tests to validate < 10 second target [tests/test-prerequisites.zsh] - Deferred: manual testing shows compliance
+
+### Review Follow-ups (AI) - 2026-01-04 - ADVERSARIAL REVIEW
+
+- [ ] [AI-Review][HIGH] AC2 violation - "automatically" contradicts user prompt requirement [lib/install/prerequisites.zsh:21]
+- [ ] [AI-Review][HIGH] Remove Amazon Q reference from prerequisites story scope [lib/install/prerequisites.zsh:124,128]
+- [ ] [AI-Review][HIGH] Add rollback mechanism to Homebrew install (parity with git) [lib/install/prerequisites.zsh:18-44]
+- [ ] [AI-Review][MEDIUM] Update AC1/AC3 to document abstraction pattern or revert to literal implementation [story file:17,19]
+- [ ] [AI-Review][MEDIUM] Fix state fallback structural mismatch with jq version [lib/install/prerequisites.zsh:202]
+- [ ] [AI-Review][MEDIUM] Refactor tests to use proper mocking instead of environment-dependent skips [tests/test-prerequisites.zsh:73-93]
+- [ ] [AI-Review][MEDIUM] Update ACs to include jq or move to separate story [story file AC section]
+- [ ] [AI-Review][MEDIUM] Align logging case (INFO vs info) with Dev Notes standard [lib/install/prerequisites.zsh:9,12,19,31,51,70,88,114]
+- [ ] [AI-Review][MEDIUM] Add shellcheck validation to test suite or remove from requirements [tests/test-prerequisites.zsh]
+- [ ] [AI-Review][LOW] Add state.json schema validation test [tests/test-prerequisites.zsh]
+- [ ] [AI-Review][LOW] Add performance test for < 10 second target [tests/test-prerequisites.zsh]
+- [ ] [AI-Review][LOW] Create tracking mechanism for 6 deferred MEDIUM issues from previous review [story file:66-73]
 
 ---
 

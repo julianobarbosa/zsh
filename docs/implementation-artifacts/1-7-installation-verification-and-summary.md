@@ -1,6 +1,6 @@
 # Story 1.7: Installation Verification and Summary
 
-Status: done
+Status: in-progress
 
 ---
 
@@ -85,6 +85,15 @@ Status: done
   - [x] 8.2 End-to-end: Verification detects missing Oh My Zsh
   - [x] 8.3 End-to-end: Verification detects missing plugins
   - [x] 8.4 End-to-end: Summary displays all information correctly
+
+### Review Follow-ups (AI) - 2026-01-04 - ADVERSARIAL REVIEW (YOLO MODE)
+
+- [ ] [AI-Review][HIGH] Verification in subshell - environment differs from actual user shell [lib/install/verify.zsh]
+- [ ] [AI-Review][HIGH] No rollback mechanism if verification fails post-install [lib/install/verify.zsh]
+- [ ] [AI-Review][MEDIUM] Colored output breaks in non-TTY environments (CI/automation) [lib/install/verify.zsh:colored output]
+- [ ] [AI-Review][MEDIUM] Duration calculation relies on state timestamps - inaccurate if state corrupted [lib/install/verify.zsh:duration]
+- [ ] [AI-Review][MEDIUM] Plugin verification only checks functions exist - doesn't validate functionality [lib/install/verify.zsh:check_plugins]
+- [ ] [AI-Review][LOW] No test for verification in non-interactive shell [tests/test-verify.zsh]
 
 ---
 

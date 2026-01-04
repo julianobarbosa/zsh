@@ -1,6 +1,6 @@
 # Story 1.6: Personal Customization Layer
 
-Status: done
+Status: in-progress
 
 ---
 
@@ -91,6 +91,14 @@ Status: done
 - [x] [AI-Review][MEDIUM] #7: Optimize grep chain in template filtering [lib/install/config.zsh:371]
 - [x] [AI-Review][MEDIUM] #8: Make template line filtering dynamic instead of hardcoded [lib/install/config.zsh:371]
 - [x] [AI-Review][MEDIUM] #9: Validate $EDITOR before execution [lib/install/config.zsh:559-564]
+
+### Review Follow-ups (AI) - 2026-01-04 - ADVERSARIAL REVIEW (YOLO MODE)
+
+- [ ] [AI-Review][HIGH] Migration logic has no rollback - partial .zshrc.local on failure [lib/install/config.zsh:migration]
+- [ ] [AI-Review][HIGH] No validation that source line doesn't already exist before adding [lib/install/config.zsh:template]
+- [ ] [AI-Review][MEDIUM] Complex marker-based extraction - brittle if markers malformed [lib/install/config.zsh:371]
+- [ ] [AI-Review][MEDIUM] Permission preservation failures logged but not handled [lib/install/config.zsh:288,408,456]
+- [ ] [AI-Review][LOW] No test for duplicate source lines in .zshrc [tests/test-config.zsh]
 
 ---
 

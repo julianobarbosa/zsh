@@ -2,6 +2,11 @@
 # Story 1.5: Theme Installation and Selection
 # Install and apply Oh My Zsh themes
 
+# Source shared component manager
+# Calculate lib directory if not set
+: ${ZSH_TOOL_LIB_DIR:="${0:A:h:h}"}
+source "${ZSH_TOOL_LIB_DIR}/core/component-manager.zsh"
+
 OMZ_CUSTOM_THEMES="${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}/themes"
 
 # Theme URL registry (for custom themes)
@@ -26,38 +31,20 @@ _zsh_tool_is_custom_theme_installed() {
   [[ -d "${OMZ_CUSTOM_THEMES}/${theme}" ]]
 }
 
-# Install custom theme
+# Install custom theme (thin wrapper around component-manager)
 _zsh_tool_install_custom_theme() {
   local theme=$1
   local url="${THEME_URLS[$theme]}"
+  local target_dir="${OMZ_CUSTOM_THEMES}/${theme}"
 
   if [[ -z "$url" ]]; then
     _zsh_tool_log WARN "No URL configured for theme: $theme"
     return 1
   fi
 
-  _zsh_tool_log INFO "Installing theme: $theme"
-
   mkdir -p "$OMZ_CUSTOM_THEMES"
 
-  # Use progress spinner for git clone (AC10 - progress indicators)
-  local exit_code
-  if typeset -f _zsh_tool_with_spinner >/dev/null 2>&1; then
-    _zsh_tool_with_spinner "Cloning $theme" "git clone --depth=1 '$url' '${OMZ_CUSTOM_THEMES}/${theme}' >> '$ZSH_TOOL_LOG_FILE' 2>&1"
-    exit_code=$?
-  else
-    # Fallback if spinner not available
-    git clone --depth=1 "$url" "${OMZ_CUSTOM_THEMES}/${theme}" 2>&1 | tee -a "$ZSH_TOOL_LOG_FILE" >/dev/null
-    exit_code=${pipestatus[1]}  # zsh uses lowercase pipestatus
-  fi
-
-  if [[ $exit_code -eq 0 ]]; then
-    _zsh_tool_log INFO "✓ Theme installed: $theme"
-    return 0
-  else
-    _zsh_tool_log ERROR "Failed to install theme: $theme"
-    return 1
-  fi
+  _zsh_tool_install_git_component "theme" "$theme" "$url" "$target_dir"
 }
 
 # Apply theme (already handled in config.zsh via template)

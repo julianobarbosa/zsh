@@ -1,6 +1,6 @@
 # Story 1.3: Install Team-Standard Configuration
 
-Status: done
+Status: in-progress
 
 ---
 
@@ -83,6 +83,17 @@ Status: done
 - [ ] [AI-Review][MEDIUM] Validate managed section markers exist before replacement [lib/install/config.zsh] - DEFERRED: Template always contains markers, validation would only catch tool bugs not user errors
 - [ ] [AI-Review][LOW] Add performance tests to validate < 2s installation target [tests/test-config.zsh] - DEFERRED: Performance targets met in manual testing, automated performance tests add maintenance burden
 - [ ] [AI-Review][LOW] Document or remove 50-line limit in YAML section extraction [lib/install/config.zsh:120] - DEFERRED: Limit is implementation detail that works for current config structure, documenting would expose internals
+
+### Review Follow-ups (AI) - 2026-01-04 - ADVERSARIAL REVIEW (YOLO MODE)
+
+- [ ] [AI-Review][HIGH] Multiple redundant config file reads - cache results to avoid I/O waste [lib/install/config.zsh:23,42,50,73,98]
+- [ ] [AI-Review][HIGH] No validation on cat failure in _zsh_tool_load_config [lib/install/config.zsh:18]
+- [ ] [AI-Review][HIGH] Regex match array accessed without existence check - silent failures [lib/install/config.zsh:34,63,66,87,90]
+- [ ] [AI-Review][MEDIUM] YAML parsing breaks with special chars in values (quotes, newlines) [lib/install/config.zsh:all parse functions]
+- [ ] [AI-Review][MEDIUM] No input validation on config.yaml structure before parsing [lib/install/config.zsh:10-18]
+- [ ] [AI-Review][MEDIUM] Section detection regex too brittle - fails on indentation changes [lib/install/config.zsh:27,55,79]
+- [ ] [AI-Review][MEDIUM] Template placeholder replacement vulnerable to injection [lib/install/config.zsh:generate_zshrc]
+- [ ] [AI-Review][LOW] Config loading happens in subshell - inefficient for large files [lib/install/config.zsh:all parse functions]
 
 ---
 

@@ -1,6 +1,6 @@
 # Story 3.1: Atuin Shell History Integration
 
-Status: review
+Status: in-progress
 
 ---
 
@@ -77,6 +77,16 @@ Status: review
 - [ ] [AI-Review][HIGH] Test reporting bug - says "11 run, 18 passed" impossible [tests/test-atuin.zsh]
 - [ ] [AI-Review][MEDIUM] Fix test counter logic to match actual test count [tests/test-atuin.zsh]
 - [ ] [AI-Review][LOW] Git status shows new files - commit or document untracked files [story file, tests]
+
+### Review Follow-ups (AI) - 2026-01-04 - ADVERSARIAL REVIEW (YOLO MODE)
+
+- [ ] [AI-Review][HIGH] Curl installation downloads and executes remote script without verification [lib/integrations/atuin.zsh:install]
+- [ ] [AI-Review][HIGH] TOML config generation vulnerable to injection if user input used [lib/integrations/atuin.zsh:configure_settings]
+- [ ] [AI-Review][HIGH] Amazon Q compatibility detection fragile - breaks if Q changes keybindings [lib/integrations/atuin.zsh:keybindings]
+- [ ] [AI-Review][MEDIUM] History import has no rollback - partial import corrupts Atuin DB [lib/integrations/atuin.zsh:import]
+- [ ] [AI-Review][MEDIUM] Keybinding restoration could conflict with other tools besides Amazon Q [lib/integrations/atuin.zsh:keybindings]
+- [ ] [AI-Review][MEDIUM] Sync setup prompts user but doesn't validate credentials work [lib/integrations/atuin.zsh:sync]
+- [ ] [AI-Review][LOW] No validation that Atuin actually works after install [lib/integrations/atuin.zsh:health_check]
 
 ---
 

@@ -84,6 +84,7 @@ source "${ZSH_TOOL_LIB_DIR}/install/verify.zsh"
 source "${ZSH_TOOL_LIB_DIR}/update/self.zsh"
 source "${ZSH_TOOL_LIB_DIR}/update/omz.zsh"
 source "${ZSH_TOOL_LIB_DIR}/update/plugins.zsh"
+source "${ZSH_TOOL_LIB_DIR}/update/themes.zsh"
 
 # Load restore modules (Epic 2)
 source "${ZSH_TOOL_LIB_DIR}/restore/backup-mgmt.zsh"
@@ -200,10 +201,101 @@ zsh-tool-install() {
 
 # Epic 2 Commands
 
-# Update command
+# Update command (Story 2.2: Bulk Plugin and Theme Updates)
 zsh-tool-update() {
-  local target="${1:-all}"
+  local target="all"
+  local check_only=false
 
+  # Parse arguments
+  while [[ $# -gt 0 ]]; do
+    case $1 in
+      --check)
+        check_only=true
+        shift
+        ;;
+      self|omz|plugins|themes|all)
+        target=$1
+        shift
+        ;;
+      *)
+        echo "Unknown option: $1"
+        echo "Usage: zsh-tool-update [--check] [self|omz|plugins|themes|all]"
+        return 1
+        ;;
+    esac
+  done
+
+  # Check-only mode
+  if [[ "$check_only" == "true" ]]; then
+    _zsh_tool_log INFO "Checking for updates (no changes will be applied)..."
+    echo ""
+
+    local updates_found=false
+
+    case "$target" in
+      self)
+        if _zsh_tool_check_for_updates >/dev/null 2>&1; then
+          _zsh_tool_log INFO "✓ zsh-tool has updates available"
+          updates_found=true
+        else
+          _zsh_tool_log INFO "✓ zsh-tool is up to date"
+        fi
+        ;;
+      omz)
+        if _zsh_tool_check_omz_updates; then
+          _zsh_tool_log INFO "✓ Oh My Zsh has updates available"
+          updates_found=true
+        else
+          _zsh_tool_log INFO "✓ Oh My Zsh is up to date"
+        fi
+        ;;
+      plugins)
+        if _zsh_tool_check_all_plugins; then
+          updates_found=true
+        fi
+        ;;
+      themes)
+        if _zsh_tool_check_all_themes; then
+          updates_found=true
+        fi
+        ;;
+      all)
+        # Check all components
+        local self_updates=false
+        local omz_updates=false
+        local plugin_updates=false
+        local theme_updates=false
+
+        _zsh_tool_check_for_updates >/dev/null 2>&1 && self_updates=true
+        _zsh_tool_check_omz_updates && omz_updates=true
+        _zsh_tool_check_all_plugins && plugin_updates=true
+        _zsh_tool_check_all_themes && theme_updates=true
+
+        echo ""
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo "Update Check Summary:"
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        [[ "$self_updates" == "true" ]] && echo "  • zsh-tool: Updates available" || echo "  • zsh-tool: Up to date"
+        [[ "$omz_updates" == "true" ]] && echo "  • Oh My Zsh: Updates available" || echo "  • Oh My Zsh: Up to date"
+        [[ "$plugin_updates" == "true" ]] && echo "  • Plugins: Updates available" || echo "  • Plugins: Up to date"
+        [[ "$theme_updates" == "true" ]] && echo "  • Themes: Updates available" || echo "  • Themes: Up to date"
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo ""
+
+        if [[ "$self_updates" == "true" || "$omz_updates" == "true" || "$plugin_updates" == "true" || "$theme_updates" == "true" ]]; then
+          echo "Run 'zsh-tool-update all' to apply updates"
+          updates_found=true
+        else
+          echo "Everything is up to date!"
+        fi
+        ;;
+    esac
+
+    echo ""
+    [[ "$updates_found" == "true" ]] && return 0 || return 1
+  fi
+
+  # Apply updates mode
   case "$target" in
     self)
       _zsh_tool_self_update
@@ -216,6 +308,10 @@ zsh-tool-update() {
       _zsh_tool_create_backup "pre-update" || return 1
       _zsh_tool_update_all_plugins
       ;;
+    themes)
+      _zsh_tool_create_backup "pre-update" || return 1
+      _zsh_tool_update_all_themes
+      ;;
     all)
       _zsh_tool_log INFO "Updating all components..."
       echo ""
@@ -223,7 +319,7 @@ zsh-tool-update() {
       # Update self
       _zsh_tool_self_update --check && _zsh_tool_apply_update
 
-      # Create backup before updating OMZ and plugins
+      # Create backup before updating OMZ, plugins, and themes
       _zsh_tool_create_backup "pre-update" || return 1
 
       # Update OMZ
@@ -231,6 +327,9 @@ zsh-tool-update() {
 
       # Update plugins
       _zsh_tool_update_all_plugins
+
+      # Update themes
+      _zsh_tool_update_all_themes
 
       echo ""
       echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
@@ -241,7 +340,7 @@ zsh-tool-update() {
       echo ""
       ;;
     *)
-      echo "Usage: zsh-tool-update [self|omz|plugins|all]"
+      echo "Usage: zsh-tool-update [--check] [self|omz|plugins|themes|all]"
       return 1
       ;;
   esac
@@ -409,10 +508,12 @@ Epic 1 - Installation & Configuration:
   zsh-tool-config [list|edit]   Manage configuration
 
 Epic 2 - Maintenance & Lifecycle:
-  zsh-tool-update [target]      Update components
+  zsh-tool-update [--check] [target]  Update components
+    --check                     Check for updates without applying
     self                        Update zsh-tool itself
     omz                         Update Oh My Zsh
     plugins                     Update all plugins
+    themes                      Update all themes
     all                         Update everything (default)
 
   zsh-tool-backup [action]      Manage backups

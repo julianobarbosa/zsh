@@ -1,6 +1,6 @@
 # Story 2.1: Self-Update Mechanism
 
-Status: review
+Status: in-progress
 
 ---
 
@@ -70,6 +70,17 @@ Status: review
 - [ ] [AI-Review][MEDIUM] tee to /dev/null captures wrong pipestatus - review index or use different pattern [lib/update/self.zsh:94-95]
 - [ ] [AI-Review][MEDIUM] No error handling if cd fails - could execute git in wrong directory [lib/update/self.zsh:23,91]
 - [ ] [AI-Review][LOW] Git status shows file modified - commit changes or document why [lib/update/self.zsh]
+
+### Review Follow-ups (AI) - 2026-01-04 - ADVERSARIAL REVIEW (YOLO MODE)
+
+- [ ] [AI-Review][CRITICAL] AC4 violation - No backup before self-update despite acceptance criteria [lib/update/self.zsh]
+- [ ] [AI-Review][CRITICAL] AC7 violation - No rollback mechanism on update failure [lib/update/self.zsh]
+- [ ] [AI-Review][HIGH] Semver regex doesn't validate properly - allows "999.999.999" and edge cases [lib/update/self.zsh:46]
+- [ ] [AI-Review][HIGH] String comparison fallback is dangerous for version comparison [lib/update/self.zsh:48]
+- [ ] [AI-Review][HIGH] No network error handling when fetching remote version [lib/update/self.zsh]
+- [ ] [AI-Review][MEDIUM] Multiple cd calls inefficient - use subshells consistently [lib/update/self.zsh:23,25,68]
+- [ ] [AI-Review][MEDIUM] No validation that update actually succeeded before reporting success [lib/update/self.zsh]
+- [ ] [AI-Review][LOW] Version comparison doesn't handle pre-release tags (1.0.0-rc1) [lib/update/self.zsh:41-80]
 
 ---
 

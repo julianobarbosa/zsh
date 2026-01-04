@@ -1,6 +1,6 @@
 # Story 1.2: Backup Existing Configuration
 
-Status: done
+Status: in-progress
 
 ---
 
@@ -76,6 +76,19 @@ Status: done
 - [ ] [AI-Review][LOW] Replace hardcoded tool_version with VERSION file read [lib/install/backup.zsh:85] - Deferred: requires centralized version system
 - [ ] [AI-Review][LOW] Replace ls with find or zsh globs for pruning robustness [lib/install/backup.zsh:94,100] - Deferred: current implementation works reliably
 - [ ] [AI-Review][LOW] Validate backup_dir exists before writing manifest [lib/install/backup.zsh:48] - Deferred: parent function already validates
+
+### Review Follow-ups (AI) - 2026-01-04 - ADVERSARIAL REVIEW (YOLO MODE)
+
+- [ ] [AI-Review][HIGH] No atomic backup - partial backup not cleaned up on mid-operation failure [lib/install/backup.zsh:23-48]
+- [ ] [AI-Review][HIGH] Race condition - chmod 700 happens after mkdir (security window) [lib/install/backup.zsh:18]
+- [ ] [AI-Review][HIGH] No validation that manifest.json write succeeded [lib/install/backup.zsh:57,88-96]
+- [ ] [AI-Review][MEDIUM] Hardcoded tool_version "1.0.0" should read from VERSION file [lib/install/backup.zsh:94]
+- [ ] [AI-Review][MEDIUM] Fragile ls parsing in pruning - breaks with special chars in filenames [lib/install/backup.zsh:103,109]
+- [ ] [AI-Review][MEDIUM] State update uses old _zsh_tool_update_state pattern instead of jq-based approach [lib/install/backup.zsh:60]
+- [ ] [AI-Review][MEDIUM] Files list in manifest not sorted - non-deterministic output [lib/install/backup.zsh:80-86]
+- [ ] [AI-Review][LOW] omz_version detection failure has no log message (silent unknown) [lib/install/backup.zsh:53]
+- [ ] [AI-Review][LOW] cd in subshell could fail silently with bad permissions [lib/install/backup.zsh:53]
+- [ ] [AI-Review][LOW] No explicit validation that backup_dir exists before manifest write [lib/install/backup.zsh:72]
 
 ---
 

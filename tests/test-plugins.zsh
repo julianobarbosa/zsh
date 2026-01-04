@@ -70,6 +70,7 @@ setup_test_env() {
   source "${PROJECT_ROOT}/lib/core/utils.zsh"
   source "${PROJECT_ROOT}/lib/install/config.zsh"
   source "${PROJECT_ROOT}/lib/install/plugins.zsh"
+  source "${PROJECT_ROOT}/lib/update/plugins.zsh"
 
   # Override config directory AFTER sourcing (utils.zsh sets defaults)
   ZSH_TOOL_CONFIG_DIR="${TEST_TMP_DIR}/config"
@@ -347,6 +348,7 @@ test_update_noninstalled_fails() {
 # Test: Update all with no plugins succeeds
 test_update_all_empty_succeeds() {
   # Clear custom plugins (suppress glob warning if empty)
+  setopt local_options null_glob
   rm -rf "${OMZ_CUSTOM_PLUGINS}"/* 2>/dev/null || true
 
   _zsh_tool_update_all_plugins >/dev/null 2>&1

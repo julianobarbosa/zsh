@@ -1,6 +1,6 @@
 # Story 1.4: Plugin Management System
 
-Status: done
+Status: in-progress
 
 ---
 
@@ -90,6 +90,14 @@ Status: done
 - [x] [AI-Review][HIGH] Update File List to reflect current git state [story file] - Updated with accurate dates
 - [x] [AI-Review][MEDIUM] Two review rounds suggests rework - verify all fixes applied correctly [lib/install/plugins.zsh] - All Round 2 fixes validated and working
 - [ ] [AI-Review][LOW] Complete Round 1 item: grep exact match pattern [lib/install/plugins.zsh:196,248] - DEFERRED: Current grep -qw provides word boundary matching which is sufficient for plugin names, changing to exact match would require escaping special chars without added security benefit
+
+### Review Follow-ups (AI) - 2026-01-04 - ADVERSARIAL REVIEW (YOLO MODE)
+
+- [ ] [AI-Review][HIGH] Three review rounds indicates code quality concerns - comprehensive refactor needed [lib/install/plugins.zsh]
+- [ ] [AI-Review][MEDIUM] Code duplication with themes.zsh - extract common URL registry pattern [lib/install/plugins.zsh + themes.zsh]
+- [ ] [AI-Review][MEDIUM] Plugin remove doesn't verify plugin not in use before deletion [lib/install/plugins.zsh:remove]
+- [ ] [AI-Review][MEDIUM] No transaction support - partial state on failure (plugin added to config but not installed) [lib/install/plugins.zsh]
+- [ ] [AI-Review][LOW] grep -qw deferred but still fragile with special plugin names [lib/install/plugins.zsh:196,248]
 
 ---
 

@@ -1,6 +1,6 @@
 # Story 1.5: Theme Installation and Selection
 
-Status: done
+Status: in-progress
 
 ---
 
@@ -89,6 +89,14 @@ Status: done
 - [x] [AI-Review][MEDIUM] Add error handling for stat permission preservation failure [themes.zsh:188-192]
 - [ ] [AI-Review][LOW] Consider dynamic built-in theme list from OMZ themes dir [themes.zsh:105] - DEFERRED: Static list covers common themes, dynamic detection would add complexity and potential errors without clear benefit
 - [ ] [AI-Review][LOW] Add more custom themes to THEME_URLS registry [themes.zsh:10-12] - DEFERRED: Registry extensible when team needs additional themes, premature to add unused themes
+
+### Review Follow-ups (AI) - 2026-01-04 - ADVERSARIAL REVIEW (YOLO MODE)
+
+- [ ] [AI-Review][HIGH] Code duplication with plugins.zsh - 90% identical logic [lib/install/themes.zsh]
+- [ ] [AI-Review][MEDIUM] Static built-in theme list will become stale as OMZ updates [lib/install/themes.zsh:105]
+- [ ] [AI-Review][MEDIUM] Theme set doesn't validate theme works before applying [lib/install/themes.zsh:set]
+- [ ] [AI-Review][MEDIUM] Only 2-3 themes in registry - insufficient for team choice [lib/install/themes.zsh:10-12]
+- [ ] [AI-Review][LOW] No test for theme conflicts (multiple themes with same name) [tests/test-themes.zsh]
 
 ---
 

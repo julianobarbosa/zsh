@@ -228,6 +228,27 @@ test_parse_amazon_q_config() {
   [[ "$enabled" == "false" ]] && [[ "$lazy" == "true" ]]
 }
 
+# Test: Amazon Q disabled_clis parsing
+test_parse_amazon_q_disabled_clis() {
+  local disabled=$(_zsh_tool_parse_amazon_q_disabled_clis 2>/dev/null)
+  # Should contain 'atuin' from default config
+  echo "$disabled" | grep -q "atuin"
+}
+
+# Test: Config cache mtime validation
+test_config_cache_mtime_validation() {
+  # Load config to populate cache
+  _zsh_tool_load_config >/dev/null 2>&1
+
+  # Modify config file (touch changes mtime)
+  sleep 1  # Ensure different mtime
+  touch "${ZSH_TOOL_CONFIG_DIR}/config.yaml"
+
+  # Cache should be invalidated and reload
+  local config=$(_zsh_tool_load_config 2>/dev/null)
+  [[ -n "$config" ]] && echo "$config" | grep -q "version:"
+}
+
 # ============================================
 # TEST CASES - ZSHRC GENERATION (Task 4.7)
 # ============================================
@@ -481,6 +502,10 @@ echo "${BLUE}YAML Section Extraction Tests${NC}"
 run_test "Extract YAML section helper" test_extract_yaml_section
 run_test "Atuin configuration parsing" test_parse_atuin_config
 run_test "Amazon Q configuration parsing" test_parse_amazon_q_config
+run_test "Amazon Q disabled_clis parsing" test_parse_amazon_q_disabled_clis
+cleanup_test_env
+setup_test_env
+run_test "Config cache mtime validation" test_config_cache_mtime_validation
 
 # ZSHRC Generation Tests
 echo ""

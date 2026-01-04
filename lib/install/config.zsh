@@ -9,6 +9,7 @@ ZSH_TOOL_MANAGED_END="# ===== ZSH-TOOL MANAGED SECTION END ====="
 # Config cache (reduces I/O for multiple parse calls)
 typeset -g _ZSH_TOOL_CONFIG_CACHE=""
 typeset -g _ZSH_TOOL_CONFIG_CACHE_FILE=""
+typeset -g _ZSH_TOOL_CONFIG_CACHE_MTIME=""
 
 # Load configuration from YAML (simple parser with caching)
 _zsh_tool_load_config() {
@@ -20,8 +21,12 @@ _zsh_tool_load_config() {
     return 1
   fi
 
-  # Return cached config if same file
-  if [[ -n "$_ZSH_TOOL_CONFIG_CACHE" && "$_ZSH_TOOL_CONFIG_CACHE_FILE" == "$config_file" ]]; then
+  # Check file modification time for cache validation
+  local current_mtime
+  current_mtime=$(stat -f "%m" "$config_file" 2>/dev/null || stat -c "%Y" "$config_file" 2>/dev/null || echo "0")
+
+  # Return cached config if same file AND same modification time
+  if [[ -n "$_ZSH_TOOL_CONFIG_CACHE" && "$_ZSH_TOOL_CONFIG_CACHE_FILE" == "$config_file" && "$_ZSH_TOOL_CONFIG_CACHE_MTIME" == "$current_mtime" ]]; then
     echo "$_ZSH_TOOL_CONFIG_CACHE"
     return 0
   fi
@@ -39,9 +44,10 @@ _zsh_tool_load_config() {
     return 1
   fi
 
-  # Cache for subsequent calls
+  # Cache for subsequent calls (includes mtime for invalidation)
   _ZSH_TOOL_CONFIG_CACHE="$config_content"
   _ZSH_TOOL_CONFIG_CACHE_FILE="$config_file"
+  _ZSH_TOOL_CONFIG_CACHE_MTIME="$current_mtime"
 
   echo "$config_content"
   return 0
@@ -51,6 +57,7 @@ _zsh_tool_load_config() {
 _zsh_tool_clear_config_cache() {
   _ZSH_TOOL_CONFIG_CACHE=""
   _ZSH_TOOL_CONFIG_CACHE_FILE=""
+  _ZSH_TOOL_CONFIG_CACHE_MTIME=""
 }
 
 # Parse plugins from config
@@ -142,6 +149,7 @@ _zsh_tool_parse_exports() {
 }
 
 # Parse PATH modifications from config
+# Handles nested structure: paths.prepend: [list of paths]
 _zsh_tool_parse_paths() {
   local config=$(_zsh_tool_load_config) || return 1
   local in_paths=false
@@ -150,19 +158,20 @@ _zsh_tool_parse_paths() {
     if [[ "$line" =~ ^paths: ]]; then
       in_paths=true
       continue
-    elif [[ "$line" =~ ^[a-z]+: ]] && [[ "$in_paths" == true ]]; then
+    # Only break on non-indented top-level keys (not prepend/append which are nested)
+    elif [[ "$line" =~ ^[a-z]+: ]] && [[ ! "$line" =~ ^[[:space:]] ]] && [[ "$in_paths" == true ]]; then
       break
     fi
 
     if [[ "$in_paths" == true && "$line" =~ -\ \"(.+)\" ]]; then
       # Safely access match array
       if [[ -n "${match[1]:-}" ]]; then
-        local path="${match[1]}"
+        local pathval="${match[1]}"
         # Expand only safe shell variables ($HOME, $USER) - no arbitrary eval
-        path="${path//\$HOME/$HOME}"
-        path="${path//\$USER/$USER}"
-        path="${path//\~/$HOME}"
-        echo "export PATH=\"${path}:\$PATH\""
+        pathval="${pathval//\$HOME/$HOME}"
+        pathval="${pathval//\$USER/$USER}"
+        pathval="${pathval//\~/$HOME}"
+        echo "export PATH=\"${pathval}:\$PATH\""
       fi
     fi
   done <<< "$config"
@@ -214,7 +223,7 @@ _zsh_tool_parse_amazon_q_atuin_compatibility() {
 }
 
 _zsh_tool_parse_amazon_q_disabled_clis() {
-  local config=$(_zsh_tool_load_config)
+  local config=$(_zsh_tool_load_config) || return 1
   local in_disabled_clis=false
 
   while IFS= read -r line; do
@@ -226,7 +235,8 @@ _zsh_tool_parse_amazon_q_disabled_clis() {
     fi
 
     if [[ "$in_disabled_clis" == true && "$line" =~ -\ ([a-z]+) ]]; then
-      echo "${match[1]} "
+      # Safely access match array
+      [[ -n "${match[1]:-}" ]] && echo "${match[1]} "
     fi
   done <<< "$config"
 }
@@ -322,6 +332,9 @@ _zsh_tool_generate_zshrc() {
 _zsh_tool_install_config() {
   _zsh_tool_log info "Installing team configuration..."
 
+  # Clear config cache to ensure fresh data is used
+  _zsh_tool_clear_config_cache
+
   # Generate new .zshrc content
   local new_content=$(_zsh_tool_generate_zshrc)
   if [[ -z "$new_content" ]]; then
@@ -379,7 +392,7 @@ _zsh_tool_validate_path() {
 
   # Check for path traversal attempts
   if [[ "$path" == *".."* ]] || [[ "$path" == *"~"* ]]; then
-    _zsh_tool_log ERROR "Invalid path detected: $path"
+    _zsh_tool_log error "Invalid path detected: $path"
     return 1
   fi
 
@@ -388,12 +401,12 @@ _zsh_tool_validate_path() {
     local real_path=$(readlink -f "$path" 2>/dev/null || realpath "$path" 2>/dev/null || echo "$path")
     # Check if resolved path contains traversal patterns
     if [[ "$real_path" == *".."* ]]; then
-      _zsh_tool_log ERROR "Symlink resolves to invalid path: $real_path"
+      _zsh_tool_log error "Symlink resolves to invalid path: $real_path"
       return 1
     fi
     # Validate resolved path is under HOME
     if [[ "$real_path" == /* ]] && [[ "$real_path" != "${HOME}"* ]]; then
-      _zsh_tool_log ERROR "Symlink points outside HOME directory: $real_path"
+      _zsh_tool_log error "Symlink points outside HOME directory: $real_path"
       return 1
     fi
   fi
@@ -472,7 +485,7 @@ _zsh_tool_preserve_user_config() {
   fi
 
   if ! mv "$temp_local" "$zshrc_local"; then
-    _zsh_tool_log ERROR "Failed to create .zshrc.local during preservation"
+    _zsh_tool_log error "Failed to create .zshrc.local during preservation"
     rm -f "$temp_local"
     return 1
   fi
@@ -520,7 +533,7 @@ EOF
   # Atomic write
   chmod 644 "$temp_local"
   if ! mv "$temp_local" "$zshrc_local"; then
-    _zsh_tool_log ERROR "Failed to create .zshrc.local template"
+    _zsh_tool_log error "Failed to create .zshrc.local template"
     rm -f "$temp_local"
     return 1
   fi
@@ -627,7 +640,7 @@ _zsh_tool_config_edit() {
 
   # Validate editor exists and is executable
   if ! command -v "$editor" >/dev/null 2>&1; then
-    _zsh_tool_log ERROR "Editor not found: $editor"
+    _zsh_tool_log error "Editor not found: $editor"
     echo "Error: Editor '$editor' not found or not executable"
     echo "Set EDITOR environment variable to a valid editor (e.g., vi, vim, nano)"
     return 1

@@ -262,7 +262,7 @@ test_state_last_backup_format() {
 # TEST CASES - PRUNING (Task 3.5)
 # ============================================
 
-# Test: Pruning logic (create 12 backups, verify only 10 remain)
+# Test: Pruning logic (create 5 backups, verify only 3 remain AND they are the NEWEST)
 test_pruning_keeps_10() {
   # Set retention to 3 for faster testing
   local orig_retention=$ZSH_TOOL_BACKUP_RETENTION
@@ -271,10 +271,12 @@ test_pruning_keeps_10() {
   create_mock_zshrc
 
   # Manually create backup directories with different timestamps
+  # Create them with increasing mtime by sleeping between each
   for i in {1..5}; do
     local ts="2026-01-0${i}-12000${i}"
     mkdir -p "${ZSH_TOOL_BACKUP_DIR}/${ts}"
     echo '{"timestamp":"test"}' > "${ZSH_TOOL_BACKUP_DIR}/${ts}/manifest.json"
+    sleep 0.5  # Ensure different modification times
   done
 
   # Run prune function
@@ -282,10 +284,20 @@ test_pruning_keeps_10() {
 
   local backup_count=$(ls -1d "${ZSH_TOOL_BACKUP_DIR}"/*/ 2>/dev/null | wc -l | tr -d ' ')
 
+  # Verify count AND that the NEWEST remain (03, 04, 05) and oldest deleted (01, 02)
+  local has_newest=0
+  local has_oldest=0
+  [[ -d "${ZSH_TOOL_BACKUP_DIR}/2026-01-05-120005" ]] && ((has_newest++))
+  [[ -d "${ZSH_TOOL_BACKUP_DIR}/2026-01-04-120004" ]] && ((has_newest++))
+  [[ -d "${ZSH_TOOL_BACKUP_DIR}/2026-01-03-120003" ]] && ((has_newest++))
+  [[ -d "${ZSH_TOOL_BACKUP_DIR}/2026-01-02-120002" ]] && ((has_oldest++))
+  [[ -d "${ZSH_TOOL_BACKUP_DIR}/2026-01-01-120001" ]] && ((has_oldest++))
+
   # Restore retention
   ZSH_TOOL_BACKUP_RETENTION=$orig_retention
 
-  [[ $backup_count -eq 3 ]]
+  # Must have exactly 3 backups AND they must be the 3 newest
+  [[ $backup_count -eq 3 ]] && [[ $has_newest -eq 3 ]] && [[ $has_oldest -eq 0 ]]
 }
 
 # Test: Pruning respects configurable retention
@@ -311,6 +323,40 @@ test_pruning_configurable_retention() {
   ZSH_TOOL_BACKUP_RETENTION=10
 
   [[ $backup_count -eq 2 ]]
+}
+
+# Test: Manifest handles special characters in filenames (JSON escaping)
+test_manifest_json_escaping() {
+  create_mock_zshrc
+
+  # Create a backup
+  _zsh_tool_create_backup "test" >/dev/null 2>&1
+
+  # Get latest backup directory
+  local latest_backup=$(ls -1dt "${ZSH_TOOL_BACKUP_DIR}"/*/ 2>/dev/null | head -1)
+
+  # Add files with special characters that could break JSON
+  touch "${latest_backup}/file\"with\"quotes.txt" 2>/dev/null
+  touch "${latest_backup}/file\\with\\backslash.txt" 2>/dev/null
+
+  # Regenerate manifest
+  _zsh_tool_generate_manifest "$latest_backup" "test" "none" >/dev/null 2>&1
+
+  # Validate JSON is still valid (use simple grep test since jq may not be available)
+  local manifest="${latest_backup}/manifest.json"
+
+  # Check manifest exists and has proper structure
+  [[ -f "$manifest" ]] && \
+  grep -q '"files"' "$manifest" && \
+  # If jq is available, validate JSON
+  if command -v jq >/dev/null 2>&1; then
+    jq . "$manifest" >/dev/null 2>&1
+  else
+    # Fallback: check for balanced braces
+    local open_braces=$(grep -o '{' "$manifest" | wc -l)
+    local close_braces=$(grep -o '}' "$manifest" | wc -l)
+    [[ $open_braces -eq $close_braces ]]
+  fi
 }
 
 # ============================================
@@ -489,15 +535,17 @@ run_test "State last_backup format matches backup dir" test_state_last_backup_fo
 echo ""
 
 # Pruning tests
-echo "${YELLOW}[5/7] Testing Backup Pruning...${NC}"
+echo "${YELLOW}[5/8] Testing Backup Pruning...${NC}"
 cleanup_test_env; setup_test_env
-run_test "Pruning keeps configured number of backups" test_pruning_keeps_10
+run_test "Pruning keeps newest backups (deletes oldest)" test_pruning_keeps_10
 cleanup_test_env; setup_test_env
 run_test "Pruning respects configurable retention" test_pruning_configurable_retention
+cleanup_test_env; setup_test_env
+run_test "Manifest handles special characters (JSON escaping)" test_manifest_json_escaping
 echo ""
 
 # Idempotency tests
-echo "${YELLOW}[6/7] Testing Idempotency...${NC}"
+echo "${YELLOW}[6/8] Testing Idempotency...${NC}"
 cleanup_test_env; setup_test_env
 run_test "Running backup twice succeeds" test_idempotency_backup_twice
 cleanup_test_env; setup_test_env
@@ -505,7 +553,7 @@ run_test "Multiple backups create separate directories" test_idempotency_separat
 echo ""
 
 # Error handling and helper tests
-echo "${YELLOW}[7/7] Testing Error Handling & Helpers...${NC}"
+echo "${YELLOW}[7/8] Testing Error Handling & Helpers...${NC}"
 cleanup_test_env; setup_test_env
 run_test "Backup logs operations appropriately" test_logging_on_backup
 cleanup_test_env; setup_test_env

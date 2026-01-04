@@ -24,8 +24,9 @@ _zsh_tool_init_logging() {
 
 # Log message
 # Usage: _zsh_tool_log <level> <message>
+# Levels: info, warn, error, debug (case-insensitive)
 _zsh_tool_log() {
-  local level=$1
+  local level="${1:u}"  # Convert to uppercase for consistent matching
   shift
   local message="$*"
   local timestamp=$(date '+%Y-%m-%d %H:%M:%S')
@@ -90,12 +91,14 @@ _zsh_tool_load_state() {
   fi
 }
 
-# Save state file
+# Save state file atomically
 # Usage: _zsh_tool_save_state <json_content>
 _zsh_tool_save_state() {
   local content="$1"
   mkdir -p "$(dirname "$ZSH_TOOL_STATE_FILE")" 2>/dev/null
-  echo "$content" > "$ZSH_TOOL_STATE_FILE"
+  # Atomic write: write to temp file then rename (prevents race conditions)
+  local temp_file="${ZSH_TOOL_STATE_FILE}.tmp.$$"
+  echo "$content" > "$temp_file" && mv "$temp_file" "$ZSH_TOOL_STATE_FILE"
 }
 
 # Update state field

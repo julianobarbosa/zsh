@@ -112,9 +112,14 @@ _zsh_tool_generate_manifest() {
   fi
 
   # Read tool version from VERSION file or fallback
+  # PROJECT_ROOT may not be set, so try script's parent directory
   local tool_version="1.0.0"
-  if [[ -f "${PROJECT_ROOT}/VERSION" ]]; then
+  local script_dir="${0:A:h}"
+  local version_file="${script_dir}/../../VERSION"
+  if [[ -n "${PROJECT_ROOT:-}" && -f "${PROJECT_ROOT}/VERSION" ]]; then
     tool_version=$(cat "${PROJECT_ROOT}/VERSION" 2>/dev/null | tr -d '\n' || echo "1.0.0")
+  elif [[ -f "$version_file" ]]; then
+    tool_version=$(cat "$version_file" 2>/dev/null | tr -d '\n' || echo "1.0.0")
   fi
 
   # Collect and sort files for deterministic output
@@ -130,10 +135,13 @@ _zsh_tool_generate_manifest() {
   # Sort files for deterministic output
   files_array=("${(@o)files_array}")
 
-  # Build JSON files array
+  # Build JSON files array with proper escaping
   local files_list=""
   for fname in "${files_array[@]}"; do
-    files_list="${files_list}\"${fname}\","
+    # Escape backslashes first, then double quotes for valid JSON
+    local escaped_fname="${fname//\\/\\\\}"
+    escaped_fname="${escaped_fname//\"/\\\"}"
+    files_list="${files_list}\"${escaped_fname}\","
   done
   files_list=${files_list%,}  # Remove trailing comma
 
@@ -166,7 +174,9 @@ EOF
 _zsh_tool_prune_old_backups() {
   setopt local_options null_glob
   local -a backup_dirs
-  backup_dirs=("${ZSH_TOOL_BACKUP_DIR}"/*(N/om))  # Get directories, sorted by modification time (oldest first)
+  # Get directories sorted by modification time (Om = oldest first for correct pruning)
+  # om sorts newest first, Om sorts oldest first
+  backup_dirs=("${ZSH_TOOL_BACKUP_DIR}"/*(N/Om))
 
   local backup_count=${#backup_dirs[@]}
 

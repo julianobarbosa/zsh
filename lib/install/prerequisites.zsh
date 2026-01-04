@@ -218,11 +218,11 @@ _zsh_tool_check_prerequisites() {
     # Update individual prerequisite fields using sed
     state=$(echo "$state" | sed 's/"homebrew":[^,}]*/"homebrew":true/')
     state=$(echo "$state" | sed 's/"git":[^,}]*/"git":true/')
-    state=$(echo "$state" | sed 's/"jq":[^,}]*/"jq":'$jq_installed'/')
-    state=$(echo "$state" | sed 's/"xcode_cli":[^,}]*/"xcode_cli":'$xcode_installed'/')
+    state=$(echo "$state" | sed 's/"jq":[^,}]*/"jq":'"${jq_installed}"'/')
+    state=$(echo "$state" | sed 's/"xcode_cli":[^,}]*/"xcode_cli":'"${xcode_installed}"'/')
 
     # If fields don't exist, add them
-    state=$(echo "$state" | sed 's/\("prerequisites":\s*{\)/\1"homebrew":true,"git":true,"jq":'$jq_installed',"xcode_cli":'$xcode_installed',/' | sed 's/,,/,/g' | sed 's/,}/}/g')
+    state=$(echo "$state" | sed 's/\("prerequisites":\s*{\)/\1"homebrew":true,"git":true,"jq":'"${jq_installed}"',"xcode_cli":'"${xcode_installed}"',/' | sed 's/,,/,/g' | sed 's/,}/}/g')
 
     _zsh_tool_save_state "$state"
   fi

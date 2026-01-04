@@ -1,6 +1,6 @@
 # Story 1.2: Backup Existing Configuration
 
-Status: review
+Status: done
 
 ---
 
@@ -89,6 +89,14 @@ Status: review
 - [x] [AI-Review][LOW] omz_version detection failure has no log message (silent unknown) [lib/install/backup.zsh:53] - RESOLVED: Added warn log for access failures
 - [x] [AI-Review][LOW] cd in subshell could fail silently with bad permissions [lib/install/backup.zsh:53] - RESOLVED: Explicit cd check with error logging
 - [x] [AI-Review][LOW] No explicit validation that backup_dir exists before manifest write [lib/install/backup.zsh:72] - RESOLVED: Added directory validation at function start
+
+### Review Follow-ups (AI) - 2026-01-04 - ADVERSARIAL REVIEW R2 (YOLO MODE)
+
+- [x] [AI-Review][CRITICAL] JSON injection via filename - files with quotes break manifest JSON [lib/install/backup.zsh:136] - FIXED: Added proper JSON escaping for backslashes and quotes
+- [x] [AI-Review][CRITICAL] Pruning deletes NEWEST backups instead of oldest - om sorts newest first [lib/install/backup.zsh:169,178-182] - FIXED: Changed to Om (oldest first) for correct pruning
+- [x] [AI-Review][HIGH] PROJECT_ROOT not defined - VERSION file path uses undefined variable [lib/install/backup.zsh:116] - FIXED: Uses script directory fallback when PROJECT_ROOT not set
+- [x] [AI-Review][HIGH] Pruning test doesn't verify WHICH backups remain - only checks count [tests/test-backup.zsh:266-289] - FIXED: Test now verifies newest 3 remain and oldest 2 deleted
+- [x] [AI-Review][MEDIUM] No test for JSON escaping edge cases [tests/test-backup.zsh] - FIXED: Added test_manifest_json_escaping test case
 
 ---
 
@@ -268,14 +276,14 @@ Claude Opus 4.5 (claude-opus-4-5-20251101)
 ### Debug Log References
 
 - Tests run: 2026-01-04
-- All 21 unit tests passing (includes adversarial review fixes)
+- All 22 unit tests passing (includes adversarial review R2 fixes)
 
 ### Completion Notes List
 
 1. **Validation Complete:** Existing `lib/install/backup.zsh` implementation validated against all 9 acceptance criteria - all criteria satisfied
 2. **Bug Fix Applied:** Fixed manifest.json file listing - added `dot_glob` option to include hidden files (`.zshrc`, `.zsh_history`) in the files array
 3. **Bug Fix Applied:** Fixed glob error in empty backup directories - added `null_glob` option to handle empty directories gracefully
-4. **Tests Created:** Comprehensive test suite `tests/test-backup.zsh` with 21 tests covering:
+4. **Tests Created:** Comprehensive test suite `tests/test-backup.zsh` with 22 tests covering:
    - Function existence and naming conventions
    - Backup creation (full, partial, empty scenarios)
    - Manifest JSON structure validation
@@ -283,7 +291,7 @@ Claude Opus 4.5 (claude-opus-4-5-20251101)
    - Backup pruning and retention
    - Idempotency verification
    - Error handling and helper functions
-5. **All Tests Pass:** Both `test-backup.zsh` (21 tests) and `test-prerequisites.zsh` (20 tests) pass with zero failures
+5. **All Tests Pass:** Both `test-backup.zsh` (22 tests) and `test-prerequisites.zsh` (20 tests) pass with zero failures
 6. **Adversarial Review Improvements (2026-01-04 - YOLO MODE):**
    - Implemented atomic backup with cleanup on partial failure
    - Fixed race condition using `mkdir -m 700` for secure permissions
@@ -295,6 +303,12 @@ Claude Opus 4.5 (claude-opus-4-5-20251101)
    - Added logging for OMZ version detection failures
    - Explicit cd validation with error handling
    - Backup directory validation before manifest write
+7. **Adversarial Review R2 Improvements (2026-01-04 - YOLO MODE):**
+   - CRITICAL: Fixed JSON injection vulnerability - proper escaping of quotes/backslashes in filenames
+   - CRITICAL: Fixed pruning logic - was deleting newest instead of oldest (changed Om for oldest-first sort)
+   - HIGH: Fixed VERSION file resolution - uses script directory fallback when PROJECT_ROOT not set
+   - HIGH: Improved pruning test to verify correct backups kept (not just count)
+   - MEDIUM: Added JSON escaping test case for edge cases
 
 ### Change Log
 
@@ -308,6 +322,12 @@ Claude Opus 4.5 (claude-opus-4-5-20251101)
 - 2026-01-03: [Code Review R2] Added -p flag to all cp commands to preserve metadata
 - 2026-01-03: [Code Review R2] Added exit code verification and error handling to all cp operations
 - 2026-01-04: [Adversarial Review - YOLO] Resolved all 10 issues (3 HIGH, 4 MEDIUM, 3 LOW)
+- 2026-01-04: [Adversarial Review R2 - YOLO] Fixed 5 critical issues:
+  - CRITICAL: JSON injection via filename - proper escaping for quotes/backslashes
+  - CRITICAL: Pruning was deleting newest instead of oldest - fixed glob modifier (Om)
+  - HIGH: PROJECT_ROOT undefined - added script directory fallback
+  - HIGH: Improved test to verify correct backups kept after pruning
+  - MEDIUM: Added JSON escaping test case (now 22 tests)
 
 ### File List
 

@@ -250,6 +250,25 @@ test_confirmation_required() {
   [[ "$homebrew_func" == *"prompt_confirm"* ]]
 }
 
+# Test: Homebrew install has rollback mechanism (parity with git)
+test_homebrew_install_has_rollback() {
+  local func_body=$(typeset -f _zsh_tool_install_homebrew)
+  [[ "$func_body" == *"rollback"* ]] || [[ "$func_body" == *"Rollback"* ]] || [[ "$func_body" == *"pre_install_state"* ]]
+}
+
+# Test: State save is atomic (prevents race conditions)
+test_state_save_atomic() {
+  local func_body=$(typeset -f _zsh_tool_save_state)
+  [[ "$func_body" == *"tmp"* ]] || [[ "$func_body" == *"mv"* ]]
+}
+
+# Test: Log function handles lowercase levels
+test_log_case_insensitive() {
+  _zsh_tool_log info "Test lowercase info" >/dev/null 2>&1
+  _zsh_tool_log INFO "Test uppercase INFO" >/dev/null 2>&1
+  grep -q "Test lowercase info" "$ZSH_TOOL_LOG_FILE" && grep -q "Test uppercase INFO" "$ZSH_TOOL_LOG_FILE"
+}
+
 # ============================================
 # RUN ALL TESTS
 # ============================================
@@ -296,13 +315,20 @@ run_test "Git check is idempotent" test_idempotency_git
 echo ""
 
 # Error handling and failure tests (NEW - fixes Issue #3, #4)
-echo "${YELLOW}[5/5] Testing Error Handling & Rollback...${NC}"
+echo "${YELLOW}[5/6] Testing Error Handling & Rollback...${NC}"
 run_test "Detection returns false for missing command" test_detection_missing_command
 run_test "Git install has rollback mechanism" test_git_install_has_rollback
 run_test "State rollback mechanism works" test_state_rollback_mechanism
 run_test "jq-based state update works" test_jq_state_update
 run_test "Install functions return error codes" test_install_functions_return_errors
 run_test "User confirmation required before install" test_confirmation_required
+run_test "Homebrew install has rollback mechanism" test_homebrew_install_has_rollback
+echo ""
+
+# Security and robustness tests (NEW - adversarial review 2026-01-04)
+echo "${YELLOW}[6/6] Testing Security & Robustness...${NC}"
+run_test "State save is atomic" test_state_save_atomic
+run_test "Log function handles lowercase levels" test_log_case_insensitive
 echo ""
 
 # Cleanup

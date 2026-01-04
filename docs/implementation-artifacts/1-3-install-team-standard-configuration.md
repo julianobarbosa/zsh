@@ -1,6 +1,6 @@
 # Story 1.3: Install Team-Standard Configuration
 
-Status: review
+Status: done
 
 ---
 
@@ -94,6 +94,16 @@ Status: review
 - [x] [AI-Review][MEDIUM] Section detection regex too brittle - fails on indentation changes [lib/install/config.zsh:27,55,79] - DEFERRED: Current regex works for team config format; over-engineering for hypothetical cases
 - [x] [AI-Review][MEDIUM] Template placeholder replacement vulnerable to injection [lib/install/config.zsh:generate_zshrc] - RESOLVED: Added sanitization for sed special characters (/, &)
 - [x] [AI-Review][LOW] Config loading happens in subshell - inefficient for large files [lib/install/config.zsh:all parse functions] - RESOLVED: Cache eliminates redundant subshell calls
+
+### Review Follow-ups (AI) - 2026-01-04 - ADVERSARIAL REVIEW R2 (YOLO MODE)
+
+- [x] [AI-Review][HIGH] Unsafe disabled_clis parsing - Missing safe match access [lib/install/config.zsh:229] - RESOLVED: Added ${match[1]:-} safe fallback pattern
+- [x] [AI-Review][HIGH] Config cache invalidation race condition - stale data on file changes [lib/install/config.zsh:23-27] - RESOLVED: Added mtime tracking for cache invalidation
+- [x] [AI-Review][MEDIUM] Missing config cache clearing before install [lib/install/config.zsh:322-373] - RESOLVED: Added _zsh_tool_clear_config_cache() call at start of install
+- [x] [AI-Review][MEDIUM] Test coverage gap - No tests for disabled_clis parsing [tests/test-config.zsh] - RESOLVED: Added test_parse_amazon_q_disabled_clis test
+- [x] [AI-Review][MEDIUM] PATH parsing doesn't handle nested prepend section correctly [lib/install/config.zsh:145-168] - RESOLVED: Fixed regex to skip indented nested keys like prepend/append
+- [x] [AI-Review][LOW] Inconsistent error logging case (ERROR vs error) [lib/install/config.zsh:382-643] - RESOLVED: Standardized to lowercase 'error'
+- [x] [AI-Review][LOW] Missing test for config cache mtime validation [tests/test-config.zsh] - RESOLVED: Added test_config_cache_mtime_validation test
 
 ---
 
@@ -339,7 +349,7 @@ Claude Opus 4.5 (claude-opus-4-5-20251101)
 ### Debug Log References
 
 - Tests run: 2026-01-04
-- All 49 unit tests passing (includes adversarial review fixes)
+- All 51 unit tests passing (includes adversarial review R1 and R2 fixes)
 
 ### Completion Notes List
 
@@ -347,7 +357,7 @@ Claude Opus 4.5 (claude-opus-4-5-20251101)
 2. **Bug Fix Applied:** Fixed `_zsh_tool_parse_plugins()` - awk range pattern `/^plugins:/,/^[a-z]/` ended immediately because `plugins:` itself matched end pattern. Replaced with while-loop pattern matching other parsing functions.
 3. **Tests Created:** Comprehensive test suite `tests/test-config.zsh` with 49 tests covering config parsing, template generation, migration, and customization layer
 4. **All Tests Pass:** `test-config.zsh` (49 tests), `test-backup.zsh` (21 tests), `test-prerequisites.zsh` (20 tests) - 90 total tests passing
-5. **Adversarial Review Improvements (2026-01-04 - YOLO MODE):**
+5. **Adversarial Review R1 Improvements (2026-01-04 - YOLO MODE):**
    - Implemented global config cache (eliminates redundant I/O)
    - Added cat failure validation and error handling
    - Safe regex match array access (${match[1]:-} pattern)
@@ -355,6 +365,13 @@ Claude Opus 4.5 (claude-opus-4-5-20251101)
    - Empty file validation and read error handling
    - Template placeholder sanitization (sed special chars)
    - Cache eliminates inefficient subshell overhead
+6. **Adversarial Review R2 Improvements (2026-01-04 - YOLO MODE):**
+   - Fixed unsafe disabled_clis parsing (safe match array access)
+   - Added mtime tracking to prevent stale cache on config changes
+   - Added cache clearing at start of install for fresh data
+   - Fixed PATH parsing to handle nested prepend/append sections
+   - Standardized error logging case (lowercase 'error')
+   - Added 2 new tests: disabled_clis parsing and cache mtime validation
 
 ### Change Log
 
@@ -364,6 +381,7 @@ Claude Opus 4.5 (claude-opus-4-5-20251101)
 - 2026-01-01: [Code Review] Removed unsafe `eval` in PATH expansion - replaced with explicit variable substitution
 - 2026-01-01: [Code Review] Fixed theme parsing to use section extraction instead of generic grep
 - 2026-01-04: [Adversarial Review - YOLO] Resolved 7 of 8 issues (3 HIGH, 3 MEDIUM, 1 LOW); 1 MEDIUM deferred
+- 2026-01-04: [Adversarial Review R2 - YOLO] Resolved all 7 issues (2 HIGH, 3 MEDIUM, 2 LOW); Story marked DONE
 
 ### File List
 
@@ -372,7 +390,7 @@ Claude Opus 4.5 (claude-opus-4-5-20251101)
 - `lib/core/utils.zsh` - Core utilities dependency (validated)
 
 **Tests:**
-- `tests/test-config.zsh` - 49 comprehensive tests covering config parsing, template generation, migration, and customization layer, all passing (Last modified: 2026-01-03)
+- `tests/test-config.zsh` - 51 comprehensive tests covering config parsing, template generation, migration, customization layer, disabled_clis parsing, and cache mtime validation, all passing (Last modified: 2026-01-04)
 
 **Documentation:**
 - `docs/implementation-artifacts/1-3-install-team-standard-configuration.md` - This story file (Last modified: 2026-01-04)

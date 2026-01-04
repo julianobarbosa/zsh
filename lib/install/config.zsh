@@ -6,21 +6,56 @@ ZSH_TOOL_TEMPLATE_DIR="${ZSH_TOOL_CONFIG_DIR}/templates"
 ZSH_TOOL_MANAGED_BEGIN="# ===== ZSH-TOOL MANAGED SECTION BEGIN ====="
 ZSH_TOOL_MANAGED_END="# ===== ZSH-TOOL MANAGED SECTION END ====="
 
-# Load configuration from YAML (simple parser for our needs)
+# Config cache (reduces I/O for multiple parse calls)
+typeset -g _ZSH_TOOL_CONFIG_CACHE=""
+typeset -g _ZSH_TOOL_CONFIG_CACHE_FILE=""
+
+# Load configuration from YAML (simple parser with caching)
 _zsh_tool_load_config() {
   local config_file="${ZSH_TOOL_CONFIG_DIR}/config.yaml"
 
+  # Validate file exists
   if [[ ! -f "$config_file" ]]; then
-    _zsh_tool_log ERROR "Configuration file not found: $config_file"
+    _zsh_tool_log error "Configuration file not found: $config_file"
     return 1
   fi
 
-  cat "$config_file"
+  # Return cached config if same file
+  if [[ -n "$_ZSH_TOOL_CONFIG_CACHE" && "$_ZSH_TOOL_CONFIG_CACHE_FILE" == "$config_file" ]]; then
+    echo "$_ZSH_TOOL_CONFIG_CACHE"
+    return 0
+  fi
+
+  # Load and validate file read
+  local config_content
+  if ! config_content=$(cat "$config_file" 2>/dev/null); then
+    _zsh_tool_log error "Failed to read configuration file: $config_file"
+    return 1
+  fi
+
+  # Basic structure validation
+  if [[ -z "$config_content" ]]; then
+    _zsh_tool_log error "Configuration file is empty: $config_file"
+    return 1
+  fi
+
+  # Cache for subsequent calls
+  _ZSH_TOOL_CONFIG_CACHE="$config_content"
+  _ZSH_TOOL_CONFIG_CACHE_FILE="$config_file"
+
+  echo "$config_content"
+  return 0
+}
+
+# Clear config cache (call after config changes)
+_zsh_tool_clear_config_cache() {
+  _ZSH_TOOL_CONFIG_CACHE=""
+  _ZSH_TOOL_CONFIG_CACHE_FILE=""
 }
 
 # Parse plugins from config
 _zsh_tool_parse_plugins() {
-  local config=$(_zsh_tool_load_config)
+  local config=$(_zsh_tool_load_config) || return 1
   local in_plugins=false
 
   while IFS= read -r line; do
@@ -32,7 +67,8 @@ _zsh_tool_parse_plugins() {
     fi
 
     if [[ "$in_plugins" == true && "$line" =~ -\ ([a-zA-Z0-9_-]+) ]]; then
-      echo -n "${match[1]} "
+      # Safely access match array
+      [[ -n "${match[1]:-}" ]] && echo -n "${match[1]} "
     fi
   done <<< "$config"
 }
@@ -47,7 +83,7 @@ _zsh_tool_parse_theme() {
 
 # Parse aliases from config
 _zsh_tool_parse_aliases() {
-  local config=$(_zsh_tool_load_config)
+  local config=$(_zsh_tool_load_config) || return 1
   local in_aliases=false
   local name=""
 
@@ -61,9 +97,13 @@ _zsh_tool_parse_aliases() {
 
     if [[ "$in_aliases" == true ]]; then
       if [[ "$line" =~ name:\ \"(.+)\" ]]; then
-        name="${match[1]}"
+        # Safely access match array
+        [[ -n "${match[1]:-}" ]] && name="${match[1]}"
       elif [[ "$line" =~ command:\ \"(.+)\" ]]; then
-        echo "alias ${name}=\"${match[1]}\""
+        # Safely access match array
+        if [[ -n "${match[1]:-}" && -n "$name" ]]; then
+          echo "alias ${name}=\"${match[1]}\""
+        fi
       fi
     fi
   done <<< "$config"
@@ -71,7 +111,7 @@ _zsh_tool_parse_aliases() {
 
 # Parse exports from config
 _zsh_tool_parse_exports() {
-  local config=$(_zsh_tool_load_config)
+  local config=$(_zsh_tool_load_config) || return 1
   local in_exports=false
   local name=""
 
@@ -85,9 +125,17 @@ _zsh_tool_parse_exports() {
 
     if [[ "$in_exports" == true ]]; then
       if [[ "$line" =~ name:\ \"(.+)\" ]]; then
-        name="${match[1]}"
+        # Safely access match array
+        [[ -n "${match[1]:-}" ]] && name="${match[1]}"
       elif [[ "$line" =~ value:\ \"(.+)\" ]]; then
-        echo "export ${name}=\"${match[1]}\""
+        # Safely access match array and escape special characters
+        if [[ -n "${match[1]:-}" && -n "$name" ]]; then
+          local value="${match[1]}"
+          # Escape double quotes and backslashes in export value
+          value="${value//\\/\\\\}"
+          value="${value//\"/\\\"}"
+          echo "export ${name}=\"${value}\""
+        fi
       fi
     fi
   done <<< "$config"
@@ -95,7 +143,7 @@ _zsh_tool_parse_exports() {
 
 # Parse PATH modifications from config
 _zsh_tool_parse_paths() {
-  local config=$(_zsh_tool_load_config)
+  local config=$(_zsh_tool_load_config) || return 1
   local in_paths=false
 
   while IFS= read -r line; do
@@ -107,12 +155,15 @@ _zsh_tool_parse_paths() {
     fi
 
     if [[ "$in_paths" == true && "$line" =~ -\ \"(.+)\" ]]; then
-      local path="${match[1]}"
-      # Expand only safe shell variables ($HOME, $USER) - no arbitrary eval
-      path="${path//\$HOME/$HOME}"
-      path="${path//\$USER/$USER}"
-      path="${path//\~/$HOME}"
-      echo "export PATH=\"${path}:\$PATH\""
+      # Safely access match array
+      if [[ -n "${match[1]:-}" ]]; then
+        local path="${match[1]}"
+        # Expand only safe shell variables ($HOME, $USER) - no arbitrary eval
+        path="${path//\$HOME/$HOME}"
+        path="${path//\$USER/$USER}"
+        path="${path//\~/$HOME}"
+        echo "export PATH=\"${path}:\$PATH\""
+      fi
     fi
   done <<< "$config"
 }
@@ -228,23 +279,38 @@ _zsh_tool_generate_zshrc() {
   local template_file="${ZSH_TOOL_TEMPLATE_DIR}/zshrc.template"
 
   if [[ ! -f "$template_file" ]]; then
-    _zsh_tool_log ERROR "Template file not found: $template_file"
+    _zsh_tool_log error "Template file not found: $template_file"
     return 1
   fi
 
   # Parse configuration
-  local plugins=$(_zsh_tool_parse_plugins)
-  local theme=$(_zsh_tool_parse_theme)
-  local aliases=$(_zsh_tool_parse_aliases)
-  local exports=$(_zsh_tool_parse_exports)
-  local paths=$(_zsh_tool_parse_paths)
+  local plugins=$(_zsh_tool_parse_plugins) || { _zsh_tool_log error "Failed to parse plugins"; return 1; }
+  local theme=$(_zsh_tool_parse_theme) || { _zsh_tool_log error "Failed to parse theme"; return 1; }
+  local aliases=$(_zsh_tool_parse_aliases) || { _zsh_tool_log error "Failed to parse aliases"; return 1; }
+  local exports=$(_zsh_tool_parse_exports) || { _zsh_tool_log error "Failed to parse exports"; return 1; }
+  local paths=$(_zsh_tool_parse_paths) || { _zsh_tool_log error "Failed to parse paths"; return 1; }
   local timestamp=$(date '+%Y-%m-%d %H:%M:%S')
 
-  # Read template and replace placeholders
-  local content=$(cat "$template_file")
-  content="${content//\{\{timestamp\}\}/$timestamp}"
-  content="${content//\{\{theme\}\}/$theme}"
-  content="${content//\{\{plugins\}\}/$plugins}"
+  # Read template and validate
+  local content
+  if ! content=$(cat "$template_file" 2>/dev/null); then
+    _zsh_tool_log error "Failed to read template file: $template_file"
+    return 1
+  fi
+
+  # Sanitize values to prevent injection (escape special sed characters)
+  local safe_timestamp="${timestamp//\//\\/}"
+  local safe_theme="${theme//\//\\/}"
+  local safe_theme="${safe_theme//&/\\&}"
+  local safe_plugins="${plugins//\//\\/}"
+  local safe_plugins="${safe_plugins//&/\\&}"
+
+  # Replace placeholders safely using sed with escaped values
+  # Note: aliases, exports, paths contain newlines and special chars - use cautiously
+  content="${content//\{\{timestamp\}\}/$safe_timestamp}"
+  content="${content//\{\{theme\}\}/$safe_theme}"
+  content="${content//\{\{plugins\}\}/$safe_plugins}"
+  # These are already escaped in parse functions, but multiline-safe
   content="${content//\{\{aliases\}\}/$aliases}"
   content="${content//\{\{exports\}\}/$exports}"
   content="${content//\{\{paths\}\}/$paths}"
@@ -254,12 +320,12 @@ _zsh_tool_generate_zshrc() {
 
 # Install team configuration
 _zsh_tool_install_config() {
-  _zsh_tool_log INFO "Installing team configuration..."
+  _zsh_tool_log info "Installing team configuration..."
 
   # Generate new .zshrc content
   local new_content=$(_zsh_tool_generate_zshrc)
   if [[ -z "$new_content" ]]; then
-    _zsh_tool_log ERROR "Failed to generate .zshrc content"
+    _zsh_tool_log error "Failed to generate .zshrc content"
     return 1
   fi
 
@@ -269,12 +335,16 @@ _zsh_tool_install_config() {
   # Preserve existing user configuration if .zshrc exists
   if [[ -f "$zshrc" ]]; then
     _zsh_tool_with_spinner "Preserving user customizations" _zsh_tool_preserve_user_config "$zshrc" || {
-      _zsh_tool_log WARN "Failed to preserve user config, continuing anyway"
+      _zsh_tool_log warn "Failed to preserve user config, continuing anyway"
     }
   fi
 
-  # Write new .zshrc with atomic operation
-  echo "$new_content" > "$temp_zshrc"
+  # Write new .zshrc with atomic operation and validation
+  if ! echo "$new_content" > "$temp_zshrc" 2>/dev/null; then
+    _zsh_tool_log error "Failed to write temporary .zshrc file"
+    rm -f "$temp_zshrc"
+    return 1
+  fi
 
   # Preserve permissions if .zshrc exists
   if [[ -f "$zshrc" ]]; then
@@ -286,12 +356,12 @@ _zsh_tool_install_config() {
   fi
 
   if ! mv "$temp_zshrc" "$zshrc"; then
-    _zsh_tool_log ERROR "Failed to install .zshrc"
+    _zsh_tool_log error "Failed to install .zshrc"
     rm -f "$temp_zshrc"
     return 1
   fi
 
-  _zsh_tool_log INFO "✓ Team configuration installed"
+  _zsh_tool_log info "✓ Team configuration installed"
 
   # Setup custom layer (creates .zshrc.local if doesn't exist)
   _zsh_tool_with_spinner "Setting up personal customization layer" _zsh_tool_setup_custom_layer

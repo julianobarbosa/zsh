@@ -12,54 +12,85 @@ _zsh_tool_create_backup() {
   local timestamp=$(date +%Y-%m-%d-%H%M%S)
   local backup_dir="${ZSH_TOOL_BACKUP_DIR}/${timestamp}"
 
-  _zsh_tool_log INFO "Creating backup (trigger: ${trigger})..."
+  _zsh_tool_log info "Creating backup (trigger: ${trigger})..."
 
-  # Create backup directory with secure permissions (0700)
-  mkdir -p "$backup_dir" && chmod 700 "$backup_dir" || {
-    _zsh_tool_log ERROR "Failed to create backup directory"
+  # Create backup directory with atomic secure permissions (fixes race condition)
+  if ! mkdir -p -m 700 "$backup_dir"; then
+    _zsh_tool_log error "Failed to create backup directory"
     return 1
-  }
+  fi
+
+  # Atomic backup: cleanup on failure
+  local backup_failed=0
 
   # Backup .zshrc if exists
   if [[ -f "${HOME}/.zshrc" ]]; then
     if ! cp -p "${HOME}/.zshrc" "${backup_dir}/.zshrc"; then
-      _zsh_tool_log ERROR "Failed to backup .zshrc"
-      return 1
+      _zsh_tool_log error "Failed to backup .zshrc"
+      backup_failed=1
+    else
+      _zsh_tool_log debug "Backed up .zshrc"
     fi
-    _zsh_tool_log DEBUG "Backed up .zshrc"
   fi
 
   # Backup .zsh_history if exists
   if [[ -f "${HOME}/.zsh_history" ]]; then
     if ! cp -p "${HOME}/.zsh_history" "${backup_dir}/.zsh_history"; then
-      _zsh_tool_log ERROR "Failed to backup .zsh_history"
-      return 1
+      _zsh_tool_log error "Failed to backup .zsh_history"
+      backup_failed=1
+    else
+      _zsh_tool_log debug "Backed up .zsh_history"
     fi
-    _zsh_tool_log DEBUG "Backed up .zsh_history"
   fi
 
   # Backup Oh My Zsh custom directory if exists
   if [[ -d "${HOME}/.oh-my-zsh/custom" ]]; then
     if ! cp -Rp "${HOME}/.oh-my-zsh/custom" "${backup_dir}/oh-my-zsh-custom"; then
-      _zsh_tool_log ERROR "Failed to backup Oh My Zsh custom directory"
-      return 1
+      _zsh_tool_log error "Failed to backup Oh My Zsh custom directory"
+      backup_failed=1
+    else
+      _zsh_tool_log debug "Backed up Oh My Zsh custom directory"
     fi
-    _zsh_tool_log DEBUG "Backed up Oh My Zsh custom directory"
+  fi
+
+  # Cleanup partial backup on failure
+  if [[ $backup_failed -eq 1 ]]; then
+    _zsh_tool_log warn "Backup partially failed - cleaning up incomplete backup"
+    rm -rf "$backup_dir"
+    return 1
   fi
 
   # Get Oh My Zsh version if installed (using subshell for safety)
   local omz_version="none"
   if [[ -d "${HOME}/.oh-my-zsh" ]]; then
-    omz_version=$(cd "${HOME}/.oh-my-zsh" 2>/dev/null && git describe --tags 2>/dev/null || git rev-parse --short HEAD 2>/dev/null || echo "unknown")
+    if cd "${HOME}/.oh-my-zsh" 2>/dev/null; then
+      omz_version=$(git describe --tags 2>/dev/null || git rev-parse --short HEAD 2>/dev/null || echo "unknown")
+      cd - >/dev/null
+    else
+      _zsh_tool_log warn "Could not access Oh My Zsh directory for version detection"
+      omz_version="unknown"
+    fi
   fi
 
-  # Generate manifest
-  _zsh_tool_generate_manifest "$backup_dir" "$trigger" "$omz_version"
+  # Generate manifest with validation
+  if ! _zsh_tool_generate_manifest "$backup_dir" "$trigger" "$omz_version"; then
+    _zsh_tool_log error "Failed to generate manifest - cleaning up backup"
+    rm -rf "$backup_dir"
+    return 1
+  fi
 
-  # Update state
-  _zsh_tool_update_state "last_backup" "\"${timestamp}\""
+  # Update state using jq-based approach
+  local jq_installed=$(command -v jq >/dev/null 2>&1 && echo "true" || echo "false")
+  if [[ "$jq_installed" == "true" ]]; then
+    local state=$(_zsh_tool_load_state)
+    local updated_state=$(echo "$state" | jq --arg backup "$timestamp" '. + {last_backup: $backup}')
+    _zsh_tool_save_state "$updated_state"
+  else
+    # Fallback for systems without jq
+    _zsh_tool_update_state "last_backup" "\"${timestamp}\""
+  fi
 
-  _zsh_tool_log INFO "✓ Backup created: ${timestamp}"
+  _zsh_tool_log info "✓ Backup created: ${timestamp}"
 
   # Prune old backups
   _zsh_tool_prune_old_backups
@@ -74,41 +105,80 @@ _zsh_tool_generate_manifest() {
   local omz_version="$3"
   local manifest_file="${backup_dir}/manifest.json"
 
-  local files_list=""
-  # Use nullglob and dotglob to handle empty directories and hidden files
+  # Validate backup directory exists
+  if [[ ! -d "$backup_dir" ]]; then
+    _zsh_tool_log error "Backup directory does not exist: $backup_dir"
+    return 1
+  fi
+
+  # Read tool version from VERSION file or fallback
+  local tool_version="1.0.0"
+  if [[ -f "${PROJECT_ROOT}/VERSION" ]]; then
+    tool_version=$(cat "${PROJECT_ROOT}/VERSION" 2>/dev/null | tr -d '\n' || echo "1.0.0")
+  fi
+
+  # Collect and sort files for deterministic output
+  local -a files_array
   setopt local_options null_glob dot_glob
   for file in "$backup_dir"/*; do
     local fname=$(basename "$file")
-    # Skip . and ..
-    [[ "$fname" == "." || "$fname" == ".." ]] && continue
-    [[ -f "$file" || -d "$file" ]] && files_list="${files_list}\"${fname}\","
+    # Skip . and .. and manifest.json itself
+    [[ "$fname" == "." || "$fname" == ".." || "$fname" == "manifest.json" ]] && continue
+    [[ -f "$file" || -d "$file" ]] && files_array+=("$fname")
+  done
+
+  # Sort files for deterministic output
+  files_array=("${(@o)files_array}")
+
+  # Build JSON files array
+  local files_list=""
+  for fname in "${files_array[@]}"; do
+    files_list="${files_list}\"${fname}\","
   done
   files_list=${files_list%,}  # Remove trailing comma
 
-  cat > "$manifest_file" <<EOF
+  # Write manifest and validate success
+  if ! cat > "$manifest_file" <<EOF
 {
   "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
   "trigger": "${trigger}",
   "files": [${files_list}],
   "omz_version": "${omz_version}",
-  "tool_version": "1.0.0"
+  "tool_version": "${tool_version}"
 }
 EOF
+  then
+    _zsh_tool_log error "Failed to write manifest file: $manifest_file"
+    return 1
+  fi
 
-  _zsh_tool_log DEBUG "Generated manifest: $manifest_file"
+  # Validate manifest was written successfully
+  if [[ ! -f "$manifest_file" ]]; then
+    _zsh_tool_log error "Manifest file not found after write: $manifest_file"
+    return 1
+  fi
+
+  _zsh_tool_log debug "Generated manifest: $manifest_file"
+  return 0
 }
 
-# Prune old backups (keep last N)
+# Prune old backups (keep last N) - using zsh globs instead of ls
 _zsh_tool_prune_old_backups() {
-  local backup_count=$(ls -1d "${ZSH_TOOL_BACKUP_DIR}"/*/ 2>/dev/null | wc -l | tr -d ' ')
+  setopt local_options null_glob
+  local -a backup_dirs
+  backup_dirs=("${ZSH_TOOL_BACKUP_DIR}"/*(N/om))  # Get directories, sorted by modification time (oldest first)
+
+  local backup_count=${#backup_dirs[@]}
 
   if [[ $backup_count -gt $ZSH_TOOL_BACKUP_RETENTION ]]; then
     local to_delete=$((backup_count - ZSH_TOOL_BACKUP_RETENTION))
-    _zsh_tool_log INFO "Pruning $to_delete old backup(s)..."
+    _zsh_tool_log info "Pruning $to_delete old backup(s)..."
 
-    ls -1dt "${ZSH_TOOL_BACKUP_DIR}"/*/ | tail -n "$to_delete" | while IFS= read -r dir; do
+    # Delete oldest backups (first N in the sorted array)
+    for ((i=1; i<=to_delete; i++)); do
+      local dir="${backup_dirs[$i]}"
       rm -rf "$dir"
-      _zsh_tool_log DEBUG "Deleted old backup: $(basename "$dir")"
+      _zsh_tool_log debug "Deleted old backup: $(basename "$dir")"
     done
   fi
 }
@@ -121,12 +191,12 @@ _zsh_tool_backup_file() {
 
   if [[ -f "$source" ]]; then
     if ! cp -p "$source" "$dest"; then
-      _zsh_tool_log ERROR "Failed to backup file: $source"
+      _zsh_tool_log error "Failed to backup file: $source"
       return 1
     fi
     return 0
   else
-    _zsh_tool_log WARN "File not found: $source"
+    _zsh_tool_log warn "File not found: $source"
     return 1
   fi
 }
@@ -139,12 +209,12 @@ _zsh_tool_backup_directory() {
 
   if [[ -d "$source" ]]; then
     if ! cp -Rp "$source" "$dest"; then
-      _zsh_tool_log ERROR "Failed to backup directory: $source"
+      _zsh_tool_log error "Failed to backup directory: $source"
       return 1
     fi
     return 0
   else
-    _zsh_tool_log WARN "Directory not found: $source"
+    _zsh_tool_log warn "Directory not found: $source"
     return 1
   fi
 }

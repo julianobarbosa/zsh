@@ -1,6 +1,6 @@
 # Story 1.2: Backup Existing Configuration
 
-Status: in-progress
+Status: review
 
 ---
 
@@ -79,16 +79,16 @@ Status: in-progress
 
 ### Review Follow-ups (AI) - 2026-01-04 - ADVERSARIAL REVIEW (YOLO MODE)
 
-- [ ] [AI-Review][HIGH] No atomic backup - partial backup not cleaned up on mid-operation failure [lib/install/backup.zsh:23-48]
-- [ ] [AI-Review][HIGH] Race condition - chmod 700 happens after mkdir (security window) [lib/install/backup.zsh:18]
-- [ ] [AI-Review][HIGH] No validation that manifest.json write succeeded [lib/install/backup.zsh:57,88-96]
-- [ ] [AI-Review][MEDIUM] Hardcoded tool_version "1.0.0" should read from VERSION file [lib/install/backup.zsh:94]
-- [ ] [AI-Review][MEDIUM] Fragile ls parsing in pruning - breaks with special chars in filenames [lib/install/backup.zsh:103,109]
-- [ ] [AI-Review][MEDIUM] State update uses old _zsh_tool_update_state pattern instead of jq-based approach [lib/install/backup.zsh:60]
-- [ ] [AI-Review][MEDIUM] Files list in manifest not sorted - non-deterministic output [lib/install/backup.zsh:80-86]
-- [ ] [AI-Review][LOW] omz_version detection failure has no log message (silent unknown) [lib/install/backup.zsh:53]
-- [ ] [AI-Review][LOW] cd in subshell could fail silently with bad permissions [lib/install/backup.zsh:53]
-- [ ] [AI-Review][LOW] No explicit validation that backup_dir exists before manifest write [lib/install/backup.zsh:72]
+- [x] [AI-Review][HIGH] No atomic backup - partial backup not cleaned up on mid-operation failure [lib/install/backup.zsh:23-48] - RESOLVED: Added backup_failed flag and cleanup logic
+- [x] [AI-Review][HIGH] Race condition - chmod 700 happens after mkdir (security window) [lib/install/backup.zsh:18] - RESOLVED: Use `mkdir -m 700` for atomic permissions
+- [x] [AI-Review][HIGH] No validation that manifest.json write succeeded [lib/install/backup.zsh:57,88-96] - RESOLVED: Added validation after cat and file existence check
+- [x] [AI-Review][MEDIUM] Hardcoded tool_version "1.0.0" should read from VERSION file [lib/install/backup.zsh:94] - RESOLVED: Reads from ${PROJECT_ROOT}/VERSION with fallback
+- [x] [AI-Review][MEDIUM] Fragile ls parsing in pruning - breaks with special chars in filenames [lib/install/backup.zsh:103,109] - RESOLVED: Replaced with zsh globs (N/om)
+- [x] [AI-Review][MEDIUM] State update uses old _zsh_tool_update_state pattern instead of jq-based approach [lib/install/backup.zsh:60] - RESOLVED: Uses jq when available with fallback
+- [x] [AI-Review][MEDIUM] Files list in manifest not sorted - non-deterministic output [lib/install/backup.zsh:80-86] - RESOLVED: Array sorted with (@o) modifier
+- [x] [AI-Review][LOW] omz_version detection failure has no log message (silent unknown) [lib/install/backup.zsh:53] - RESOLVED: Added warn log for access failures
+- [x] [AI-Review][LOW] cd in subshell could fail silently with bad permissions [lib/install/backup.zsh:53] - RESOLVED: Explicit cd check with error logging
+- [x] [AI-Review][LOW] No explicit validation that backup_dir exists before manifest write [lib/install/backup.zsh:72] - RESOLVED: Added directory validation at function start
 
 ---
 
@@ -267,7 +267,8 @@ Claude Opus 4.5 (claude-opus-4-5-20251101)
 
 ### Debug Log References
 
-None - implementation completed without issues.
+- Tests run: 2026-01-04
+- All 21 unit tests passing (includes adversarial review fixes)
 
 ### Completion Notes List
 
@@ -283,6 +284,17 @@ None - implementation completed without issues.
    - Idempotency verification
    - Error handling and helper functions
 5. **All Tests Pass:** Both `test-backup.zsh` (21 tests) and `test-prerequisites.zsh` (20 tests) pass with zero failures
+6. **Adversarial Review Improvements (2026-01-04 - YOLO MODE):**
+   - Implemented atomic backup with cleanup on partial failure
+   - Fixed race condition using `mkdir -m 700` for secure permissions
+   - Added manifest write validation
+   - Reads tool_version from VERSION file
+   - Replaced fragile ls with robust zsh globs
+   - Uses jq-based state updates with fallback
+   - Sorted manifest files array for determinism
+   - Added logging for OMZ version detection failures
+   - Explicit cd validation with error handling
+   - Backup directory validation before manifest write
 
 ### Change Log
 
@@ -295,17 +307,21 @@ None - implementation completed without issues.
 - 2026-01-01: [Code Review] Updated permission test to verify actual 0700 bits
 - 2026-01-03: [Code Review R2] Added -p flag to all cp commands to preserve metadata
 - 2026-01-03: [Code Review R2] Added exit code verification and error handling to all cp operations
+- 2026-01-04: [Adversarial Review - YOLO] Resolved all 10 issues (3 HIGH, 4 MEDIUM, 3 LOW)
 
 ### File List
 
 **Implementation:**
-- `lib/install/backup.zsh` - Backup creation and management (Last modified: 2026-01-03)
+- `lib/install/backup.zsh` - Backup creation and management (Last modified: 2026-01-04)
 - `lib/core/utils.zsh` - Core utilities dependency (validated)
 
 **Tests:**
 - `tests/test-backup.zsh` - 21 comprehensive tests, all passing (Last modified: 2026-01-01)
 
 **Documentation:**
-- `docs/implementation-artifacts/1-2-backup-existing-configuration.md` - This story file
+- `docs/implementation-artifacts/1-2-backup-existing-configuration.md` - This story file (Last modified: 2026-01-04)
+
+**Project Tracking:**
+- `docs/implementation-artifacts/sprint-status.yaml` - Story status updated to review (will be updated)
 
 ---

@@ -44,7 +44,8 @@ exports:
 # PATH modifications
 paths:
   prepend:
-    - "$HOME/.local/bin"
+    - "$HOME/.venv/tools3/bin"  # uv global tools environment
+    - "$HOME/.local/bin"  # uv installed binaries
     - "$HOME/bin"
 
 # Atuin Shell History Integration

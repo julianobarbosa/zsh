@@ -50,26 +50,50 @@ _zsh_tool_parse_yaml_list() {
     return 1
   fi
 
+  if [[ -z "$section" ]]; then
+    _zsh_tool_log ERROR "Section parameter required"
+    return 1
+  fi
+
+  # Extract items only from the specified section
+  # Uses awk to find the section header and extract list items until the next top-level section
+  local in_section=0
   while IFS= read -r line; do
-    # Skip empty lines and comments
-    [[ -z "$line" || "$line" =~ ^[[:space:]]*# ]] && continue
-
-    # Extract item name - remove leading "- " and any trailing whitespace
-    local item="${line##*- }"
-    item="${item%%[[:space:]]*}"  # Remove trailing whitespace
-    item="${item//[[:space:]]/}"  # Remove any remaining whitespace
-
-    # Skip empty items
-    [[ -z "$item" ]] && continue
-
-    # CRITICAL: Validate item name - only allow safe characters
-    if ! _zsh_tool_validate_name "$item" "plugin/theme"; then
-      echo "[WARN] Skipping invalid item name in config: $item" >&2
+    # Check if we've hit the target section header (e.g., "plugins:")
+    if [[ "$line" =~ ^${section}:[[:space:]]*$ ]]; then
+      in_section=1
       continue
     fi
 
-    items+=("$item")
-  done < <(grep "^  - " "$config_file" 2>/dev/null | sed 's/^  - //' | grep -v "^#")
+    # Check if we've hit a new top-level section (non-indented line ending with :)
+    # This means we've left our target section
+    if [[ $in_section -eq 1 && "$line" =~ ^[^[:space:]] ]]; then
+      break
+    fi
+
+    # Skip if not in our section
+    [[ $in_section -eq 0 ]] && continue
+
+    # Skip empty lines and comments
+    [[ -z "$line" || "$line" =~ ^[[:space:]]*# ]] && continue
+
+    # Only process simple list items (lines starting with "  - " followed by a simple value)
+    # Skip complex items like "  - name: value" (these have a colon after the item)
+    if [[ "$line" =~ ^[[:space:]]{2}-[[:space:]]+([^:[:space:]]+)[[:space:]]*$ ]]; then
+      local item="${match[1]}"
+
+      # Skip empty items
+      [[ -z "$item" ]] && continue
+
+      # CRITICAL: Validate item name - only allow safe characters
+      if ! _zsh_tool_validate_name "$item" "plugin/theme"; then
+        echo "[WARN] Skipping invalid item name in config: $item" >&2
+        continue
+      fi
+
+      items+=("$item")
+    fi
+  done < "$config_file"
 
   # Output valid items
   printf '%s\n' "${items[@]}"

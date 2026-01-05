@@ -2,10 +2,10 @@
 # Core utilities for zsh-tool
 # Logging, prompts, error handling, idempotency checks
 
-# Ensure essential system paths are in PATH (fixes rare command resolution issues)
-# This is defensive - standard commands like date, dirname should always be available
-[[ ":$PATH:" != *":/bin:"* ]] && PATH="/bin:$PATH"
-[[ ":$PATH:" != *":/usr/bin:"* ]] && PATH="/usr/bin:$PATH"
+# CRITICAL: Ensure essential system paths are in PATH BEFORE any function definitions
+# This fixes command resolution issues where date, dirname, etc. are not found
+# Must happen at the very top, unconditionally
+export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"
 
 # Configuration (use defaults only if not already set)
 : ${ZSH_TOOL_CONFIG_DIR:="${HOME}/.config/zsh-tool"}
@@ -24,7 +24,7 @@ ZSH_TOOL_LOG_LEVELS=(
 
 # Initialize logging directory
 _zsh_tool_init_logging() {
-  mkdir -p "$(dirname "$ZSH_TOOL_LOG_FILE")" 2>/dev/null
+  command mkdir -p "$(command dirname "$ZSH_TOOL_LOG_FILE")" 2>/dev/null
 }
 
 # Log message
@@ -34,10 +34,10 @@ _zsh_tool_log() {
   local level="${1:u}"  # Convert to uppercase for consistent matching
   shift
   local message="$*"
-  local timestamp=$(date '+%Y-%m-%d %H:%M:%S')
+  local timestamp=$(command date '+%Y-%m-%d %H:%M:%S')
 
   # Initialize logging if needed
-  [[ ! -d "$(dirname "$ZSH_TOOL_LOG_FILE")" ]] && _zsh_tool_init_logging
+  [[ ! -d "$(command dirname "$ZSH_TOOL_LOG_FILE")" ]] && _zsh_tool_init_logging
 
   # Check log level
   local current_level=${ZSH_TOOL_LOG_LEVELS[$ZSH_TOOL_LOG_LEVEL]:-1}
@@ -100,7 +100,7 @@ _zsh_tool_load_state() {
 # Usage: _zsh_tool_save_state <json_content>
 _zsh_tool_save_state() {
   local content="$1"
-  mkdir -p "$(dirname "$ZSH_TOOL_STATE_FILE")" 2>/dev/null
+  command mkdir -p "$(command dirname "$ZSH_TOOL_STATE_FILE")" 2>/dev/null
   # Atomic write: write to temp file then rename (prevents race conditions)
   local temp_file="${ZSH_TOOL_STATE_FILE}.tmp.$$"
   echo "$content" > "$temp_file" && mv "$temp_file" "$ZSH_TOOL_STATE_FILE"

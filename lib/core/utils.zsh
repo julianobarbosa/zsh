@@ -7,6 +7,17 @@
 # Must happen at the very top, unconditionally
 export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"
 
+# Define absolute paths for critical commands used in logging/init
+# This avoids PATH resolution issues in command substitutions
+typeset -g _ZSH_TOOL_CMD_DATE="/bin/date"
+typeset -g _ZSH_TOOL_CMD_DIRNAME="/usr/bin/dirname"
+typeset -g _ZSH_TOOL_CMD_MKDIR="/bin/mkdir"
+
+# Verify commands exist at expected paths, fallback to PATH lookup if not
+[[ ! -x "$_ZSH_TOOL_CMD_DATE" ]] && _ZSH_TOOL_CMD_DATE="date"
+[[ ! -x "$_ZSH_TOOL_CMD_DIRNAME" ]] && _ZSH_TOOL_CMD_DIRNAME="dirname"
+[[ ! -x "$_ZSH_TOOL_CMD_MKDIR" ]] && _ZSH_TOOL_CMD_MKDIR="mkdir"
+
 # Configuration (use defaults only if not already set)
 : ${ZSH_TOOL_CONFIG_DIR:="${HOME}/.config/zsh-tool"}
 : ${ZSH_TOOL_LOG_FILE:="${ZSH_TOOL_CONFIG_DIR}/logs/zsh-tool.log"}
@@ -24,7 +35,7 @@ ZSH_TOOL_LOG_LEVELS=(
 
 # Initialize logging directory
 _zsh_tool_init_logging() {
-  command mkdir -p "$(command dirname "$ZSH_TOOL_LOG_FILE")" 2>/dev/null
+  $_ZSH_TOOL_CMD_MKDIR -p "$($_ZSH_TOOL_CMD_DIRNAME "$ZSH_TOOL_LOG_FILE")" 2>/dev/null
 }
 
 # Log message
@@ -34,10 +45,10 @@ _zsh_tool_log() {
   local level="${1:u}"  # Convert to uppercase for consistent matching
   shift
   local message="$*"
-  local timestamp=$(command date '+%Y-%m-%d %H:%M:%S')
+  local timestamp=$($_ZSH_TOOL_CMD_DATE '+%Y-%m-%d %H:%M:%S')
 
   # Initialize logging if needed
-  [[ ! -d "$(command dirname "$ZSH_TOOL_LOG_FILE")" ]] && _zsh_tool_init_logging
+  [[ ! -d "$($_ZSH_TOOL_CMD_DIRNAME "$ZSH_TOOL_LOG_FILE")" ]] && _zsh_tool_init_logging
 
   # Check log level
   local current_level=${ZSH_TOOL_LOG_LEVELS[$ZSH_TOOL_LOG_LEVEL]:-1}
@@ -100,7 +111,7 @@ _zsh_tool_load_state() {
 # Usage: _zsh_tool_save_state <json_content>
 _zsh_tool_save_state() {
   local content="$1"
-  command mkdir -p "$(command dirname "$ZSH_TOOL_STATE_FILE")" 2>/dev/null
+  $_ZSH_TOOL_CMD_MKDIR -p "$($_ZSH_TOOL_CMD_DIRNAME "$ZSH_TOOL_STATE_FILE")" 2>/dev/null
   # Atomic write: write to temp file then rename (prevents race conditions)
   local temp_file="${ZSH_TOOL_STATE_FILE}.tmp.$$"
   echo "$content" > "$temp_file" && mv "$temp_file" "$ZSH_TOOL_STATE_FILE"

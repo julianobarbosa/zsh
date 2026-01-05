@@ -3,16 +3,17 @@
 **Author:** Barbosa
 **Date:** 2025-10-01
 **Project Level:** Level 2 (Small complete system)
-**Target Scale:** 5-15 stories, 1-2 epics
+**Target Scale:** 14 stories, 3 epics
 
 ---
 
 ## Epic Overview
 
-This project consists of 2 epics delivering a complete zsh configuration and maintenance system for the development team:
+This project consists of 3 epics delivering a complete zsh configuration and maintenance system for the development team:
 
 1. **Epic 1: Core Installation & Configuration System** - Provides the foundation for automated zsh installation and team-standard configuration
 2. **Epic 2: Maintenance & Lifecycle Management** - Enables ongoing updates, backups, and configuration management
+3. **Epic 3: Advanced Integrations** - Provides seamless integration with external shell productivity tools (Atuin, Amazon Q)
 
 ---
 
@@ -182,15 +183,76 @@ This project consists of 2 epics delivering a complete zsh configuration and mai
 
 ---
 
+## Epic 3: Advanced Integrations
+
+**Goal:** Provide seamless integration with external shell productivity tools, enabling developers to leverage advanced shell history search (Atuin) and AI-powered command assistance (Amazon Q) within the zsh-tool ecosystem while maintaining compatibility and optimal performance
+
+**Priority:** P1 - Should Have
+
+**Dependencies:** Epic 1 (Core Installation), Epic 2 (Maintenance)
+
+**Estimated Stories:** 2
+
+### Stories
+
+#### Story 3.1: Atuin Shell History Integration
+**As a** developer using zsh-tool
+**I want** to integrate Atuin shell history with my zsh environment
+**So that** I can search my command history across machines with fuzzy search and sync capabilities
+
+**Mapped Requirements:** FR013
+
+**Acceptance Criteria:**
+- [ ] Atuin detection validates installation via `atuin --version`
+- [ ] Automated installation via curl or Homebrew
+- [ ] TOML configuration management for Atuin settings
+- [ ] Shell integration configured in zshrc
+- [ ] Ctrl+R keybinding properly configured
+- [ ] Amazon Q compatibility ensures keybinding restoration
+- [ ] History import from existing zsh history
+- [ ] Sync setup for multi-machine history
+- [ ] Health check verifies Atuin functionality
+
+**Story Points:** 5
+
+---
+
+#### Story 3.2: Amazon Q CLI Integration
+**As a** developer using zsh-tool
+**I want** to integrate Amazon Q Developer CLI into my zsh environment
+**So that** I can leverage AI-powered command line assistance while maintaining my existing workflow tools
+
+**Mapped Requirements:** FR014
+
+**Acceptance Criteria:**
+- [ ] Amazon Q CLI detection validates actual Amazon Q (not other `q` commands)
+- [ ] Guided installation via official .dmg installer
+- [ ] Shell integration configured with lazy loading
+- [ ] Atuin compatibility through disabled CLIs list
+- [ ] Performance optimization via lazy loading (reduces 1.8s startup to near-zero)
+- [ ] Configuration management for Amazon Q settings
+- [ ] Secure .zshrc injection without command injection vulnerabilities
+- [ ] Health check via `q doctor`
+- [ ] Comprehensive test coverage
+
+**Story Points:** 8
+
+---
+
+**Epic 3 Total Story Points:** 13
+
+---
+
 ## Summary
 
-**Total Epics:** 2
-**Total Stories:** 12
-**Total Story Points:** 40
+**Total Epics:** 3
+**Total Stories:** 14
+**Total Story Points:** 53
 
 ### Phasing Recommendation
 
 **Phase 1 (MVP):** Epic 1 - Core Installation & Configuration System
 **Phase 2:** Epic 2 - Maintenance & Lifecycle Management
+**Phase 3:** Epic 3 - Advanced Integrations (Atuin, Amazon Q)
 
-This phasing allows developers to benefit from automated installation immediately while adding lifecycle management capabilities in the second phase.
+This phasing allows developers to benefit from automated installation immediately, adding lifecycle management capabilities in the second phase, and advanced shell productivity integrations in the third phase.

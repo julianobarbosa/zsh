@@ -1,7 +1,7 @@
 # zsh Configuration Tool - Solution Architecture
 
 **Author:** Barbosa
-**Date:** 2025-10-01
+**Date:** 2025-12-17
 **Project Level:** Level 2 (Small complete system)
 **Architecture Style:** Modular monolith (function-based CLI)
 **Repository Strategy:** Monorepo
@@ -92,6 +92,10 @@ This document defines the technical architecture for a zsh configuration and mai
 - `restore/backup-mgmt.zsh` - Backup creation/listing
 - `restore/restore.zsh` - Configuration restoration
 - `git/integration.zsh` - Dotfile git operations
+
+**Epic 3 Modules (Integrations):**
+- `integrations/atuin.zsh` - Atuin shell history integration with lazy loading, Ctrl+R conflict resolution, and configuration management
+- `integrations/amazon-q.zsh` - Amazon Q CLI integration with lazy loading, secure .zshrc injection, and comprehensive test coverage
 
 ---
 
@@ -828,8 +832,12 @@ zsh-tool/
 │   │   ├── backup-mgmt.zsh     # Backup creation/listing
 │   │   └── restore.zsh         # Restoration logic
 │   │
-│   └── git/
-│       └── integration.zsh     # Dotfile git operations
+│   ├── git/
+│   │   └── integration.zsh     # Dotfile git operations
+│   │
+│   └── integrations/            # Epic 3: External tool integrations
+│       ├── atuin.zsh           # Atuin shell history (lazy load, Ctrl+R fix)
+│       └── amazon-q.zsh        # Amazon Q CLI (lazy load, secure injection)
 │
 ├── templates/                   # Configuration templates
 │   ├── config.yaml              # Default tool configuration
@@ -1082,6 +1090,6 @@ From PRD Out of Scope section, potential future work:
 
 ---
 
-**Document Version:** 1.0
-**Last Updated:** 2025-10-01
-**Status:** Ready for Review
+**Document Version:** 1.2
+**Last Updated:** 2025-12-17
+**Status:** Current (Epic 3 Integrations added)

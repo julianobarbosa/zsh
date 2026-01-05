@@ -4,7 +4,7 @@
 **Epic**: Epic 3 - Advanced Integrations
 **Priority**: High
 **Estimate**: 2 points
-**Status**: Ready for Review
+**Status**: Done
 **Created**: 2025-10-02
 **Labels**: bug, high-priority
 
@@ -67,6 +67,9 @@ _amazonq_health_check() {
   - [x] Test with q not in PATH
   - [x] Test with q not executable
   - [x] Verify error messages
+
+### Review Follow-ups (AI)
+- [ ] [AI-Review][LOW] Add fallback guidance if `q doctor` command changes in future CLI versions [lib/integrations/amazon-q.zsh:183]
 
 ## Technical Implementation
 

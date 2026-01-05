@@ -44,7 +44,9 @@ exports:
 # PATH modifications
 paths:
   prepend:
-    - "$HOME/.local/bin"
+    - "$HOME/.bun/bin"  # bun JavaScript runtime and package manager
+    - "$HOME/.venv/tools3/bin"  # uv global tools environment
+    - "$HOME/.local/bin"  # uv installed binaries
     - "$HOME/bin"
 
 # Atuin Shell History Integration
@@ -56,15 +58,23 @@ atuin:
   filter_mode: "global"  # Filter mode: global, host, session, directory
   inline_height: 20  # Number of lines in search interface
   style: "auto"  # UI style: auto, compact, full
+  # Tab completion integration - use Atuin history for TAB completions
+  tab_completion:
+    enabled: true  # Enable TAB completion from Atuin history
+    min_chars: 2  # Minimum characters before suggesting
+    limit: 20  # Maximum suggestions to show
+    search_mode: "prefix"  # Search mode for TAB: prefix (fast) or fuzzy
+    bind_tab: false  # Replace default TAB with Atuin hybrid (experimental)
   # Atuin provides enhanced shell history with search, sync, and statistics
   # Press Ctrl+R to open interactive search interface
+  # With tab_completion enabled, typing "export ELE<TAB>" suggests from history
 
-# Amazon Q Developer CLI Integration
-amazon_q:
-  enabled: false  # Set to true to enable Amazon Q CLI integration
+# Kiro CLI Integration (formerly Amazon Q Developer CLI)
+kiro_cli:
+  enabled: false  # Set to true to enable Kiro CLI integration
   lazy_loading: true  # Defer initialization to improve startup time (recommended)
   atuin_compatibility: true  # Configure compatibility with Atuin command history
-  disabled_clis:  # CLIs to exclude from Amazon Q autocomplete
-    - atuin  # Prevent Amazon Q from intercepting Atuin keybindings
-  # Performance note: Amazon Q adds ~11ms per command and ~1.8s startup overhead
-  # Lazy loading helps mitigate startup impact
+  disabled_clis:  # CLIs to exclude from Kiro CLI autocomplete
+    - atuin  # Prevent Kiro CLI from intercepting Atuin keybindings
+  # Performance note: Kiro CLI has improved performance over Amazon Q
+  # Lazy loading helps with shell startup time

@@ -59,6 +59,11 @@ _atuin_install() {
   echo "     cargo install atuin"
   echo ""
   echo "  3. Installation script:"
+  echo ""
+  echo "     ⚠️  SECURITY NOTE: This option downloads and executes a remote script."
+  echo "     Review the script first: curl -sSf https://setup.atuin.sh | less"
+  echo "     Only proceed if you trust the source."
+  echo ""
   echo "     bash <(curl --proto '=https' --tlsv1.2 -sSf https://setup.atuin.sh)"
   echo ""
   echo "  4. Package managers:"
@@ -204,12 +209,68 @@ _atuin_configure_keybindings() {
 
   if [[ "$bind_ctrl_r" == "true" ]]; then
     _zsh_tool_log INFO "✓ Ctrl+R will be bound to Atuin search"
-    _zsh_tool_log INFO "Note: If Amazon Q is enabled, keybinding will be restored after Amazon Q loads"
+    _zsh_tool_log INFO "Note: If Kiro CLI is enabled, keybinding will be restored after Kiro CLI loads"
   else
     _zsh_tool_log INFO "Ctrl+R keybinding disabled - use default history search"
   fi
 
   return 0
+}
+
+# Update state.json with Atuin installation info
+_atuin_update_state() {
+  local installed="${1:-false}"
+  local version="${2:-unknown}"
+  local sync_enabled="${3:-false}"
+  local history_imported="${4:-false}"
+
+  _zsh_tool_log DEBUG "Updating Atuin state in state.json..."
+
+  # Load current state
+  local state=$(_zsh_tool_load_state)
+
+  # Create Atuin integration entry
+  local atuin_state=$(cat <<EOF
+{
+  "installed": $installed,
+  "version": "$version",
+  "sync_enabled": $sync_enabled,
+  "history_imported": $history_imported,
+  "config_path": "$ATUIN_CONFIG_FILE"
+}
+EOF
+)
+
+  # Update state - use jq if available for safe JSON manipulation,
+  # otherwise fall back to sed with comprehensive escaping
+  if command -v jq &>/dev/null; then
+    # Use jq for safe JSON manipulation (preferred)
+    local updated=$(echo "$state" | jq --argjson val "$atuin_state" '.integrations.atuin = $val')
+  else
+    # Fallback: Escape ALL sed special characters in the replacement string
+    # Characters to escape: \ & / [ ] . * ^ $
+    local escaped_state="$atuin_state"
+    escaped_state="${escaped_state//\\/\\\\}"  # Escape backslashes first
+    escaped_state="${escaped_state//&/\\&}"     # Escape ampersand
+    escaped_state="${escaped_state//\//\\/}"    # Escape forward slashes
+    escaped_state="${escaped_state//\[/\\[}"    # Escape open bracket
+    escaped_state="${escaped_state//\]/\\]}"    # Escape close bracket
+    escaped_state="${escaped_state//./\\.}"     # Escape dots
+    escaped_state="${escaped_state//\*/\\*}"    # Escape asterisks
+    escaped_state="${escaped_state//^/\\^}"     # Escape caret
+    escaped_state="${escaped_state//\$/\\$}"    # Escape dollar sign
+
+    if echo "$state" | grep -q '"integrations"'; then
+      # integrations section exists, update it
+      local updated=$(echo "$state" | sed 's/"integrations":[^}]*}/"integrations":{"atuin":'"${escaped_state}"'}/')
+    else
+      # Add integrations section
+      local updated=$(echo "$state" | sed 's/}$/,"integrations":{"atuin":'"${escaped_state}"'}}/')
+    fi
+  fi
+
+  _zsh_tool_save_state "$updated"
+  _zsh_tool_log DEBUG "Atuin state updated successfully"
 }
 
 # Run Atuin health check
@@ -293,10 +354,28 @@ _atuin_import_history() {
   echo ""
 
   if _zsh_tool_prompt_confirm "Import existing zsh history?"; then
+    # HIGH-1 FIX: Backup database before import for rollback capability
+    local backup_path=""
+    if [[ -f "$ATUIN_DB_PATH" ]]; then
+      backup_path="${ATUIN_DB_PATH}.backup.$(date +%Y%m%d%H%M%S)"
+      _zsh_tool_log INFO "Creating database backup: $backup_path"
+      if ! cp "$ATUIN_DB_PATH" "$backup_path"; then
+        _zsh_tool_log ERROR "Failed to create backup. Aborting import for safety."
+        return 1
+      fi
+      _zsh_tool_log INFO "✓ Database backup created"
+    fi
+
     _zsh_tool_log INFO "Running: atuin import auto"
 
     if atuin import auto; then
       _zsh_tool_log INFO "✓ History imported successfully"
+
+      # Remove backup on success (optional - keep for safety)
+      if [[ -n "$backup_path" && -f "$backup_path" ]]; then
+        _zsh_tool_log INFO "Backup retained at: $backup_path"
+        _zsh_tool_log INFO "To rollback: cp '$backup_path' '$ATUIN_DB_PATH'"
+      fi
 
       # Show stats after import
       echo ""
@@ -304,6 +383,17 @@ _atuin_import_history() {
       echo ""
     else
       _zsh_tool_log WARN "History import failed or had issues"
+      # Offer rollback if backup exists
+      if [[ -n "$backup_path" && -f "$backup_path" ]]; then
+        _zsh_tool_log INFO "Rollback available: cp '$backup_path' '$ATUIN_DB_PATH'"
+        if _zsh_tool_prompt_confirm "Restore database from backup?"; then
+          if cp "$backup_path" "$ATUIN_DB_PATH"; then
+            _zsh_tool_log INFO "✓ Database restored from backup"
+          else
+            _zsh_tool_log ERROR "Failed to restore from backup"
+          fi
+        fi
+      fi
       _zsh_tool_log INFO "You can manually import later with: atuin import auto"
     fi
   else
@@ -342,22 +432,27 @@ _atuin_setup_sync() {
   return 0
 }
 
-# Configure Amazon Q compatibility
-_atuin_configure_amazonq_compatibility() {
-  _zsh_tool_log INFO "Configuring Atuin compatibility with Amazon Q..."
+# Configure Kiro CLI compatibility
+_atuin_configure_kiro_compatibility() {
+  _zsh_tool_log INFO "Configuring Atuin compatibility with Kiro CLI..."
 
   # The actual keybinding restoration happens in the .zshrc
   # This function just logs the compatibility setup
 
-  _zsh_tool_log INFO "✓ Amazon Q compatibility configured"
-  _zsh_tool_log INFO "Note: Ctrl+R will be restored to Atuin after Amazon Q loads"
+  _zsh_tool_log INFO "Kiro CLI compatibility configured"
+  _zsh_tool_log INFO "Note: Ctrl+R will be restored to Atuin after Kiro CLI loads"
 
   return 0
 }
 
+# DEPRECATED: Alias for backward compatibility
+_atuin_configure_amazonq_compatibility() {
+  _atuin_configure_kiro_compatibility
+}
+
 # Add Atuin init to .zshrc custom layer
 _atuin_add_to_zshrc_custom() {
-  local restore_amazonq="${1:-false}"
+  local restore_kiro="${1:-false}"
 
   _zsh_tool_log INFO "Adding Atuin initialization to .zshrc custom layer..."
 
@@ -373,7 +468,7 @@ _atuin_add_to_zshrc_custom() {
 
   # Check if already configured
   if grep -q "atuin init zsh" "$zshrc_custom" 2>/dev/null; then
-    _zsh_tool_log INFO "✓ Atuin already configured in .zshrc.local"
+    _zsh_tool_log INFO "Atuin already configured in .zshrc.local"
   else
     _zsh_tool_log INFO "Adding Atuin initialization..."
 
@@ -387,27 +482,38 @@ if command -v atuin >/dev/null 2>&1; then
 fi
 EOF
 
-    _zsh_tool_log INFO "✓ Atuin initialization added to .zshrc.local"
+    _zsh_tool_log INFO "Atuin initialization added to .zshrc.local"
   fi
 
-  # Add Amazon Q compatibility fix if needed
-  if [[ "$restore_amazonq" == "true" ]]; then
-    if grep -q "Restore Atuin keybindings after Amazon Q" "$zshrc_custom" 2>/dev/null; then
-      _zsh_tool_log INFO "✓ Amazon Q compatibility fix already present"
+  # Add Kiro CLI compatibility fix if needed
+  if [[ "$restore_kiro" == "true" ]]; then
+    if grep -q "Restore Atuin keybindings after Kiro" "$zshrc_custom" 2>/dev/null || \
+       grep -q "Restore Atuin keybindings after Amazon Q" "$zshrc_custom" 2>/dev/null; then
+      _zsh_tool_log INFO "Kiro CLI compatibility fix already present"
     else
-      _zsh_tool_log INFO "Adding Amazon Q compatibility fix..."
+      _zsh_tool_log INFO "Adding Kiro CLI compatibility fix..."
 
       cat >> "$zshrc_custom" <<'EOF'
 
-# Restore Atuin keybindings after Amazon Q (Amazon Q overrides Ctrl+R)
+# Restore Atuin keybindings after Kiro CLI (Kiro CLI overrides Ctrl+R)
 # This ensures Ctrl+R opens Atuin search instead of just redisplaying the prompt
 if command -v atuin &>/dev/null; then
-    bindkey -M emacs '^r' atuin-search
-    bindkey -M viins '^r' atuin-search-viins
+    # Check if atuin-search widget exists before binding (emacs mode)
+    if zle -la | grep -q '^atuin-search$'; then
+        bindkey -M emacs '^r' atuin-search
+    fi
+    # Check if atuin-search-viins widget exists before binding (vi insert mode)
+    if zle -la | grep -q '^atuin-search-viins$'; then
+        bindkey -M viins '^r' atuin-search-viins
+    fi
+    # Check if atuin-search-vicmd widget exists before binding (vi command mode)
+    if zle -la | grep -q '^atuin-search-vicmd$'; then
+        bindkey -M vicmd '^r' atuin-search-vicmd
+    fi
 fi
 EOF
 
-      _zsh_tool_log INFO "✓ Amazon Q compatibility fix added"
+      _zsh_tool_log INFO "Kiro CLI compatibility fix added"
     fi
   fi
 
@@ -417,8 +523,9 @@ EOF
 # Main installation flow for Atuin integration
 atuin_install_integration() {
   local import_history="${1:-true}"
-  local configure_amazonq="${2:-false}"
+  local configure_kiro="${2:-false}"
   local sync_enabled="${3:-false}"
+  local tab_completion_enabled="${4:-true}"
 
   _zsh_tool_log INFO "Starting Atuin shell history integration..."
 
@@ -440,28 +547,37 @@ atuin_install_integration() {
   _atuin_configure_keybindings "true"
 
   # Step 5: Add to .zshrc.local
-  _atuin_add_to_zshrc_custom "$configure_amazonq"
+  _atuin_add_to_zshrc_custom "$configure_kiro"
 
-  # Step 6: Configure Amazon Q compatibility if requested
-  if [[ "$configure_amazonq" == "true" ]]; then
-    _atuin_configure_amazonq_compatibility
+  # Step 6: Configure Kiro CLI compatibility if requested
+  if [[ "$configure_kiro" == "true" ]]; then
+    _atuin_configure_kiro_compatibility
   fi
 
-  # Step 7: Health check
+  # Step 7: Configure tab completion if enabled
+  if [[ "$tab_completion_enabled" == "true" ]]; then
+    _atuin_add_completion_to_zshrc
+  fi
+
+  # Step 8: Health check
   if ! _atuin_health_check; then
     _zsh_tool_log WARN "Atuin health check had issues"
     _zsh_tool_log INFO "You may need to complete setup manually"
   fi
 
-  # Step 8: Import existing history
+  # Step 9: Import existing history
   if [[ "$import_history" == "true" ]]; then
     _atuin_import_history
   fi
 
-  # Step 9: Provide sync information
+  # Step 10: Provide sync information
   if [[ "$sync_enabled" == "true" ]]; then
     _atuin_setup_sync
   fi
+
+  # Step 11: Update state.json with installation info
+  local atuin_version=$(atuin --version 2>/dev/null | awk '{print $2}')
+  _atuin_update_state "true" "$atuin_version" "$sync_enabled" "$import_history"
 
   _zsh_tool_log INFO "✓ Atuin shell history integration complete"
 
@@ -473,12 +589,16 @@ atuin_install_integration() {
   echo "  ✓ Atuin installed and configured"
   echo "  ✓ Shell integration added to .zshrc.local"
   echo "  ✓ Ctrl+R bound to Atuin search"
+  if [[ "$tab_completion_enabled" == "true" ]]; then
+    echo "  ✓ Tab completion from Atuin history enabled"
+  fi
   echo ""
   echo "Next steps:"
   echo "  1. Reload shell: exec zsh"
   echo "  2. Press Ctrl+R to search history"
-  echo "  3. View stats: atuin stats"
-  echo "  4. (Optional) Setup sync: atuin register"
+  echo "  3. Type partial command + TAB for history suggestions"
+  echo "  4. View stats: atuin stats"
+  echo "  5. (Optional) Setup sync: atuin register"
   echo ""
   echo "Documentation: https://docs.atuin.sh"
   echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
@@ -489,3 +609,274 @@ atuin_install_integration() {
 
 # Alias for consistency with naming convention
 alias _atuin_install_integration='atuin_install_integration'
+
+# ============================================================================
+# Public Commands (zsh-tool naming convention)
+# ============================================================================
+
+# Public command for Atuin installation
+# This provides the user-facing command following zsh-tool naming conventions
+# Usage: zsh-tool-install-atuin [options]
+zsh-tool-install-atuin() {
+  local import_history="true"
+  local configure_kiro="false"
+  local sync_enabled="false"
+  local tab_completion_enabled="true"
+
+  # Parse command-line options
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --no-import)
+        import_history="false"
+        shift
+        ;;
+      --kiro)
+        configure_kiro="true"
+        shift
+        ;;
+      --sync)
+        sync_enabled="true"
+        shift
+        ;;
+      --no-completion)
+        tab_completion_enabled="false"
+        shift
+        ;;
+      --help)
+        echo "Usage: zsh-tool-install-atuin [options]"
+        echo ""
+        echo "Options:"
+        echo "  --no-import         Skip importing existing zsh history"
+        echo "  --kiro              Configure Kiro CLI keybinding compatibility"
+        echo "  --sync              Enable Atuin sync (requires account setup)"
+        echo "  --no-completion     Disable tab completion integration"
+        echo "  --help              Show this help message"
+        echo ""
+        echo "Example:"
+        echo "  zsh-tool-install-atuin --kiro --sync"
+        return 0
+        ;;
+      *)
+        _zsh_tool_log WARN "Unknown option: $1"
+        shift
+        ;;
+    esac
+  done
+
+  # Call the main installation function
+  atuin_install_integration "$import_history" "$configure_kiro" "$sync_enabled" "$tab_completion_enabled"
+}
+
+# ============================================================================
+# Atuin History Tab Completion Integration
+# ============================================================================
+# This enables TAB completion from Atuin's history database
+# Example: typing "export ELE<TAB>" will suggest "export ELEVENLABS_API_KEY=..."
+
+# Configuration for Atuin completion behavior
+ATUIN_COMPLETE_LIMIT="${ATUIN_COMPLETE_LIMIT:-20}"        # Max suggestions to show
+ATUIN_COMPLETE_MIN_CHARS="${ATUIN_COMPLETE_MIN_CHARS:-2}" # Min chars before suggesting
+ATUIN_COMPLETE_SEARCH_MODE="${ATUIN_COMPLETE_SEARCH_MODE:-prefix}"  # prefix, fuzzy, full-text
+
+# Custom completer function for Atuin history
+# This integrates with Zsh's completion system (_complete, _approximate, etc.)
+_atuin_history_completer() {
+  # Get the current command line buffer
+  local buffer="${BUFFER:-$words[*]}"
+
+  # Skip if buffer is too short
+  if (( ${#buffer} < ATUIN_COMPLETE_MIN_CHARS )); then
+    return 1
+  fi
+
+  # Skip if Atuin is not available
+  if ! command -v atuin &>/dev/null; then
+    return 1
+  fi
+
+  # Query Atuin for matching history entries
+  local -a matches
+  local line
+
+  # Use process substitution to get history matches
+  while IFS= read -r line; do
+    [[ -n "$line" ]] && matches+=("$line")
+  done < <(atuin search --cmd-only --limit "$ATUIN_COMPLETE_LIMIT" \
+    --search-mode "$ATUIN_COMPLETE_SEARCH_MODE" -- "$buffer" 2>/dev/null)
+
+  # If no matches, return failure to try next completer
+  if (( ${#matches} == 0 )); then
+    return 1
+  fi
+
+  # Add matches using compadd
+  # -U: Don't require match with current prefix
+  # -V: Named group for completion display
+  # -Q: Don't quote special characters (preserve as-is)
+  local expl
+  _description -V history-atuin expl "Atuin history"
+  compadd "${expl[@]}" -U -Q -- "${matches[@]}"
+
+  return 0
+}
+
+# Widget function for direct line replacement with Atuin completion
+_atuin_complete_line() {
+  local buffer="$BUFFER"
+
+  # Skip if buffer is too short
+  if (( ${#buffer} < ATUIN_COMPLETE_MIN_CHARS )); then
+    zle expand-or-complete
+    return
+  fi
+
+  # Skip if Atuin is not available
+  if ! command -v atuin &>/dev/null; then
+    zle expand-or-complete
+    return
+  fi
+
+  # Get completions from Atuin
+  local -a matches
+  local line
+
+  while IFS= read -r line; do
+    [[ -n "$line" ]] && matches+=("$line")
+  done < <(atuin search --cmd-only --limit "$ATUIN_COMPLETE_LIMIT" \
+    --search-mode "$ATUIN_COMPLETE_SEARCH_MODE" -- "$buffer" 2>/dev/null)
+
+  if (( ${#matches} == 0 )); then
+    # No Atuin matches, fallback to normal completion
+    zle expand-or-complete
+    return
+  fi
+
+  if (( ${#matches} == 1 )); then
+    # Single match - replace buffer directly
+    BUFFER="${matches[1]}"
+    CURSOR=${#BUFFER}
+  else
+    # Multiple matches - show menu
+    local -a display_matches
+    local i=1
+    for match in "${matches[@]}"; do
+      # Truncate long commands for display
+      if (( ${#match} > 80 )); then
+        display_matches+=("${match:0:77}...")
+      else
+        display_matches+=("$match")
+      fi
+      ((i++))
+    done
+
+    # Use menu-select if available
+    LBUFFER="$buffer"
+    _atuin_history_completer
+    zle menu-select 2>/dev/null || zle expand-or-complete
+  fi
+}
+
+# Alternative: Hybrid completion that checks Atuin first, then falls back
+_atuin_hybrid_complete() {
+  local buffer="$BUFFER"
+
+  # Try Atuin first for any input
+  if command -v atuin &>/dev/null && (( ${#buffer} >= ATUIN_COMPLETE_MIN_CHARS )); then
+    local -a matches
+    local line
+
+    while IFS= read -r line; do
+      [[ -n "$line" ]] && matches+=("$line")
+    done < <(atuin search --cmd-only --limit 5 \
+      --search-mode prefix -- "$buffer" 2>/dev/null)
+
+    if (( ${#matches} > 0 )); then
+      # If we have history matches, use Atuin's interactive search
+      # This gives the best UX - full fuzzy search with preview
+      zle atuin-search 2>/dev/null || zle expand-or-complete
+      return
+    fi
+  fi
+
+  # Fallback to standard completion
+  zle expand-or-complete
+}
+
+# Setup Atuin completion integration
+_atuin_setup_completion() {
+  # Register the completer function
+  # Add to the completer list - runs after _expand but before _complete
+  local current_completers
+  zstyle -g current_completers ':completion:*' completer
+
+  # Only add if not already present
+  if [[ ! " ${current_completers[*]} " =~ " _atuin_history_completer " ]]; then
+    # Insert after _expand (if present) or at the beginning
+    local -a new_completers
+    local found=0
+    for c in "${current_completers[@]}"; do
+      new_completers+=("$c")
+      if [[ "$c" == "_expand" ]]; then
+        new_completers+=("_atuin_history_completer")
+        found=1
+      fi
+    done
+
+    # If _expand wasn't found, prepend
+    if (( ! found )); then
+      new_completers=("_atuin_history_completer" "${current_completers[@]}")
+    fi
+
+    zstyle ':completion:*' completer "${new_completers[@]}"
+  fi
+
+  # Configure Atuin completion display
+  zstyle ':completion:*:history-atuin:*' format '%F{yellow}── Atuin History ──%f'
+  zstyle ':completion:*:history-atuin:*' group-name 'history-atuin'
+
+  # Create ZLE widgets
+  zle -N _atuin_complete_line
+  zle -N _atuin_hybrid_complete
+
+  # Optional: Bind to a key (uncomment to enable)
+  # bindkey '^X^H' _atuin_complete_line  # Ctrl+X Ctrl+H for Atuin line completion
+}
+
+# Add Atuin completion setup to .zshrc.local
+_atuin_add_completion_to_zshrc() {
+  local zshrc_custom="${HOME}/.zshrc.local"
+
+  # Check if already configured
+  if grep -q "_atuin_setup_completion" "$zshrc_custom" 2>/dev/null; then
+    _zsh_tool_log INFO "✓ Atuin completion already configured in .zshrc.local"
+    return 0
+  fi
+
+  _zsh_tool_log INFO "Adding Atuin completion integration to .zshrc.local..."
+
+  cat >> "$zshrc_custom" <<'EOF'
+
+# ===== Atuin Tab Completion Integration =====
+# Enables TAB completion from Atuin's history database
+# Usage: type partial command and press TAB to get suggestions from history
+# Configuration:
+#   ATUIN_COMPLETE_LIMIT=20        # Max suggestions
+#   ATUIN_COMPLETE_MIN_CHARS=2     # Min chars before suggesting
+#   ATUIN_COMPLETE_SEARCH_MODE=prefix  # prefix, fuzzy, full-text
+
+if command -v atuin >/dev/null 2>&1; then
+  # Source the Atuin completion functions
+  source "${ZSH_TOOL_DIR:-$HOME/Repos/github/zsh}/lib/integrations/atuin.zsh" 2>/dev/null
+
+  # Initialize Atuin completion
+  _atuin_setup_completion
+
+  # Optional: Replace default TAB with hybrid completion
+  # Uncomment the next line to try Atuin first, then fallback to standard completion
+  # bindkey '^I' _atuin_hybrid_complete
+fi
+EOF
+
+  _zsh_tool_log INFO "✓ Atuin completion integration added"
+  return 0
+}

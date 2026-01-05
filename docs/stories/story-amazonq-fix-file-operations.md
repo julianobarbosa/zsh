@@ -4,7 +4,7 @@
 **Epic**: Epic 3 - Advanced Integrations
 **Priority**: High
 **Estimate**: 3 points
-**Status**: Ready for Review
+**Status**: Done
 **Created**: 2025-10-02
 **Labels**: bug, high-priority
 
@@ -51,31 +51,34 @@ _zsh_tool_log INFO "✓ Amazon Q settings configured"  # Always reports success
 ## Tasks/Subtasks
 
 - [x] **Task 1: Add directory creation error checking**
-  - [ ] Check mkdir return code
-  - [ ] Log descriptive error on failure
-  - [ ] Return error code to caller
+  - [x] Check mkdir return code
+  - [x] Log descriptive error on failure
+  - [x] Return error code to caller
 
 - [x] **Task 2: Add directory writability check**
-  - [ ] Verify directory exists after creation
-  - [ ] Check write permissions on directory
-  - [ ] Log error if not writable
+  - [x] Verify directory exists after creation
+  - [x] Check write permissions on directory
+  - [x] Log error if not writable
 
 - [x] **Task 3: Add file write error checking**
-  - [ ] Check file write operation return code
-  - [ ] Verify file was actually created
-  - [ ] Verify file contains expected content
-  - [ ] Log error on failure
+  - [x] Check file write operation return code
+  - [x] Verify file was actually created
+  - [x] Verify file contains expected content
+  - [x] Log error on failure
 
 - [x] **Task 4: Improve error messages**
-  - [ ] Include file paths in error messages
-  - [ ] Suggest possible solutions (check permissions, disk space)
-  - [ ] Use consistent error message format
+  - [x] Include file paths in error messages
+  - [x] Suggest possible solutions (check permissions, disk space)
+  - [x] Use consistent error message format
 
 - [x] **Task 5: Add error handling tests**
-  - [ ] Test with read-only filesystem (mockup)
-  - [ ] Test with insufficient permissions
-  - [ ] Test with invalid paths
-  - [ ] Verify error messages are helpful
+  - [x] Test with read-only filesystem (mockup)
+  - [x] Test with insufficient permissions
+  - [x] Test with invalid paths
+  - [x] Verify error messages are helpful
+
+### Review Follow-ups (AI)
+- [x] [AI-Review][HIGH] Add explicit umask when creating settings file to prevent world-readable permissions [lib/integrations/amazon-q.zsh:269] **FIXED**
 
 ## Technical Implementation
 

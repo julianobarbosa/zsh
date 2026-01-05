@@ -4,7 +4,7 @@
 **Epic**: Epic 3 - Advanced Integrations
 **Priority**: Medium
 **Estimate**: 3 points
-**Status**: Ready for Review
+**Status**: Done
 **Created**: 2025-10-02
 **Labels**: bug, medium-priority
 
@@ -56,6 +56,11 @@ _zsh_tool_log INFO "✓ Lazy loading configured"
 - [x] **Task 4: Add rollback capability**
   - [x] Restore backup on failure
   - [x] Log rollback actions
+
+### Review Follow-ups (AI)
+- [ ] [AI-Review][MEDIUM] Add backup cleanup - keep only N most recent backup files [lib/integrations/amazon-q.zsh:379]
+- [ ] [AI-Review][MEDIUM] Review non-interactive symlink handling - may modify shared configs silently in CI/CD [lib/integrations/amazon-q.zsh:362-369]
+- [ ] [AI-Review][MEDIUM] Add test for rollback when append fails [tests/test-amazon-q-edge-cases.zsh]
 
 ## Technical Implementation
 

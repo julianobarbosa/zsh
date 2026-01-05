@@ -8,7 +8,7 @@ A comprehensive command-line tool for managing zsh shell configurations on macOS
 - **Team consistency**: Ensure all developers use the same base configuration and conventions
 - **Easy maintenance**: Update configurations, plugins, and themes with simple commands
 - **Safe operations**: Automatic backups before changes with easy rollback
-- **Advanced integrations**: Optional Atuin shell history and Amazon Q Developer CLI support
+- **Advanced integrations**: Optional Atuin shell history and Kiro CLI support
 
 ## Quick Start
 
@@ -38,8 +38,8 @@ That's it! Your zsh environment is now configured with team standards.
 
 ### Advanced Integrations
 - **[Atuin](https://atuin.sh)**: Enhanced shell history with searchable SQLite database, sync across machines
-- **[Amazon Q Developer CLI](https://aws.amazon.com/q/developer/)**: AI-powered command completions and suggestions
-- **Compatibility Layer**: Automatic configuration for Atuin + Amazon Q coexistence
+- **[Kiro CLI](https://kiro.dev/docs/cli/)**: AI-powered command completions and suggestions
+- **Compatibility Layer**: Automatic configuration for Atuin + Kiro CLI coexistence
 
 ## Common Commands
 
@@ -61,9 +61,9 @@ zsh-tool-restore apply <backup-id>
 zsh-tool-atuin install
 zsh-tool-atuin stats
 
-# Amazon Q Developer
-zsh-tool-amazonq install
-zsh-tool-amazonq status
+# Kiro CLI
+zsh-tool-kiro install
+zsh-tool-kiro status
 
 # Get help
 zsh-tool-help
@@ -86,7 +86,7 @@ zsh-tool/
 │   ├── update/            # Update operations
 │   ├── restore/           # Backup and restore
 │   ├── git/               # Git integration
-│   └── integrations/      # Atuin, Amazon Q
+│   └── integrations/      # Atuin, Kiro CLI
 ├── templates/             # Configuration templates
 ├── tests/                 # Test suite
 ├── docs/                  # Comprehensive documentation
@@ -102,7 +102,7 @@ zsh-tool/
 - **[Codebase Analysis](docs/CODEBASE-ANALYSIS.md)**: Detailed code structure
 
 ### Troubleshooting & Fixes
-- [Atuin + Amazon Q Compatibility](docs/ATUIN-CTRL-R-FIX.md)
+- [Atuin + Kiro CLI Compatibility](docs/ATUIN-CTRL-R-FIX.md)
 - [iTerm2 XPC Connection Fix](docs/ITERM2-XPC-CONNECTION-FIX.md)
 - [Lazy Completion Optimization](docs/LAZY-COMPLETION-FIX.md)
 - [Security & Reliability Fixes](docs/FIXES-2025-10-02.md)
@@ -128,7 +128,7 @@ atuin:
   import_history: true
   search_mode: "fuzzy"
 
-amazon_q:
+kiro_cli:
   enabled: false
   lazy_loading: true
   atuin_compatibility: true
@@ -155,8 +155,7 @@ function my_function() {
 
 ### Running Tests
 ```bash
-cd tests
-zsh run-tests.zsh
+zsh tests/run-all-tests.sh
 ```
 
 ### Development Mode
@@ -194,7 +193,7 @@ MIT License - See LICENSE file for details
 Built with:
 - [Oh My Zsh](https://ohmyz.sh/) - Zsh framework
 - [Atuin](https://atuin.sh) - Shell history enhancement
-- [Amazon Q Developer CLI](https://aws.amazon.com/q/developer/) - AI-powered CLI assistance
+- [Kiro CLI](https://kiro.dev/docs/cli/) - AI-powered CLI assistance
 
 ---
 

@@ -84,6 +84,7 @@ source "${ZSH_TOOL_LIB_DIR}/install/verify.zsh"
 source "${ZSH_TOOL_LIB_DIR}/update/self.zsh"
 source "${ZSH_TOOL_LIB_DIR}/update/omz.zsh"
 source "${ZSH_TOOL_LIB_DIR}/update/plugins.zsh"
+source "${ZSH_TOOL_LIB_DIR}/update/themes.zsh"
 
 # Load restore modules (Epic 2)
 source "${ZSH_TOOL_LIB_DIR}/restore/backup-mgmt.zsh"
@@ -95,7 +96,7 @@ source "${ZSH_TOOL_LIB_DIR}/git/integration.zsh"
 # Load integrations (Epic 3)
 if [[ -d "${ZSH_TOOL_LIB_DIR}/integrations" ]]; then
   source "${ZSH_TOOL_LIB_DIR}/integrations/atuin.zsh"
-  source "${ZSH_TOOL_LIB_DIR}/integrations/amazon-q.zsh"
+  source "${ZSH_TOOL_LIB_DIR}/integrations/kiro-cli.zsh"
 fi
 
 # Setup integrations based on config
@@ -104,7 +105,7 @@ _zsh_tool_setup_integrations() {
 
   # Check if Atuin is enabled in config
   local atuin_enabled=$(_zsh_tool_parse_atuin_enabled)
-  local amazonq_enabled=$(_zsh_tool_parse_amazon_q_enabled)
+  local kiro_enabled=$(_zsh_tool_parse_kiro_enabled)
 
   if [[ "$atuin_enabled" == "true" ]]; then
     _zsh_tool_log INFO "Atuin enabled in configuration"
@@ -112,29 +113,29 @@ _zsh_tool_setup_integrations() {
     local import_history=$(_zsh_tool_parse_atuin_import_history)
     local sync_enabled=$(_zsh_tool_parse_atuin_sync_enabled)
 
-    # If Amazon Q is also enabled, configure compatibility
-    local configure_amazonq="false"
-    if [[ "$amazonq_enabled" == "true" ]]; then
-      configure_amazonq="true"
+    # If Kiro CLI is also enabled, configure compatibility
+    local configure_kiro="false"
+    if [[ "$kiro_enabled" == "true" ]]; then
+      configure_kiro="true"
     fi
 
     # Install and configure Atuin
-    _atuin_install_integration "$import_history" "$configure_amazonq" "$sync_enabled"
+    _atuin_install_integration "$import_history" "$configure_kiro" "$sync_enabled"
   else
     _zsh_tool_log DEBUG "Atuin not enabled, skipping"
   fi
 
-  # Check if Amazon Q is enabled in config
-  if [[ "$amazonq_enabled" == "true" ]]; then
-    _zsh_tool_log INFO "Amazon Q enabled in configuration"
+  # Check if Kiro CLI is enabled in config
+  if [[ "$kiro_enabled" == "true" ]]; then
+    _zsh_tool_log INFO "Kiro CLI enabled in configuration"
 
-    local lazy_loading=$(_zsh_tool_parse_amazon_q_lazy_loading)
-    local atuin_compat=$(_zsh_tool_parse_amazon_q_atuin_compatibility)
+    local lazy_loading=$(_zsh_tool_parse_kiro_lazy_loading)
+    local atuin_compat=$(_zsh_tool_parse_kiro_atuin_compatibility)
 
-    # Install and configure Amazon Q
-    _amazonq_install_integration "$lazy_loading" "$atuin_compat"
+    # Install and configure Kiro CLI
+    kiro_install_integration "$lazy_loading" "$atuin_compat"
   else
-    _zsh_tool_log DEBUG "Amazon Q not enabled, skipping"
+    _zsh_tool_log DEBUG "Kiro CLI not enabled, skipping"
   fi
 
   return 0
@@ -142,10 +143,15 @@ _zsh_tool_setup_integrations() {
 
 # Main install command
 zsh-tool-install() {
+  # Record installation start time
   local start_time=$(date +%s)
+  local start_iso=$(date -Iseconds 2>/dev/null || date -u +%Y-%m-%dT%H:%M:%S%z)
 
   _zsh_tool_log INFO "Starting zsh-tool installation..."
   echo ""
+
+  # Track installation start in state (Story 1.7)
+  _zsh_tool_update_state "installation_start" "\"${start_iso}\""
 
   # Check prerequisites (Story 1.1)
   _zsh_tool_check_prerequisites || return 1
@@ -171,14 +177,47 @@ zsh-tool-install() {
   # Setup integrations (if enabled in config)
   _zsh_tool_setup_integrations
 
+  # Record installation end time (Story 1.7)
+  local end_time=$(date +%s)
+  local end_iso=$(date -Iseconds 2>/dev/null || date -u +%Y-%m-%dT%H:%M:%S%z)
+  local duration=$((end_time - start_time))
+
+  # Track installation end and duration in state (Story 1.7)
+  _zsh_tool_update_state "installation_end" "\"${end_iso}\""
+  _zsh_tool_update_state "installation_duration_seconds" "$duration"
+
   # Verify installation (Story 1.7)
-  _zsh_tool_verify_installation
+  # HIGH-4 FIX: Only mark as installed if verification passes
+  if ! _zsh_tool_verify_installation; then
+    _zsh_tool_log ERROR "Installation verification failed"
+    _zsh_tool_update_state "installed" "false"
+    _zsh_tool_update_state "verification_failed" "true"
+    _zsh_tool_update_state "verification_timestamp" "\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\""
 
-  # Display summary
-  _zsh_tool_display_summary "$start_time"
+    echo ""
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo "  INSTALLATION VERIFICATION FAILED"
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo ""
+    echo "The installation completed but verification failed."
+    echo ""
+    echo "Rollback options:"
+    echo "  1. Restore from backup: zsh-tool-restore apply <backup-id>"
+    echo "  2. List available backups: zsh-tool-restore list"
+    echo "  3. Re-run installation: zsh-tool-install"
+    echo ""
+    echo "Check logs for details: \$ZSH_TOOL_LOG_FILE"
+    echo ""
 
-  # Update state - mark as installed
+    return 1
+  fi
+
+  # Display summary (Story 1.7)
+  _zsh_tool_display_summary
+
+  # Update state - mark as installed (only after successful verification)
   _zsh_tool_update_state "installed" "true"
+  _zsh_tool_update_state "verification_failed" "false"
   _zsh_tool_update_state "install_timestamp" "\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\""
 
   return 0
@@ -186,10 +225,101 @@ zsh-tool-install() {
 
 # Epic 2 Commands
 
-# Update command
+# Update command (Story 2.2: Bulk Plugin and Theme Updates)
 zsh-tool-update() {
-  local target="${1:-all}"
+  local target="all"
+  local check_only=false
 
+  # Parse arguments
+  while [[ $# -gt 0 ]]; do
+    case $1 in
+      --check)
+        check_only=true
+        shift
+        ;;
+      self|omz|plugins|themes|all)
+        target=$1
+        shift
+        ;;
+      *)
+        echo "Unknown option: $1"
+        echo "Usage: zsh-tool-update [--check] [self|omz|plugins|themes|all]"
+        return 1
+        ;;
+    esac
+  done
+
+  # Check-only mode
+  if [[ "$check_only" == "true" ]]; then
+    _zsh_tool_log INFO "Checking for updates (no changes will be applied)..."
+    echo ""
+
+    local updates_found=false
+
+    case "$target" in
+      self)
+        if _zsh_tool_check_for_updates >/dev/null 2>&1; then
+          _zsh_tool_log INFO "✓ zsh-tool has updates available"
+          updates_found=true
+        else
+          _zsh_tool_log INFO "✓ zsh-tool is up to date"
+        fi
+        ;;
+      omz)
+        if _zsh_tool_check_omz_updates; then
+          _zsh_tool_log INFO "✓ Oh My Zsh has updates available"
+          updates_found=true
+        else
+          _zsh_tool_log INFO "✓ Oh My Zsh is up to date"
+        fi
+        ;;
+      plugins)
+        if _zsh_tool_check_all_plugins; then
+          updates_found=true
+        fi
+        ;;
+      themes)
+        if _zsh_tool_check_all_themes; then
+          updates_found=true
+        fi
+        ;;
+      all)
+        # Check all components
+        local self_updates=false
+        local omz_updates=false
+        local plugin_updates=false
+        local theme_updates=false
+
+        _zsh_tool_check_for_updates >/dev/null 2>&1 && self_updates=true
+        _zsh_tool_check_omz_updates && omz_updates=true
+        _zsh_tool_check_all_plugins && plugin_updates=true
+        _zsh_tool_check_all_themes && theme_updates=true
+
+        echo ""
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo "Update Check Summary:"
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        [[ "$self_updates" == "true" ]] && echo "  • zsh-tool: Updates available" || echo "  • zsh-tool: Up to date"
+        [[ "$omz_updates" == "true" ]] && echo "  • Oh My Zsh: Updates available" || echo "  • Oh My Zsh: Up to date"
+        [[ "$plugin_updates" == "true" ]] && echo "  • Plugins: Updates available" || echo "  • Plugins: Up to date"
+        [[ "$theme_updates" == "true" ]] && echo "  • Themes: Updates available" || echo "  • Themes: Up to date"
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo ""
+
+        if [[ "$self_updates" == "true" || "$omz_updates" == "true" || "$plugin_updates" == "true" || "$theme_updates" == "true" ]]; then
+          echo "Run 'zsh-tool-update all' to apply updates"
+          updates_found=true
+        else
+          echo "Everything is up to date!"
+        fi
+        ;;
+    esac
+
+    echo ""
+    [[ "$updates_found" == "true" ]] && return 0 || return 1
+  fi
+
+  # Apply updates mode
   case "$target" in
     self)
       _zsh_tool_self_update
@@ -202,6 +332,10 @@ zsh-tool-update() {
       _zsh_tool_create_backup "pre-update" || return 1
       _zsh_tool_update_all_plugins
       ;;
+    themes)
+      _zsh_tool_create_backup "pre-update" || return 1
+      _zsh_tool_update_all_themes
+      ;;
     all)
       _zsh_tool_log INFO "Updating all components..."
       echo ""
@@ -209,7 +343,7 @@ zsh-tool-update() {
       # Update self
       _zsh_tool_self_update --check && _zsh_tool_apply_update
 
-      # Create backup before updating OMZ and plugins
+      # Create backup before updating OMZ, plugins, and themes
       _zsh_tool_create_backup "pre-update" || return 1
 
       # Update OMZ
@@ -217,6 +351,9 @@ zsh-tool-update() {
 
       # Update plugins
       _zsh_tool_update_all_plugins
+
+      # Update themes
+      _zsh_tool_update_all_themes
 
       echo ""
       echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
@@ -227,7 +364,7 @@ zsh-tool-update() {
       echo ""
       ;;
     *)
-      echo "Usage: zsh-tool-update [self|omz|plugins|all]"
+      echo "Usage: zsh-tool-update [--check] [self|omz|plugins|themes|all]"
       return 1
       ;;
   esac
@@ -287,12 +424,12 @@ zsh-tool-atuin() {
       _zsh_tool_log INFO "Installing Atuin shell history integration..."
       local import_history=$(_zsh_tool_parse_atuin_import_history)
       local sync_enabled=$(_zsh_tool_parse_atuin_sync_enabled)
-      local amazonq_enabled=$(_zsh_tool_parse_amazon_q_enabled)
-      local configure_amazonq="false"
-      if [[ "$amazonq_enabled" == "true" ]]; then
-        configure_amazonq="true"
+      local kiro_enabled=$(_zsh_tool_parse_kiro_enabled)
+      local configure_kiro="false"
+      if [[ "$kiro_enabled" == "true" ]]; then
+        configure_kiro="true"
       fi
-      _atuin_install_integration "$import_history" "$configure_amazonq" "$sync_enabled"
+      _atuin_install_integration "$import_history" "$configure_kiro" "$sync_enabled"
       ;;
     status|detect)
       _atuin_detect
@@ -331,38 +468,38 @@ ATUIN_HELP
   esac
 }
 
-# Amazon Q integration command
-zsh-tool-amazonq() {
+# Kiro CLI integration command
+zsh-tool-kiro() {
   local subcommand="${1:-status}"
 
   case "$subcommand" in
     install)
-      _zsh_tool_log INFO "Installing Amazon Q CLI integration..."
-      local lazy_loading=$(_zsh_tool_parse_amazon_q_lazy_loading)
-      local atuin_compat=$(_zsh_tool_parse_amazon_q_atuin_compatibility)
-      _amazonq_install_integration "$lazy_loading" "$atuin_compat"
+      _zsh_tool_log INFO "Installing Kiro CLI integration..."
+      local lazy_loading=$(_zsh_tool_parse_kiro_lazy_loading)
+      local atuin_compat=$(_zsh_tool_parse_kiro_atuin_compatibility)
+      kiro_install_integration "$lazy_loading" "$atuin_compat"
       ;;
     status|detect)
-      _amazonq_detect
+      _kiro_detect
       ;;
     health|doctor)
-      _amazonq_health_check
+      _kiro_health_check
       ;;
     config-atuin)
-      _amazonq_configure_atuin_compatibility
+      _kiro_configure_atuin_compatibility
       ;;
     *)
-      cat <<AMAZONQ_HELP
-Usage: zsh-tool-amazonq [command]
+      cat <<KIRO_HELP
+Usage: zsh-tool-kiro [command]
 
 Commands:
-  install         Install and configure Amazon Q CLI
-  status          Check Amazon Q CLI installation status
-  health          Run Amazon Q health check (q doctor)
+  install         Install and configure Kiro CLI
+  status          Check Kiro CLI installation status
+  health          Run Kiro CLI health check (kiro-cli doctor)
   config-atuin    Configure Atuin compatibility
 
-For more info: https://docs.aws.amazon.com/amazonq/latest/qdeveloper-ug/command-line.html
-AMAZONQ_HELP
+For more info: https://kiro.dev/docs/cli/
+KIRO_HELP
       ;;
   esac
 }
@@ -395,10 +532,12 @@ Epic 1 - Installation & Configuration:
   zsh-tool-config [list|edit]   Manage configuration
 
 Epic 2 - Maintenance & Lifecycle:
-  zsh-tool-update [target]      Update components
+  zsh-tool-update [--check] [target]  Update components
+    --check                     Check for updates without applying
     self                        Update zsh-tool itself
     omz                         Update Oh My Zsh
     plugins                     Update all plugins
+    themes                      Update all themes
     all                         Update everything (default)
 
   zsh-tool-backup [action]      Manage backups
@@ -428,10 +567,10 @@ Epic 3 - Integrations:
     stats                       Show history statistics
     sync-setup                  Setup history sync
 
-  zsh-tool-amazonq [command]    Amazon Q CLI integration
-    install                     Install and configure Amazon Q
+  zsh-tool-kiro [command]       Kiro CLI integration
+    install                     Install and configure Kiro CLI
     status                      Check installation status
-    health                      Run health check (q doctor)
+    health                      Run health check (kiro-cli doctor)
     config-atuin                Configure Atuin compatibility
 
 Other:

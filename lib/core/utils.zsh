@@ -2,11 +2,27 @@
 # Core utilities for zsh-tool
 # Logging, prompts, error handling, idempotency checks
 
-# Configuration
-ZSH_TOOL_CONFIG_DIR="${HOME}/.config/zsh-tool"
-ZSH_TOOL_LOG_FILE="${ZSH_TOOL_CONFIG_DIR}/logs/zsh-tool.log"
-ZSH_TOOL_STATE_FILE="${ZSH_TOOL_CONFIG_DIR}/state.json"
-ZSH_TOOL_LOG_LEVEL="${ZSH_TOOL_LOG_LEVEL:-INFO}"
+# CRITICAL: Ensure essential system paths are in PATH BEFORE any function definitions
+# This fixes command resolution issues where date, dirname, etc. are not found
+# Must happen at the very top, unconditionally
+export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"
+
+# Define absolute paths for critical commands used in logging/init
+# This avoids PATH resolution issues in command substitutions
+typeset -g _ZSH_TOOL_CMD_DATE="/bin/date"
+typeset -g _ZSH_TOOL_CMD_DIRNAME="/usr/bin/dirname"
+typeset -g _ZSH_TOOL_CMD_MKDIR="/bin/mkdir"
+
+# Verify commands exist at expected paths, fallback to PATH lookup if not
+[[ ! -x "$_ZSH_TOOL_CMD_DATE" ]] && _ZSH_TOOL_CMD_DATE="date"
+[[ ! -x "$_ZSH_TOOL_CMD_DIRNAME" ]] && _ZSH_TOOL_CMD_DIRNAME="dirname"
+[[ ! -x "$_ZSH_TOOL_CMD_MKDIR" ]] && _ZSH_TOOL_CMD_MKDIR="mkdir"
+
+# Configuration (use defaults only if not already set)
+: ${ZSH_TOOL_CONFIG_DIR:="${HOME}/.config/zsh-tool"}
+: ${ZSH_TOOL_LOG_FILE:="${ZSH_TOOL_CONFIG_DIR}/logs/zsh-tool.log"}
+: ${ZSH_TOOL_STATE_FILE:="${ZSH_TOOL_CONFIG_DIR}/state.json"}
+: ${ZSH_TOOL_LOG_LEVEL:=INFO}
 
 # Logging levels
 typeset -A ZSH_TOOL_LOG_LEVELS
@@ -19,19 +35,20 @@ ZSH_TOOL_LOG_LEVELS=(
 
 # Initialize logging directory
 _zsh_tool_init_logging() {
-  mkdir -p "$(dirname "$ZSH_TOOL_LOG_FILE")" 2>/dev/null
+  $_ZSH_TOOL_CMD_MKDIR -p "$($_ZSH_TOOL_CMD_DIRNAME "$ZSH_TOOL_LOG_FILE")" 2>/dev/null
 }
 
 # Log message
 # Usage: _zsh_tool_log <level> <message>
+# Levels: info, warn, error, debug (case-insensitive)
 _zsh_tool_log() {
-  local level=$1
+  local level="${1:u}"  # Convert to uppercase for consistent matching
   shift
   local message="$*"
-  local timestamp=$(date '+%Y-%m-%d %H:%M:%S')
+  local timestamp=$($_ZSH_TOOL_CMD_DATE '+%Y-%m-%d %H:%M:%S')
 
   # Initialize logging if needed
-  [[ ! -d "$(dirname "$ZSH_TOOL_LOG_FILE")" ]] && _zsh_tool_init_logging
+  [[ ! -d "$($_ZSH_TOOL_CMD_DIRNAME "$ZSH_TOOL_LOG_FILE")" ]] && _zsh_tool_init_logging
 
   # Check log level
   local current_level=${ZSH_TOOL_LOG_LEVELS[$ZSH_TOOL_LOG_LEVEL]:-1}
@@ -90,17 +107,57 @@ _zsh_tool_load_state() {
   fi
 }
 
-# Save state file
+# Save state file atomically
 # Usage: _zsh_tool_save_state <json_content>
 _zsh_tool_save_state() {
   local content="$1"
-  mkdir -p "$(dirname "$ZSH_TOOL_STATE_FILE")" 2>/dev/null
-  echo "$content" > "$ZSH_TOOL_STATE_FILE"
+  $_ZSH_TOOL_CMD_MKDIR -p "$($_ZSH_TOOL_CMD_DIRNAME "$ZSH_TOOL_STATE_FILE")" 2>/dev/null
+  # Atomic write: write to temp file then rename (prevents race conditions)
+  local temp_file="${ZSH_TOOL_STATE_FILE}.tmp.$$"
+  echo "$content" > "$temp_file" && mv "$temp_file" "$ZSH_TOOL_STATE_FILE"
 }
 
-# Update state field
+# Update state field with file locking to prevent TOCTOU race conditions
 # Usage: _zsh_tool_update_state <key> <value>
 _zsh_tool_update_state() {
+  local key="$1"
+  local value="$2"
+  local state_file="$ZSH_TOOL_STATE_FILE"
+  local lock_dir="${state_file}.lock"
+
+  # Use mkdir-based atomic locking (works on all platforms including macOS)
+  # mkdir is atomic on POSIX systems, making it safe for locking
+  local max_attempts=10
+  local attempt=0
+  while ! mkdir "$lock_dir" 2>/dev/null; do
+    attempt=$((attempt + 1))
+    if [[ $attempt -ge $max_attempts ]]; then
+      _zsh_tool_log ERROR "Failed to acquire state lock after $max_attempts attempts"
+      return 1
+    fi
+    sleep 0.1
+  done
+
+  # Ensure lock is released on exit (normal or error)
+  # Use a cleanup function to handle all cases
+  _zsh_tool_release_state_lock() {
+    rmdir "$lock_dir" 2>/dev/null
+  }
+  trap '_zsh_tool_release_state_lock' EXIT INT TERM HUP
+
+  _zsh_tool_update_state_internal "$key" "$value"
+  local result=$?
+
+  # Release lock and reset trap
+  _zsh_tool_release_state_lock
+  trap - EXIT INT TERM HUP
+
+  return $result
+}
+
+# Internal function to perform the actual state update (called within lock)
+# Usage: _zsh_tool_update_state_internal <key> <value>
+_zsh_tool_update_state_internal() {
   local key="$1"
   local value="$2"
   local state=$(_zsh_tool_load_state)

@@ -792,7 +792,7 @@ theme: ../../../etc/passwd
 EOF
 
   local theme
-  theme=$(_zsh_tool_parse_theme "${ZSH_TOOL_CONFIG_DIR}/config.yaml" 2>/dev/null)
+  theme=$(_zsh_tool_verify_parse_theme "${ZSH_TOOL_CONFIG_DIR}/config.yaml" 2>/dev/null)
   local result=$?
 
   # Restore config
@@ -813,7 +813,7 @@ theme: "robbyrussell;rm -rf /"
 EOF
 
   local theme
-  theme=$(_zsh_tool_parse_theme "${ZSH_TOOL_CONFIG_DIR}/config.yaml" 2>/dev/null)
+  theme=$(_zsh_tool_verify_parse_theme "${ZSH_TOOL_CONFIG_DIR}/config.yaml" 2>/dev/null)
   local result=$?
 
   # Restore config

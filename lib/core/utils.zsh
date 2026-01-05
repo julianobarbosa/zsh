@@ -2,6 +2,11 @@
 # Core utilities for zsh-tool
 # Logging, prompts, error handling, idempotency checks
 
+# Ensure essential system paths are in PATH (fixes rare command resolution issues)
+# This is defensive - standard commands like date, dirname should always be available
+[[ ":$PATH:" != *":/bin:"* ]] && PATH="/bin:$PATH"
+[[ ":$PATH:" != *":/usr/bin:"* ]] && PATH="/usr/bin:$PATH"
+
 # Configuration (use defaults only if not already set)
 : ${ZSH_TOOL_CONFIG_DIR:="${HOME}/.config/zsh-tool"}
 : ${ZSH_TOOL_LOG_FILE:="${ZSH_TOOL_CONFIG_DIR}/logs/zsh-tool.log"}

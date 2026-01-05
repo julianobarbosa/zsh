@@ -99,9 +99,10 @@ _zsh_tool_parse_yaml_list() {
   printf '%s\n' "${items[@]}"
 }
 
-# Safely parse theme from config file
+# Safely parse theme from config file (for verification)
+# Note: Named differently from _zsh_tool_parse_theme in config.zsh to avoid collision
 # Returns: Prints validated theme name or empty string
-_zsh_tool_parse_theme() {
+_zsh_tool_verify_parse_theme() {
   local config_file="$1"
 
   if [[ ! -f "$config_file" ]]; then
@@ -327,7 +328,7 @@ _zsh_tool_check_theme_applied() {
 
   # SECURITY FIX: Use safe theme parser with validation
   local configured_theme
-  configured_theme=$(_zsh_tool_parse_theme "$config_file")
+  configured_theme=$(_zsh_tool_verify_parse_theme "$config_file")
   local parse_result=$?
 
   # Check if parsing failed (invalid theme name detected)
@@ -421,7 +422,7 @@ _zsh_tool_display_summary() {
 
     # SECURITY FIX: Use safe theme parser with validation
     local theme
-    theme=$(_zsh_tool_parse_theme "$config_file")
+    theme=$(_zsh_tool_verify_parse_theme "$config_file")
     if [[ -n "$theme" ]]; then
       echo "  ✓ Theme: $theme"
     fi

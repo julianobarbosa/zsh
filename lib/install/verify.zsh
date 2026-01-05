@@ -206,37 +206,40 @@ _zsh_tool_verify_in_subshell() {
   return 0
 }
 
-# Check if Oh My Zsh is loaded
-# Returns: 0 if OMZ is loaded, 1 otherwise
+# Check if Oh My Zsh is installed
+# Returns: 0 if OMZ is installed, 1 otherwise
+# Note: During installation, .zshrc hasn't been sourced so we check files exist, not functions loaded
 _zsh_tool_check_omz_loaded() {
-  _zsh_tool_log DEBUG "Checking if Oh My Zsh is loaded"
+  _zsh_tool_log DEBUG "Checking if Oh My Zsh is installed"
 
-  # Check $ZSH variable exists
-  if [[ -z "$ZSH" ]]; then
-    _zsh_tool_log DEBUG "ZSH variable not set"
-    return 1
-  fi
+  # Set default OMZ path if not already set (during install, .zshrc hasn't been sourced)
+  local zsh_dir="${ZSH:-$HOME/.oh-my-zsh}"
 
   # Check oh-my-zsh.sh exists
-  if [[ ! -f "$ZSH/oh-my-zsh.sh" ]]; then
-    _zsh_tool_log DEBUG "oh-my-zsh.sh not found at $ZSH"
+  if [[ ! -f "$zsh_dir/oh-my-zsh.sh" ]]; then
+    _zsh_tool_log DEBUG "oh-my-zsh.sh not found at $zsh_dir"
     return 1
   fi
 
-  # Check OMZ functions are defined
-  if ! typeset -f omz >/dev/null 2>&1; then
-    _zsh_tool_log DEBUG "omz function not defined"
+  # Check essential OMZ directories exist
+  if [[ ! -d "$zsh_dir/plugins" ]] || [[ ! -d "$zsh_dir/themes" ]]; then
+    _zsh_tool_log DEBUG "OMZ plugins or themes directory not found at $zsh_dir"
     return 1
   fi
 
-  _zsh_tool_log DEBUG "Oh My Zsh is loaded successfully"
+  _zsh_tool_log DEBUG "Oh My Zsh is installed successfully"
   return 0
 }
 
-# Check if configured plugins are loaded
-# Returns: 0 if all plugins are loaded, 1 otherwise
+# Check if configured plugins are installed
+# Returns: 0 if all plugins are installed, 1 otherwise
+# Note: This checks installation (files exist), not loading (which requires sourcing .zshrc)
 _zsh_tool_check_plugins_loaded() {
-  _zsh_tool_log DEBUG "Checking if plugins are loaded"
+  _zsh_tool_log DEBUG "Checking if plugins are installed"
+
+  # Set default OMZ paths if not already set (during install, .zshrc hasn't been sourced)
+  local zsh_dir="${ZSH:-$HOME/.oh-my-zsh}"
+  local zsh_custom="${ZSH_CUSTOM:-$zsh_dir/custom}"
 
   # Read plugins from config
   local config_file="${ZSH_TOOL_CONFIG_DIR}/config.yaml"
@@ -262,43 +265,34 @@ _zsh_tool_check_plugins_loaded() {
     _zsh_tool_log DEBUG "Checking plugin: $plugin"
 
     # SECURITY: Plugin name already validated by _zsh_tool_parse_yaml_list
-    # Plugin-specific checks
-    case "$plugin" in
-      zsh-syntax-highlighting)
-        if [[ -z "$ZSH_HIGHLIGHT_VERSION" ]]; then
-          failed_plugins+=("$plugin")
-          _zsh_tool_log DEBUG "Plugin check failed: $plugin (ZSH_HIGHLIGHT_VERSION not set)"
-        fi
-        ;;
-      zsh-autosuggestions)
-        if [[ -z "$ZSH_AUTOSUGGEST_VERSION" ]]; then
-          failed_plugins+=("$plugin")
-          _zsh_tool_log DEBUG "Plugin check failed: $plugin (ZSH_AUTOSUGGEST_VERSION not set)"
-        fi
-        ;;
-      *)
-        # Generic check: plugin dir exists
-        if [[ ! -d "$ZSH/plugins/$plugin" ]] && [[ ! -d "$ZSH_CUSTOM/plugins/$plugin" ]]; then
-          failed_plugins+=("$plugin")
-          _zsh_tool_log DEBUG "Plugin check failed: $plugin (directory not found)"
-        fi
-        ;;
-    esac
+    # Check if plugin is installed (directory exists in OMZ plugins or custom plugins)
+    # External plugins (zsh-syntax-highlighting, zsh-autosuggestions) are installed to $ZSH_CUSTOM/plugins/
+    if [[ -d "$zsh_dir/plugins/$plugin" ]] || [[ -d "$zsh_custom/plugins/$plugin" ]]; then
+      _zsh_tool_log DEBUG "Plugin found: $plugin"
+    else
+      failed_plugins+=("$plugin")
+      _zsh_tool_log DEBUG "Plugin check failed: $plugin (directory not found in $zsh_dir/plugins or $zsh_custom/plugins)"
+    fi
   done
 
   if [[ ${#failed_plugins[@]} -gt 0 ]]; then
-    _zsh_tool_log ERROR "Failed to load plugins: ${failed_plugins[*]}"
+    _zsh_tool_log ERROR "Failed to find plugins: ${failed_plugins[*]}"
     return 1
   fi
 
-  _zsh_tool_log DEBUG "All plugins loaded successfully"
+  _zsh_tool_log DEBUG "All plugins installed successfully"
   return 0
 }
 
-# Check if theme is applied
-# Returns: 0 if theme is applied, 1 otherwise
+# Check if theme is installed
+# Returns: 0 if theme is installed, 1 otherwise
+# Note: During installation, .zshrc hasn't been sourced so we check files exist, not ZSH_THEME var
 _zsh_tool_check_theme_applied() {
-  _zsh_tool_log DEBUG "Checking if theme is applied"
+  _zsh_tool_log DEBUG "Checking if theme is installed"
+
+  # Set default OMZ paths if not already set (during install, .zshrc hasn't been sourced)
+  local zsh_dir="${ZSH:-$HOME/.oh-my-zsh}"
+  local zsh_custom="${ZSH_CUSTOM:-$zsh_dir/custom}"
 
   # Read theme from config
   local config_file="${ZSH_TOOL_CONFIG_DIR}/config.yaml"
@@ -335,20 +329,14 @@ _zsh_tool_check_theme_applied() {
     return 1
   fi
 
-  # Check $ZSH_THEME matches config
-  if [[ "$ZSH_THEME" != "$configured_theme" ]]; then
-    _zsh_tool_log ERROR "Theme mismatch: configured=$configured_theme, actual=$ZSH_THEME"
-    return 1
-  fi
-
   # Check theme file exists (now safe after validation)
-  if [[ ! -f "$ZSH/themes/${configured_theme}.zsh-theme" ]] && \
-     [[ ! -f "$ZSH_CUSTOM/themes/${configured_theme}.zsh-theme" ]]; then
+  if [[ ! -f "$zsh_dir/themes/${configured_theme}.zsh-theme" ]] && \
+     [[ ! -f "$zsh_custom/themes/${configured_theme}.zsh-theme" ]]; then
     _zsh_tool_log ERROR "Theme file not found: $configured_theme"
     return 1
   fi
 
-  _zsh_tool_log DEBUG "Theme applied successfully: $configured_theme"
+  _zsh_tool_log DEBUG "Theme installed successfully: $configured_theme"
   return 0
 }
 
@@ -376,8 +364,10 @@ _zsh_tool_display_summary() {
     echo "  ✓ Git: $git_version"
   fi
 
-  if [[ -n "$ZSH" ]] && [[ -d "$ZSH/.git" ]]; then
-    local omz_hash=$(cd "$ZSH" && git rev-parse --short HEAD 2>/dev/null || echo "unknown")
+  # Set default OMZ path if not already set (during install, .zshrc hasn't been sourced)
+  local zsh_dir="${ZSH:-$HOME/.oh-my-zsh}"
+  if [[ -d "$zsh_dir/.git" ]]; then
+    local omz_hash=$(cd "$zsh_dir" && git rev-parse --short HEAD 2>/dev/null || echo "unknown")
     echo "  ✓ Oh My Zsh: commit $omz_hash"
   fi
 

@@ -365,15 +365,59 @@ _zsh_tool_check_theme_applied() {
   return 0
 }
 
+# MEDIUM FIX: Detect if running in a TTY for colored output
+# Returns: 0 if TTY available, 1 otherwise
+_zsh_tool_is_tty() {
+  [[ -t 1 ]] && [[ -t 2 ]]
+}
+
+# Safe echo with optional color support
+# Usage: _zsh_tool_echo_status <status> <message>
+# status: "success" (✓), "failure" (✗), "warning" (⚠), "info" (•)
+_zsh_tool_echo_status() {
+  local status="$1"
+  local message="$2"
+
+  local prefix=""
+  case "$status" in
+    success) prefix="✓" ;;
+    failure) prefix="✗" ;;
+    warning) prefix="⚠" ;;
+    info)    prefix="•" ;;
+    *)       prefix="" ;;
+  esac
+
+  # In non-TTY environments, use ASCII fallbacks
+  if ! _zsh_tool_is_tty; then
+    case "$status" in
+      success) prefix="[OK]" ;;
+      failure) prefix="[FAIL]" ;;
+      warning) prefix="[WARN]" ;;
+      info)    prefix="[-]" ;;
+    esac
+  fi
+
+  echo "  ${prefix} ${message}"
+}
+
 # Display installation summary
 # Returns: 0 on success
 _zsh_tool_display_summary() {
   _zsh_tool_log DEBUG "Displaying installation summary"
 
   echo ""
-  echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  # Use ASCII box drawing for non-TTY environments
+  if _zsh_tool_is_tty; then
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  else
+    echo "========================================"
+  fi
   echo "  ZSH-TOOL INSTALLATION SUMMARY"
-  echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  if _zsh_tool_is_tty; then
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  else
+    echo "========================================"
+  fi
   echo ""
 
   # Prerequisites Section
@@ -381,23 +425,23 @@ _zsh_tool_display_summary() {
 
   if command -v brew >/dev/null 2>&1; then
     local brew_version=$(brew --version 2>/dev/null | head -1)
-    echo "  ✓ Homebrew: $brew_version"
+    _zsh_tool_echo_status "success" "Homebrew: $brew_version"
   fi
 
   if command -v git >/dev/null 2>&1; then
     local git_version=$(git --version 2>/dev/null)
-    echo "  ✓ Git: $git_version"
+    _zsh_tool_echo_status "success" "Git: $git_version"
   fi
 
   # Set default OMZ path if not already set (during install, .zshrc hasn't been sourced)
   local zsh_dir="${ZSH:-$HOME/.oh-my-zsh}"
   if [[ -d "$zsh_dir/.git" ]]; then
     local omz_hash=$(cd "$zsh_dir" && git rev-parse --short HEAD 2>/dev/null || echo "unknown")
-    echo "  ✓ Oh My Zsh: commit $omz_hash"
+    _zsh_tool_echo_status "success" "Oh My Zsh: commit $omz_hash"
   fi
 
   local zsh_version=$(zsh --version 2>/dev/null)
-  echo "  ✓ Zsh: $zsh_version"
+  _zsh_tool_echo_status "success" "Zsh: $zsh_version"
 
   echo ""
 
@@ -416,7 +460,7 @@ _zsh_tool_display_summary() {
     if [[ ${#plugins[@]} -gt 0 ]]; then
       echo "  Plugins:"
       for plugin in "${plugins[@]}"; do
-        echo "    ✓ $plugin"
+        _zsh_tool_echo_status "success" "$plugin"
       done
     fi
 
@@ -424,17 +468,17 @@ _zsh_tool_display_summary() {
     local theme
     theme=$(_zsh_tool_verify_parse_theme "$config_file")
     if [[ -n "$theme" ]]; then
-      echo "  ✓ Theme: $theme"
+      _zsh_tool_echo_status "success" "Theme: $theme"
     fi
   fi
 
   # Custom layer
   if [[ -f "${HOME}/.zshrc.local" ]]; then
-    echo "  ✓ Custom layer: ~/.zshrc.local"
+    _zsh_tool_echo_status "success" "Custom layer: ~/.zshrc.local"
   fi
 
   # Team config
-  echo "  ✓ Team config: ${config_file}"
+  _zsh_tool_echo_status "success" "Team config: ${config_file}"
 
   echo ""
 
@@ -448,11 +492,11 @@ _zsh_tool_display_summary() {
       # SECURITY FIX (HIGH-6): Validate backup_location before using with find
       if _zsh_tool_validate_backup_location "$backup_location"; then
         echo "Backup:"
-        echo "  ✓ Location: $backup_location"
-        echo "  ✓ Timestamp: $backup_timestamp"
+        _zsh_tool_echo_status "success" "Location: $backup_location"
+        _zsh_tool_echo_status "success" "Timestamp: $backup_timestamp"
         # Safe to use find now that backup_location is validated
         local backup_count=$(find "$backup_location" -type f 2>/dev/null | wc -l | tr -d ' ')
-        echo "  ✓ Files backed up: $backup_count"
+        _zsh_tool_echo_status "success" "Files backed up: $backup_count"
         echo ""
       else
         _zsh_tool_log WARN "Skipping backup display: invalid backup location"
@@ -465,13 +509,20 @@ _zsh_tool_display_summary() {
 
     if [[ -n "$install_start" ]] && [[ -n "$install_end" ]]; then
       echo "Installation Timing:"
-      echo "  ✓ Started: $install_start"
-      echo "  ✓ Completed: $install_end"
+      _zsh_tool_echo_status "success" "Started: $install_start"
+      _zsh_tool_echo_status "success" "Completed: $install_end"
 
-      # Calculate duration (simplified - just show timestamps)
+      # MEDIUM FIX: Validate duration with fallback for corrupted state
       local duration_seconds=$(grep '"installation_duration_seconds"' "$state_file" 2>/dev/null | sed 's/.*: *\([0-9]*\).*/\1/')
-      if [[ -n "$duration_seconds" ]]; then
-        echo "  ✓ Duration: ${duration_seconds}s"
+      if [[ -n "$duration_seconds" ]] && [[ "$duration_seconds" =~ ^[0-9]+$ ]]; then
+        # Validate duration is reasonable (less than 1 hour = 3600 seconds)
+        if [[ "$duration_seconds" -lt 3600 ]]; then
+          _zsh_tool_echo_status "success" "Duration: ${duration_seconds}s"
+        else
+          _zsh_tool_echo_status "warning" "Duration: ${duration_seconds}s (unusually long)"
+        fi
+      else
+        _zsh_tool_echo_status "warning" "Duration: unavailable (state may be corrupted)"
       fi
       echo ""
     fi
@@ -479,11 +530,15 @@ _zsh_tool_display_summary() {
 
   # Next Steps Section
   echo "Next Steps:"
-  echo "  • Customize: Edit ~/.zshrc.local for personal settings"
-  echo "  • Verify: Run 'zsh-tool-verify' to check installation"
-  echo "  • Docs: See ${ZSH_TOOL_CONFIG_DIR}/README.md"
+  _zsh_tool_echo_status "info" "Customize: Edit ~/.zshrc.local for personal settings"
+  _zsh_tool_echo_status "info" "Verify: Run 'zsh-tool-verify' to check installation"
+  _zsh_tool_echo_status "info" "Docs: See ${ZSH_TOOL_CONFIG_DIR}/README.md"
   echo ""
-  echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  if _zsh_tool_is_tty; then
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  else
+    echo "========================================"
+  fi
   echo ""
 
   return 0

@@ -92,10 +92,10 @@ Status: in-progress
 
 ### Review Follow-ups (AI) - 2026-01-04 - ADVERSARIAL REVIEW (YOLO MODE)
 
-- [ ] [AI-Review][HIGH] Code duplication with plugins.zsh - 90% identical logic [lib/install/themes.zsh]
-- [ ] [AI-Review][MEDIUM] Static built-in theme list will become stale as OMZ updates [lib/install/themes.zsh:105]
-- [ ] [AI-Review][MEDIUM] Theme set doesn't validate theme works before applying [lib/install/themes.zsh:set]
-- [ ] [AI-Review][MEDIUM] Only 2-3 themes in registry - insufficient for team choice [lib/install/themes.zsh:10-12]
+- [ ] [AI-Review][HIGH] Code duplication with plugins.zsh - 90% identical logic [lib/install/themes.zsh] - RESOLVED: Now uses shared component-manager.zsh
+- [x] [AI-Review][MEDIUM] Static built-in theme list will become stale as OMZ updates [lib/install/themes.zsh:105] - FIXED: Added _zsh_tool_get_builtin_themes() for dynamic detection from OMZ themes directory
+- [ ] [AI-Review][MEDIUM] Theme set doesn't validate theme works before applying [lib/install/themes.zsh:set] - DEFERRED: Would require sourcing theme which could have side effects
+- [x] [AI-Review][MEDIUM] Only 2-3 themes in registry - insufficient for team choice [lib/install/themes.zsh:10-12] - FIXED: Expanded THEME_URLS with 7 popular themes (powerlevel10k, spaceship-prompt, pure, agkozak-zsh-prompt, starship, bullet-train, alien)
 - [ ] [AI-Review][LOW] No test for theme conflicts (multiple themes with same name) [tests/test-themes.zsh]
 
 ---

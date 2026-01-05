@@ -11,9 +11,16 @@ OMZ_CUSTOM_THEMES="${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}/themes"
 
 # Theme URL registry (for custom themes)
 # Use -g for global scope when sourced from within a function
+# MEDIUM FIX: Expanded registry with more popular themes for team choice
 typeset -gA THEME_URLS
 THEME_URLS=(
   "powerlevel10k" "https://github.com/romkatv/powerlevel10k.git"
+  "spaceship-prompt" "https://github.com/spaceship-prompt/spaceship-prompt.git"
+  "pure" "https://github.com/sindresorhus/pure.git"
+  "agkozak-zsh-prompt" "https://github.com/agkozak/agkozak-zsh-prompt.git"
+  "starship" "https://github.com/starship/starship.git"
+  "bullet-train" "https://github.com/caiogondim/bullet-train.zsh.git"
+  "alien" "https://github.com/eendroroy/alien.git"
 )
 
 # Default fallback theme
@@ -99,6 +106,27 @@ _zsh_tool_validate_theme_name() {
   [[ -z "$sanitized" ]]
 }
 
+# Get built-in themes dynamically from OMZ themes directory
+# MEDIUM FIX: Dynamic detection instead of static list
+_zsh_tool_get_builtin_themes() {
+  local omz_themes_dir="${HOME}/.oh-my-zsh/themes"
+  local themes=()
+
+  if [[ -d "$omz_themes_dir" ]]; then
+    for theme_file in "${omz_themes_dir}"/*.zsh-theme(N); do
+      local theme_name="${theme_file:t:r}"  # basename without extension
+      [[ -n "$theme_name" ]] && themes+=("$theme_name")
+    done
+  fi
+
+  # Fallback to common themes if directory not found
+  if [[ ${#themes[@]} -eq 0 ]]; then
+    themes=("robbyrussell" "agnoster" "af-magic" "bira" "candy" "clean" "cloud" "dallas" "dst" "eastwood" "fino" "gnzh" "jnrowe" "mh" "minimal" "ys")
+  fi
+
+  printf '%s\n' "${themes[@]}" | sort -u
+}
+
 # List available themes with status
 _zsh_tool_theme_list() {
   local current_theme=$(_zsh_tool_parse_theme 2>/dev/null)
@@ -107,8 +135,11 @@ _zsh_tool_theme_list() {
   echo "Available themes:"
   echo "================"
 
-  # List built-in themes (common ones)
-  local builtin_themes=("robbyrussell" "agnoster" "af-magic" "bira" "candy" "clean" "cloud" "dallas" "dst" "eastwood" "fino" "gnzh" "jnrowe" "mh" "minimal" "ys")
+  # Get built-in themes dynamically
+  local builtin_themes=()
+  while IFS= read -r theme; do
+    [[ -n "$theme" ]] && builtin_themes+=("$theme")
+  done < <(_zsh_tool_get_builtin_themes)
 
   for theme in "${builtin_themes[@]}"; do
     local theme_status=""

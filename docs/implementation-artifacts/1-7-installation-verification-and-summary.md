@@ -88,11 +88,11 @@ Status: in-progress
 
 ### Review Follow-ups (AI) - 2026-01-04 - ADVERSARIAL REVIEW (YOLO MODE)
 
-- [ ] [AI-Review][HIGH] Verification in subshell - environment differs from actual user shell [lib/install/verify.zsh]
-- [ ] [AI-Review][HIGH] No rollback mechanism if verification fails post-install [lib/install/verify.zsh]
-- [ ] [AI-Review][MEDIUM] Colored output breaks in non-TTY environments (CI/automation) [lib/install/verify.zsh:colored output]
-- [ ] [AI-Review][MEDIUM] Duration calculation relies on state timestamps - inaccurate if state corrupted [lib/install/verify.zsh:duration]
-- [ ] [AI-Review][MEDIUM] Plugin verification only checks functions exist - doesn't validate functionality [lib/install/verify.zsh:check_plugins]
+- [ ] [AI-Review][HIGH] Verification in subshell - environment differs from actual user shell [lib/install/verify.zsh] - DEFERRED: Subshell verification is per story requirements
+- [ ] [AI-Review][HIGH] No rollback mechanism if verification fails post-install [lib/install/verify.zsh] - DEFERRED: Rollback would require tracking all changes
+- [x] [AI-Review][MEDIUM] Colored output breaks in non-TTY environments (CI/automation) [lib/install/verify.zsh:colored output] - FIXED: Added _zsh_tool_is_tty() and _zsh_tool_echo_status() for TTY-aware output with ASCII fallbacks
+- [x] [AI-Review][MEDIUM] Duration calculation relies on state timestamps - inaccurate if state corrupted [lib/install/verify.zsh:duration] - FIXED: Added validation for duration (numeric check, reasonableness check <3600s, warning for corrupted state)
+- [ ] [AI-Review][MEDIUM] Plugin verification only checks functions exist - doesn't validate functionality [lib/install/verify.zsh:check_plugins] - DEFERRED: Full functionality validation would require executing plugins with side effects
 - [ ] [AI-Review][LOW] No test for verification in non-interactive shell [tests/test-verify.zsh]
 
 ---

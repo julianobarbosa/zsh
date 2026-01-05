@@ -82,12 +82,18 @@ _zsh_tool_update_component() {
       return 0
     fi
 
-    # Pull latest changes
-    git pull 2>&1 | tee -a "$ZSH_TOOL_LOG_FILE" >/dev/null
-    local pull_status=${pipestatus[1]}
+    # Pull latest changes - capture output for better error reporting
+    local pull_output
+    pull_output=$(git pull 2>&1)
+    local pull_status=$?
+
+    # Log output
+    echo "$pull_output" >> "$ZSH_TOOL_LOG_FILE"
 
     if [[ $pull_status -ne 0 ]]; then
-      _zsh_tool_log WARN "Failed to update ${component_type}: $component_name"
+      # MEDIUM FIX: Improve network failure error reporting with specific error
+      local error_summary="${pull_output%%$'\n'*}"  # First line of error
+      _zsh_tool_log WARN "Failed to update ${component_type}: $component_name - ${error_summary}"
       return 1
     fi
   )
@@ -135,9 +141,13 @@ _zsh_tool_install_git_component() {
 
   _zsh_tool_log INFO "Installing ${component_type}: $component_name from $git_url"
 
-  # Clone repository
-  git clone --depth 1 "$git_url" "$target_dir" 2>&1 | tee -a "$ZSH_TOOL_LOG_FILE" >/dev/null
-  local clone_status=${pipestatus[1]}
+  # Clone repository - capture output for better error reporting
+  local clone_output
+  clone_output=$(git clone --depth 1 "$git_url" "$target_dir" 2>&1)
+  local clone_status=$?
+
+  # Log output
+  echo "$clone_output" >> "$ZSH_TOOL_LOG_FILE"
 
   if [[ $clone_status -eq 0 ]]; then
     _zsh_tool_log INFO "✓ ${(C)component_type} $component_name installed"
@@ -151,7 +161,9 @@ _zsh_tool_install_git_component() {
   else
     # Clean up partial clone on failure
     [[ -d "$target_dir" ]] && rm -rf "$target_dir"
-    _zsh_tool_log ERROR "Failed to install ${component_type}: $component_name"
+    # MEDIUM FIX: Improve network failure error reporting with specific error
+    local error_summary="${clone_output%%$'\n'*}"  # First line of error
+    _zsh_tool_log ERROR "Failed to install ${component_type}: $component_name - ${error_summary}"
     return 1
   fi
 }

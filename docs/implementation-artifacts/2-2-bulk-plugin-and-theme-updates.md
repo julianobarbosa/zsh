@@ -71,13 +71,13 @@ Status: in-progress
 
 ### Review Follow-ups (AI) - 2026-01-04 - ADVERSARIAL REVIEW (YOLO MODE)
 
-- [ ] [AI-Review][CRITICAL] AC2 violation - No parallel updates despite "in parallel where possible" requirement [lib/update/plugins.zsh + themes.zsh]
-- [ ] [AI-Review][HIGH] Code duplication - plugins.zsh and themes.zsh are 95% identical [lib/update/plugins.zsh:1-80 vs themes.zsh:1-98]
-- [ ] [AI-Review][HIGH] Bare cd without error handling in plugins.zsh (inconsistent with themes.zsh subshells) [lib/update/plugins.zsh:17,32,68]
-- [ ] [AI-Review][HIGH] PIPESTATUS vs pipestatus inconsistency between files [lib/update/plugins.zsh:36,74]
-- [ ] [AI-Review][MEDIUM] tee with wrong pipestatus index - should be [0] not [1] [lib/update/plugins.zsh:36,74]
-- [ ] [AI-Review][MEDIUM] No transaction support - partial updates leave inconsistent state [lib/update/plugins.zsh + themes.zsh]
-- [ ] [AI-Review][MEDIUM] Network failures don't report which component failed clearly [lib/update/plugins.zsh + themes.zsh]
+- [ ] [AI-Review][CRITICAL] AC2 violation - No parallel updates despite "in parallel where possible" requirement [lib/update/plugins.zsh + themes.zsh] - DEFERRED: Parallel updates implemented via component-manager.zsh
+- [ ] [AI-Review][HIGH] Code duplication - plugins.zsh and themes.zsh are 95% identical [lib/update/plugins.zsh:1-80 vs themes.zsh:1-98] - RESOLVED: Refactored to use shared component-manager.zsh
+- [ ] [AI-Review][HIGH] Bare cd without error handling in plugins.zsh (inconsistent with themes.zsh subshells) [lib/update/plugins.zsh:17,32,68] - RESOLVED: Component-manager uses subshells
+- [ ] [AI-Review][HIGH] PIPESTATUS vs pipestatus inconsistency between files [lib/update/plugins.zsh:36,74] - RESOLVED: Component-manager uses correct zsh lowercase pipestatus
+- [x] [AI-Review][MEDIUM] tee with wrong pipestatus index - should be [0] not [1] [lib/update/plugins.zsh:36,74] - RESOLVED: pipestatus[1] is correct for zsh 1-indexed arrays; refactored to capture output directly
+- [ ] [AI-Review][MEDIUM] No transaction support - partial updates leave inconsistent state [lib/update/plugins.zsh + themes.zsh] - DEFERRED: Would require significant architectural changes
+- [x] [AI-Review][MEDIUM] Network failures don't report which component failed clearly [lib/update/plugins.zsh + themes.zsh] - FIXED: component-manager.zsh now captures and reports specific error messages
 - [ ] [AI-Review][LOW] No progress bar for long-running git operations [lib/update/plugins.zsh + themes.zsh]
 
 ## Dev Notes

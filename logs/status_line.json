@@ -14278,5 +14278,4056 @@
       "exceeds_200k_tokens": false
     },
     "status_line_output": "\u001b[36m[Opus 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-12-15T09:26:02.558576",
+    "input_data": {
+      "session_id": "9d1e0ce5-701f-4856-9b45-4d9357d0d6c8",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/9d1e0ce5-701f-4856-9b45-4d9357d0d6c8.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.57",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.0005870000000000001,
+        "total_duration_ms": 5400,
+        "total_api_duration_ms": 2127,
+        "total_lines_added": 0,
+        "total_lines_removed": 0
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Opus 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/9d1e0ce5-701f-4856-9b45-4d9357d0d6c8.json does not exist"
+  },
+  {
+    "timestamp": "2025-12-15T09:26:02.565713",
+    "input_data": {
+      "session_id": "9d1e0ce5-701f-4856-9b45-4d9357d0d6c8",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/9d1e0ce5-701f-4856-9b45-4d9357d0d6c8.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.57",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.0005870000000000001,
+        "total_duration_ms": 5400,
+        "total_api_duration_ms": 2127,
+        "total_lines_added": 0,
+        "total_lines_removed": 0
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Opus 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-12-15T09:26:04.562001",
+    "input_data": {
+      "session_id": "9d1e0ce5-701f-4856-9b45-4d9357d0d6c8",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/9d1e0ce5-701f-4856-9b45-4d9357d0d6c8.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.57",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.0005870000000000001,
+        "total_duration_ms": 7492,
+        "total_api_duration_ms": 2127,
+        "total_lines_added": 0,
+        "total_lines_removed": 0
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Opus 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/9d1e0ce5-701f-4856-9b45-4d9357d0d6c8.json does not exist"
+  },
+  {
+    "timestamp": "2025-12-15T09:26:04.569299",
+    "input_data": {
+      "session_id": "9d1e0ce5-701f-4856-9b45-4d9357d0d6c8",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/9d1e0ce5-701f-4856-9b45-4d9357d0d6c8.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.57",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.0005870000000000001,
+        "total_duration_ms": 7492,
+        "total_api_duration_ms": 2127,
+        "total_lines_added": 0,
+        "total_lines_removed": 0
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Opus 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-12-15T09:26:59.239971",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0,
+        "total_duration_ms": 2748,
+        "total_api_duration_ms": 0,
+        "total_lines_added": 0,
+        "total_lines_removed": 0
+      },
+      "context_window": {
+        "total_input_tokens": 0,
+        "total_output_tokens": 0,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Opus 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.json does not exist"
+  },
+  {
+    "timestamp": "2025-12-15T09:26:59.256610",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0,
+        "total_duration_ms": 2748,
+        "total_api_duration_ms": 0,
+        "total_lines_added": 0,
+        "total_lines_removed": 0
+      },
+      "context_window": {
+        "total_input_tokens": 0,
+        "total_output_tokens": 0,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Opus 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-12-15T09:27:23.328570",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.01487,
+        "total_duration_ms": 27503,
+        "total_api_duration_ms": 10043,
+        "total_lines_added": 0,
+        "total_lines_removed": 0
+      },
+      "context_window": {
+        "total_input_tokens": 2961,
+        "total_output_tokens": 385,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Opus 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.json does not exist"
+  },
+  {
+    "timestamp": "2025-12-15T09:27:23.336044",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.01487,
+        "total_duration_ms": 27503,
+        "total_api_duration_ms": 10043,
+        "total_lines_added": 0,
+        "total_lines_removed": 0
+      },
+      "context_window": {
+        "total_input_tokens": 2961,
+        "total_output_tokens": 385,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Opus 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-12-15T09:27:51.843228",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.01487,
+        "total_duration_ms": 55995,
+        "total_api_duration_ms": 10043,
+        "total_lines_added": 0,
+        "total_lines_removed": 0
+      },
+      "context_window": {
+        "total_input_tokens": 2961,
+        "total_output_tokens": 385,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Opus 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.json does not exist"
+  },
+  {
+    "timestamp": "2025-12-15T09:27:51.850259",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.01487,
+        "total_duration_ms": 55995,
+        "total_api_duration_ms": 10043,
+        "total_lines_added": 0,
+        "total_lines_removed": 0
+      },
+      "context_window": {
+        "total_input_tokens": 2961,
+        "total_output_tokens": 385,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Opus 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-12-15T09:28:03.736924",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.01487,
+        "total_duration_ms": 67910,
+        "total_api_duration_ms": 10043,
+        "total_lines_added": 0,
+        "total_lines_removed": 0
+      },
+      "context_window": {
+        "total_input_tokens": 2961,
+        "total_output_tokens": 385,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Opus 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.json does not exist"
+  },
+  {
+    "timestamp": "2025-12-15T09:28:03.744367",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.01487,
+        "total_duration_ms": 67910,
+        "total_api_duration_ms": 10043,
+        "total_lines_added": 0,
+        "total_lines_removed": 0
+      },
+      "context_window": {
+        "total_input_tokens": 2961,
+        "total_output_tokens": 385,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Opus 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-12-15T09:28:09.054884",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.01487,
+        "total_duration_ms": 73250,
+        "total_api_duration_ms": 10043,
+        "total_lines_added": 0,
+        "total_lines_removed": 0
+      },
+      "context_window": {
+        "total_input_tokens": 2961,
+        "total_output_tokens": 385,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Opus 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.json does not exist"
+  },
+  {
+    "timestamp": "2025-12-15T09:28:09.062166",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.01487,
+        "total_duration_ms": 73250,
+        "total_api_duration_ms": 10043,
+        "total_lines_added": 0,
+        "total_lines_removed": 0
+      },
+      "context_window": {
+        "total_input_tokens": 2961,
+        "total_output_tokens": 385,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Opus 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-12-15T09:29:27.685837",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.016611,
+        "total_duration_ms": 151810,
+        "total_api_duration_ms": 11584,
+        "total_lines_added": 0,
+        "total_lines_removed": 0
+      },
+      "context_window": {
+        "total_input_tokens": 4572,
+        "total_output_tokens": 411,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Opus 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.json does not exist"
+  },
+  {
+    "timestamp": "2025-12-15T09:29:27.693278",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.016611,
+        "total_duration_ms": 151810,
+        "total_api_duration_ms": 11584,
+        "total_lines_added": 0,
+        "total_lines_removed": 0
+      },
+      "context_window": {
+        "total_input_tokens": 4572,
+        "total_output_tokens": 411,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Opus 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-12-15T09:29:28.178241",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.7274735,
+        "total_duration_ms": 152391,
+        "total_api_duration_ms": 24498,
+        "total_lines_added": 0,
+        "total_lines_removed": 0
+      },
+      "context_window": {
+        "total_input_tokens": 4582,
+        "total_output_tokens": 802,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Opus 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.json does not exist"
+  },
+  {
+    "timestamp": "2025-12-15T09:29:28.185343",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.7274735,
+        "total_duration_ms": 152391,
+        "total_api_duration_ms": 24498,
+        "total_lines_added": 0,
+        "total_lines_removed": 0
+      },
+      "context_window": {
+        "total_input_tokens": 4582,
+        "total_output_tokens": 802,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Opus 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-12-15T09:29:39.313416",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.7299715,
+        "total_duration_ms": 163503,
+        "total_api_duration_ms": 28879,
+        "total_lines_added": 0,
+        "total_lines_removed": 0
+      },
+      "context_window": {
+        "total_input_tokens": 6720,
+        "total_output_tokens": 874,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Opus 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.json does not exist"
+  },
+  {
+    "timestamp": "2025-12-15T09:29:39.320420",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.7299715,
+        "total_duration_ms": 163503,
+        "total_api_duration_ms": 28879,
+        "total_lines_added": 0,
+        "total_lines_removed": 0
+      },
+      "context_window": {
+        "total_input_tokens": 6720,
+        "total_output_tokens": 874,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Opus 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-12-15T09:29:42.674155",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.7980195,
+        "total_duration_ms": 166885,
+        "total_api_duration_ms": 36458,
+        "total_lines_added": 0,
+        "total_lines_removed": 0
+      },
+      "context_window": {
+        "total_input_tokens": 6728,
+        "total_output_tokens": 1227,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Opus 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.json does not exist"
+  },
+  {
+    "timestamp": "2025-12-15T09:29:42.682081",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.7980195,
+        "total_duration_ms": 166885,
+        "total_api_duration_ms": 36458,
+        "total_lines_added": 0,
+        "total_lines_removed": 0
+      },
+      "context_window": {
+        "total_input_tokens": 6728,
+        "total_output_tokens": 1227,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Opus 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-12-15T09:29:47.400716",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.7980195,
+        "total_duration_ms": 171583,
+        "total_api_duration_ms": 36458,
+        "total_lines_added": 0,
+        "total_lines_removed": 0
+      },
+      "context_window": {
+        "total_input_tokens": 6728,
+        "total_output_tokens": 1227,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Opus 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.json does not exist"
+  },
+  {
+    "timestamp": "2025-12-15T09:29:47.408297",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.7980195,
+        "total_duration_ms": 171583,
+        "total_api_duration_ms": 36458,
+        "total_lines_added": 0,
+        "total_lines_removed": 0
+      },
+      "context_window": {
+        "total_input_tokens": 6728,
+        "total_output_tokens": 1227,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Opus 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-12-15T09:29:48.057319",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.7980195,
+        "total_duration_ms": 172262,
+        "total_api_duration_ms": 36458,
+        "total_lines_added": 0,
+        "total_lines_removed": 0
+      },
+      "context_window": {
+        "total_input_tokens": 6728,
+        "total_output_tokens": 1227,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Opus 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.json does not exist"
+  },
+  {
+    "timestamp": "2025-12-15T09:29:48.064962",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.7980195,
+        "total_duration_ms": 172262,
+        "total_api_duration_ms": 36458,
+        "total_lines_added": 0,
+        "total_lines_removed": 0
+      },
+      "context_window": {
+        "total_input_tokens": 6728,
+        "total_output_tokens": 1227,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Opus 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-12-15T09:29:48.728853",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.7980195,
+        "total_duration_ms": 172938,
+        "total_api_duration_ms": 36458,
+        "total_lines_added": 0,
+        "total_lines_removed": 0
+      },
+      "context_window": {
+        "total_input_tokens": 6728,
+        "total_output_tokens": 1227,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Opus 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.json does not exist"
+  },
+  {
+    "timestamp": "2025-12-15T09:29:48.736735",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.7980195,
+        "total_duration_ms": 172938,
+        "total_api_duration_ms": 36458,
+        "total_lines_added": 0,
+        "total_lines_removed": 0
+      },
+      "context_window": {
+        "total_input_tokens": 6728,
+        "total_output_tokens": 1227,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Opus 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-12-15T09:29:49.661427",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.86464675,
+        "total_duration_ms": 173878,
+        "total_api_duration_ms": 43348,
+        "total_lines_added": 0,
+        "total_lines_removed": 0
+      },
+      "context_window": {
+        "total_input_tokens": 6736,
+        "total_output_tokens": 1539,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Opus 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.json does not exist"
+  },
+  {
+    "timestamp": "2025-12-15T09:29:49.669012",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.86464675,
+        "total_duration_ms": 173878,
+        "total_api_duration_ms": 43348,
+        "total_lines_added": 0,
+        "total_lines_removed": 0
+      },
+      "context_window": {
+        "total_input_tokens": 6736,
+        "total_output_tokens": 1539,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Opus 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-12-15T09:29:55.691422",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.86719275,
+        "total_duration_ms": 179897,
+        "total_api_duration_ms": 47047,
+        "total_lines_added": 0,
+        "total_lines_removed": 0
+      },
+      "context_window": {
+        "total_input_tokens": 8802,
+        "total_output_tokens": 1635,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Opus 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.json does not exist"
+  },
+  {
+    "timestamp": "2025-12-15T09:29:55.699064",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.86719275,
+        "total_duration_ms": 179897,
+        "total_api_duration_ms": 47047,
+        "total_lines_added": 0,
+        "total_lines_removed": 0
+      },
+      "context_window": {
+        "total_input_tokens": 8802,
+        "total_output_tokens": 1635,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Opus 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-12-15T09:29:56.322057",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.86719275,
+        "total_duration_ms": 180533,
+        "total_api_duration_ms": 47047,
+        "total_lines_added": 0,
+        "total_lines_removed": 0
+      },
+      "context_window": {
+        "total_input_tokens": 8802,
+        "total_output_tokens": 1635,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Opus 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.json does not exist"
+  },
+  {
+    "timestamp": "2025-12-15T09:29:56.329529",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.86719275,
+        "total_duration_ms": 180533,
+        "total_api_duration_ms": 47047,
+        "total_lines_added": 0,
+        "total_lines_removed": 0
+      },
+      "context_window": {
+        "total_input_tokens": 8802,
+        "total_output_tokens": 1635,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Opus 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-12-15T09:29:56.824146",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.94036775,
+        "total_duration_ms": 181030,
+        "total_api_duration_ms": 53823,
+        "total_lines_added": 0,
+        "total_lines_removed": 0
+      },
+      "context_window": {
+        "total_input_tokens": 8854,
+        "total_output_tokens": 1937,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Opus 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.json does not exist"
+  },
+  {
+    "timestamp": "2025-12-15T09:29:56.832085",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.94036775,
+        "total_duration_ms": 181030,
+        "total_api_duration_ms": 53823,
+        "total_lines_added": 0,
+        "total_lines_removed": 0
+      },
+      "context_window": {
+        "total_input_tokens": 8854,
+        "total_output_tokens": 1937,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Opus 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-12-15T09:30:00.957920",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.9408877499999999,
+        "total_duration_ms": 185161,
+        "total_api_duration_ms": 54604,
+        "total_lines_added": 0,
+        "total_lines_removed": 0
+      },
+      "context_window": {
+        "total_input_tokens": 9184,
+        "total_output_tokens": 1975,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Opus 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.json does not exist"
+  },
+  {
+    "timestamp": "2025-12-15T09:30:00.965820",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 0.9408877499999999,
+        "total_duration_ms": 185161,
+        "total_api_duration_ms": 54604,
+        "total_lines_added": 0,
+        "total_lines_removed": 0
+      },
+      "context_window": {
+        "total_input_tokens": 9184,
+        "total_output_tokens": 1975,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Opus 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-12-15T09:30:02.174361",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.0075747499999999,
+        "total_duration_ms": 186379,
+        "total_api_duration_ms": 59552,
+        "total_lines_added": 0,
+        "total_lines_removed": 0
+      },
+      "context_window": {
+        "total_input_tokens": 9192,
+        "total_output_tokens": 2082,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Opus 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.json does not exist"
+  },
+  {
+    "timestamp": "2025-12-15T09:30:02.182274",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.0075747499999999,
+        "total_duration_ms": 186379,
+        "total_api_duration_ms": 59552,
+        "total_lines_added": 0,
+        "total_lines_removed": 0
+      },
+      "context_window": {
+        "total_input_tokens": 9192,
+        "total_output_tokens": 2082,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Opus 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-12-15T09:30:10.384965",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.0075747499999999,
+        "total_duration_ms": 194592,
+        "total_api_duration_ms": 59552,
+        "total_lines_added": 0,
+        "total_lines_removed": 0
+      },
+      "context_window": {
+        "total_input_tokens": 9192,
+        "total_output_tokens": 2082,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Opus 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.json does not exist"
+  },
+  {
+    "timestamp": "2025-12-15T09:30:10.393187",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.0075747499999999,
+        "total_duration_ms": 194592,
+        "total_api_duration_ms": 59552,
+        "total_lines_added": 0,
+        "total_lines_removed": 0
+      },
+      "context_window": {
+        "total_input_tokens": 9192,
+        "total_output_tokens": 2082,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Opus 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-12-15T09:30:12.973113",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.0880632499999998,
+        "total_duration_ms": 197184,
+        "total_api_duration_ms": 70209,
+        "total_lines_added": 0,
+        "total_lines_removed": 0
+      },
+      "context_window": {
+        "total_input_tokens": 9200,
+        "total_output_tokens": 2621,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Opus 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.json does not exist"
+  },
+  {
+    "timestamp": "2025-12-15T09:30:12.980763",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.0880632499999998,
+        "total_duration_ms": 197184,
+        "total_api_duration_ms": 70209,
+        "total_lines_added": 0,
+        "total_lines_removed": 0
+      },
+      "context_window": {
+        "total_input_tokens": 9200,
+        "total_output_tokens": 2621,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Opus 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-12-15T09:30:16.999201",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.0880632499999998,
+        "total_duration_ms": 201163,
+        "total_api_duration_ms": 70209,
+        "total_lines_added": 0,
+        "total_lines_removed": 0
+      },
+      "context_window": {
+        "total_input_tokens": 9200,
+        "total_output_tokens": 2621,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Opus 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.json does not exist"
+  },
+  {
+    "timestamp": "2025-12-15T09:30:17.007213",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.0880632499999998,
+        "total_duration_ms": 201163,
+        "total_api_duration_ms": 70209,
+        "total_lines_added": 0,
+        "total_lines_removed": 0
+      },
+      "context_window": {
+        "total_input_tokens": 9200,
+        "total_output_tokens": 2621,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Opus 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-12-15T09:30:17.844692",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.1529064999999998,
+        "total_duration_ms": 201919,
+        "total_api_duration_ms": 74890,
+        "total_lines_added": 0,
+        "total_lines_removed": 0
+      },
+      "context_window": {
+        "total_input_tokens": 9208,
+        "total_output_tokens": 2727,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Opus 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.json does not exist"
+  },
+  {
+    "timestamp": "2025-12-15T09:30:17.852593",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.1529064999999998,
+        "total_duration_ms": 201919,
+        "total_api_duration_ms": 74890,
+        "total_lines_added": 0,
+        "total_lines_removed": 0
+      },
+      "context_window": {
+        "total_input_tokens": 9208,
+        "total_output_tokens": 2727,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Opus 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-12-15T09:30:24.744945",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.1533824999999998,
+        "total_duration_ms": 208930,
+        "total_api_duration_ms": 76297,
+        "total_lines_added": 0,
+        "total_lines_removed": 0
+      },
+      "context_window": {
+        "total_input_tokens": 9524,
+        "total_output_tokens": 2759,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Opus 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.json does not exist"
+  },
+  {
+    "timestamp": "2025-12-15T09:30:24.752579",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.1533824999999998,
+        "total_duration_ms": 208930,
+        "total_api_duration_ms": 76297,
+        "total_lines_added": 0,
+        "total_lines_removed": 0
+      },
+      "context_window": {
+        "total_input_tokens": 9524,
+        "total_output_tokens": 2759,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Opus 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-12-15T09:30:41.631396",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.2412672499999997,
+        "total_duration_ms": 225829,
+        "total_api_duration_ms": 99431,
+        "total_lines_added": 103,
+        "total_lines_removed": 0
+      },
+      "context_window": {
+        "total_input_tokens": 9532,
+        "total_output_tokens": 3886,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Opus 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.json does not exist"
+  },
+  {
+    "timestamp": "2025-12-15T09:30:41.639098",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.2412672499999997,
+        "total_duration_ms": 225829,
+        "total_api_duration_ms": 99431,
+        "total_lines_added": 103,
+        "total_lines_removed": 0
+      },
+      "context_window": {
+        "total_input_tokens": 9532,
+        "total_output_tokens": 3886,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Opus 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-12-15T09:30:46.076569",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.2412672499999997,
+        "total_duration_ms": 230268,
+        "total_api_duration_ms": 99431,
+        "total_lines_added": 103,
+        "total_lines_removed": 0
+      },
+      "context_window": {
+        "total_input_tokens": 9532,
+        "total_output_tokens": 3886,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Opus 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.json does not exist"
+  },
+  {
+    "timestamp": "2025-12-15T09:30:46.084302",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.2412672499999997,
+        "total_duration_ms": 230268,
+        "total_api_duration_ms": 99431,
+        "total_lines_added": 103,
+        "total_lines_removed": 0
+      },
+      "context_window": {
+        "total_input_tokens": 9532,
+        "total_output_tokens": 3886,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Opus 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-12-15T09:30:48.038610",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.3157589999999997,
+        "total_duration_ms": 232235,
+        "total_api_duration_ms": 105610,
+        "total_lines_added": 103,
+        "total_lines_removed": 0
+      },
+      "context_window": {
+        "total_input_tokens": 9540,
+        "total_output_tokens": 4220,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Opus 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.json does not exist"
+  },
+  {
+    "timestamp": "2025-12-15T09:30:48.050147",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.3157589999999997,
+        "total_duration_ms": 232235,
+        "total_api_duration_ms": 105610,
+        "total_lines_added": 103,
+        "total_lines_removed": 0
+      },
+      "context_window": {
+        "total_input_tokens": 9540,
+        "total_output_tokens": 4220,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Opus 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-12-15T09:30:55.685158",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.3157589999999997,
+        "total_duration_ms": 239889,
+        "total_api_duration_ms": 105610,
+        "total_lines_added": 103,
+        "total_lines_removed": 0
+      },
+      "context_window": {
+        "total_input_tokens": 9540,
+        "total_output_tokens": 4220,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Opus 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.json does not exist"
+  },
+  {
+    "timestamp": "2025-12-15T09:30:55.693414",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.3157589999999997,
+        "total_duration_ms": 239889,
+        "total_api_duration_ms": 105610,
+        "total_lines_added": 103,
+        "total_lines_removed": 0
+      },
+      "context_window": {
+        "total_input_tokens": 9540,
+        "total_output_tokens": 4220,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Opus 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-12-15T09:30:56.072860",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.3850917499999997,
+        "total_duration_ms": 240286,
+        "total_api_duration_ms": 113578,
+        "total_lines_added": 103,
+        "total_lines_removed": 0
+      },
+      "context_window": {
+        "total_input_tokens": 9548,
+        "total_output_tokens": 4518,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Opus 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.json does not exist"
+  },
+  {
+    "timestamp": "2025-12-15T09:30:56.080970",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.3850917499999997,
+        "total_duration_ms": 240286,
+        "total_api_duration_ms": 113578,
+        "total_lines_added": 103,
+        "total_lines_removed": 0
+      },
+      "context_window": {
+        "total_input_tokens": 9548,
+        "total_output_tokens": 4518,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Opus 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-12-15T09:31:00.725096",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.3858107499999996,
+        "total_duration_ms": 244929,
+        "total_api_duration_ms": 115131,
+        "total_lines_added": 103,
+        "total_lines_removed": 0
+      },
+      "context_window": {
+        "total_input_tokens": 10107,
+        "total_output_tokens": 4550,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Opus 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.json does not exist"
+  },
+  {
+    "timestamp": "2025-12-15T09:31:00.733967",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.3858107499999996,
+        "total_duration_ms": 244929,
+        "total_api_duration_ms": 115131,
+        "total_lines_added": 103,
+        "total_lines_removed": 0
+      },
+      "context_window": {
+        "total_input_tokens": 10107,
+        "total_output_tokens": 4550,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Opus 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-12-15T09:31:02.767595",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.4580037499999996,
+        "total_duration_ms": 246973,
+        "total_api_duration_ms": 121422,
+        "total_lines_added": 103,
+        "total_lines_removed": 0
+      },
+      "context_window": {
+        "total_input_tokens": 10115,
+        "total_output_tokens": 4916,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Opus 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.json does not exist"
+  },
+  {
+    "timestamp": "2025-12-15T09:31:02.775208",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.4580037499999996,
+        "total_duration_ms": 246973,
+        "total_api_duration_ms": 121422,
+        "total_lines_added": 103,
+        "total_lines_removed": 0
+      },
+      "context_window": {
+        "total_input_tokens": 10115,
+        "total_output_tokens": 4916,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Opus 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-12-15T09:31:07.514545",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.4580037499999996,
+        "total_duration_ms": 251721,
+        "total_api_duration_ms": 121422,
+        "total_lines_added": 103,
+        "total_lines_removed": 0
+      },
+      "context_window": {
+        "total_input_tokens": 10115,
+        "total_output_tokens": 4916,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Opus 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.json does not exist"
+  },
+  {
+    "timestamp": "2025-12-15T09:31:07.522642",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.4580037499999996,
+        "total_duration_ms": 251721,
+        "total_api_duration_ms": 121422,
+        "total_lines_added": 103,
+        "total_lines_removed": 0
+      },
+      "context_window": {
+        "total_input_tokens": 10115,
+        "total_output_tokens": 4916,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Opus 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-12-15T09:31:18.293575",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.5364969999999996,
+        "total_duration_ms": 262500,
+        "total_api_duration_ms": 136822,
+        "total_lines_added": 103,
+        "total_lines_removed": 0
+      },
+      "context_window": {
+        "total_input_tokens": 10123,
+        "total_output_tokens": 5554,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Opus 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.json does not exist"
+  },
+  {
+    "timestamp": "2025-12-15T09:31:18.301673",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.5364969999999996,
+        "total_duration_ms": 262500,
+        "total_api_duration_ms": 136822,
+        "total_lines_added": 103,
+        "total_lines_removed": 0
+      },
+      "context_window": {
+        "total_input_tokens": 10123,
+        "total_output_tokens": 5554,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Opus 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-12-15T09:31:21.974268",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.5364969999999996,
+        "total_duration_ms": 266191,
+        "total_api_duration_ms": 136822,
+        "total_lines_added": 103,
+        "total_lines_removed": 0
+      },
+      "context_window": {
+        "total_input_tokens": 10123,
+        "total_output_tokens": 5554,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Opus 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.json does not exist"
+  },
+  {
+    "timestamp": "2025-12-15T09:31:21.982208",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.5364969999999996,
+        "total_duration_ms": 266191,
+        "total_api_duration_ms": 136822,
+        "total_lines_added": 103,
+        "total_lines_removed": 0
+      },
+      "context_window": {
+        "total_input_tokens": 10123,
+        "total_output_tokens": 5554,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Opus 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-12-15T09:31:24.169015",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.6138102499999996,
+        "total_duration_ms": 268375,
+        "total_api_duration_ms": 142596,
+        "total_lines_added": 103,
+        "total_lines_removed": 0
+      },
+      "context_window": {
+        "total_input_tokens": 10131,
+        "total_output_tokens": 5900,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Opus 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.json does not exist"
+  },
+  {
+    "timestamp": "2025-12-15T09:31:24.177696",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.6138102499999996,
+        "total_duration_ms": 268375,
+        "total_api_duration_ms": 142596,
+        "total_lines_added": 103,
+        "total_lines_removed": 0
+      },
+      "context_window": {
+        "total_input_tokens": 10131,
+        "total_output_tokens": 5900,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Opus 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-12-15T09:31:29.280421",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.6138102499999996,
+        "total_duration_ms": 273494,
+        "total_api_duration_ms": 142596,
+        "total_lines_added": 103,
+        "total_lines_removed": 0
+      },
+      "context_window": {
+        "total_input_tokens": 10131,
+        "total_output_tokens": 5900,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Opus 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.json does not exist"
+  },
+  {
+    "timestamp": "2025-12-15T09:31:29.289006",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.6138102499999996,
+        "total_duration_ms": 273494,
+        "total_api_duration_ms": 142596,
+        "total_lines_added": 103,
+        "total_lines_removed": 0
+      },
+      "context_window": {
+        "total_input_tokens": 10131,
+        "total_output_tokens": 5900,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Opus 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-12-15T09:31:33.282445",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.6859914999999996,
+        "total_duration_ms": 277491,
+        "total_api_duration_ms": 151607,
+        "total_lines_added": 108,
+        "total_lines_removed": 1
+      },
+      "context_window": {
+        "total_input_tokens": 10139,
+        "total_output_tokens": 6255,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Opus 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.json does not exist"
+  },
+  {
+    "timestamp": "2025-12-15T09:31:33.290733",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.6859914999999996,
+        "total_duration_ms": 277491,
+        "total_api_duration_ms": 151607,
+        "total_lines_added": 108,
+        "total_lines_removed": 1
+      },
+      "context_window": {
+        "total_input_tokens": 10139,
+        "total_output_tokens": 6255,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Opus 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-12-15T09:31:37.772680",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.6859914999999996,
+        "total_duration_ms": 281986,
+        "total_api_duration_ms": 151607,
+        "total_lines_added": 108,
+        "total_lines_removed": 1
+      },
+      "context_window": {
+        "total_input_tokens": 10139,
+        "total_output_tokens": 6255,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Opus 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.json does not exist"
+  },
+  {
+    "timestamp": "2025-12-15T09:31:37.781483",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.6859914999999996,
+        "total_duration_ms": 281986,
+        "total_api_duration_ms": 151607,
+        "total_lines_added": 108,
+        "total_lines_removed": 1
+      },
+      "context_window": {
+        "total_input_tokens": 10139,
+        "total_output_tokens": 6255,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Opus 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-12-15T09:31:39.858188",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.7607139999999997,
+        "total_duration_ms": 284024,
+        "total_api_duration_ms": 157992,
+        "total_lines_added": 108,
+        "total_lines_removed": 1
+      },
+      "context_window": {
+        "total_input_tokens": 10147,
+        "total_output_tokens": 6624,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Opus 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.json does not exist"
+  },
+  {
+    "timestamp": "2025-12-15T09:31:39.867573",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.7607139999999997,
+        "total_duration_ms": 284024,
+        "total_api_duration_ms": 157992,
+        "total_lines_added": 108,
+        "total_lines_removed": 1
+      },
+      "context_window": {
+        "total_input_tokens": 10147,
+        "total_output_tokens": 6624,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Opus 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-12-15T09:31:44.578987",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.7607139999999997,
+        "total_duration_ms": 288786,
+        "total_api_duration_ms": 157992,
+        "total_lines_added": 108,
+        "total_lines_removed": 1
+      },
+      "context_window": {
+        "total_input_tokens": 10147,
+        "total_output_tokens": 6624,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Opus 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.json does not exist"
+  },
+  {
+    "timestamp": "2025-12-15T09:31:44.587355",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.7607139999999997,
+        "total_duration_ms": 288786,
+        "total_api_duration_ms": 157992,
+        "total_lines_added": 108,
+        "total_lines_removed": 1
+      },
+      "context_window": {
+        "total_input_tokens": 10147,
+        "total_output_tokens": 6624,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Opus 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-12-15T09:31:49.962295",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.8371684999999998,
+        "total_duration_ms": 294169,
+        "total_api_duration_ms": 168042,
+        "total_lines_added": 123,
+        "total_lines_removed": 20
+      },
+      "context_window": {
+        "total_input_tokens": 10155,
+        "total_output_tokens": 7122,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Opus 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.json does not exist"
+  },
+  {
+    "timestamp": "2025-12-15T09:31:49.970625",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.8371684999999998,
+        "total_duration_ms": 294169,
+        "total_api_duration_ms": 168042,
+        "total_lines_added": 123,
+        "total_lines_removed": 20
+      },
+      "context_window": {
+        "total_input_tokens": 10155,
+        "total_output_tokens": 7122,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Opus 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-12-15T09:31:53.544277",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.8371684999999998,
+        "total_duration_ms": 297738,
+        "total_api_duration_ms": 168042,
+        "total_lines_added": 123,
+        "total_lines_removed": 20
+      },
+      "context_window": {
+        "total_input_tokens": 10155,
+        "total_output_tokens": 7122,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Opus 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.json does not exist"
+  },
+  {
+    "timestamp": "2025-12-15T09:31:53.553730",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.8371684999999998,
+        "total_duration_ms": 297738,
+        "total_api_duration_ms": 168042,
+        "total_lines_added": 123,
+        "total_lines_removed": 20
+      },
+      "context_window": {
+        "total_input_tokens": 10155,
+        "total_output_tokens": 7122,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Opus 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-12-15T09:31:56.001325",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.9135319999999998,
+        "total_duration_ms": 300211,
+        "total_api_duration_ms": 173913,
+        "total_lines_added": 123,
+        "total_lines_removed": 20
+      },
+      "context_window": {
+        "total_input_tokens": 10163,
+        "total_output_tokens": 7455,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Opus 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.json does not exist"
+  },
+  {
+    "timestamp": "2025-12-15T09:31:56.010262",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.9135319999999998,
+        "total_duration_ms": 300211,
+        "total_api_duration_ms": 173913,
+        "total_lines_added": 123,
+        "total_lines_removed": 20
+      },
+      "context_window": {
+        "total_input_tokens": 10163,
+        "total_output_tokens": 7455,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Opus 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-12-15T09:31:59.422005",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.9135319999999998,
+        "total_duration_ms": 303632,
+        "total_api_duration_ms": 173913,
+        "total_lines_added": 123,
+        "total_lines_removed": 20
+      },
+      "context_window": {
+        "total_input_tokens": 10163,
+        "total_output_tokens": 7455,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Opus 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.json does not exist"
+  },
+  {
+    "timestamp": "2025-12-15T09:31:59.430967",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.9135319999999998,
+        "total_duration_ms": 303632,
+        "total_api_duration_ms": 173913,
+        "total_lines_added": 123,
+        "total_lines_removed": 20
+      },
+      "context_window": {
+        "total_input_tokens": 10163,
+        "total_output_tokens": 7455,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Opus 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-12-15T09:32:02.111189",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.9880854999999997,
+        "total_duration_ms": 306321,
+        "total_api_duration_ms": 179894,
+        "total_lines_added": 137,
+        "total_lines_removed": 35
+      },
+      "context_window": {
+        "total_input_tokens": 10171,
+        "total_output_tokens": 7857,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Opus 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.json does not exist"
+  },
+  {
+    "timestamp": "2025-12-15T09:32:02.119430",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.9880854999999997,
+        "total_duration_ms": 306321,
+        "total_api_duration_ms": 179894,
+        "total_lines_added": 137,
+        "total_lines_removed": 35
+      },
+      "context_window": {
+        "total_input_tokens": 10171,
+        "total_output_tokens": 7857,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Opus 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-12-15T09:32:05.761443",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.9880854999999997,
+        "total_duration_ms": 309950,
+        "total_api_duration_ms": 179894,
+        "total_lines_added": 137,
+        "total_lines_removed": 35
+      },
+      "context_window": {
+        "total_input_tokens": 10171,
+        "total_output_tokens": 7857,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Opus 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.json does not exist"
+  },
+  {
+    "timestamp": "2025-12-15T09:32:05.770432",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 1.9880854999999997,
+        "total_duration_ms": 309950,
+        "total_api_duration_ms": 179894,
+        "total_lines_added": 137,
+        "total_lines_removed": 35
+      },
+      "context_window": {
+        "total_input_tokens": 10171,
+        "total_output_tokens": 7857,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Opus 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-12-15T09:32:07.796961",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 2.06438,
+        "total_duration_ms": 311993,
+        "total_api_duration_ms": 185412,
+        "total_lines_added": 137,
+        "total_lines_removed": 35
+      },
+      "context_window": {
+        "total_input_tokens": 10179,
+        "total_output_tokens": 8204,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Opus 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.json does not exist"
+  },
+  {
+    "timestamp": "2025-12-15T09:32:07.805371",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 2.06438,
+        "total_duration_ms": 311993,
+        "total_api_duration_ms": 185412,
+        "total_lines_added": 137,
+        "total_lines_removed": 35
+      },
+      "context_window": {
+        "total_input_tokens": 10179,
+        "total_output_tokens": 8204,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Opus 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-12-15T09:32:11.386092",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 2.06438,
+        "total_duration_ms": 315598,
+        "total_api_duration_ms": 185412,
+        "total_lines_added": 137,
+        "total_lines_removed": 35
+      },
+      "context_window": {
+        "total_input_tokens": 10179,
+        "total_output_tokens": 8204,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Opus 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.json does not exist"
+  },
+  {
+    "timestamp": "2025-12-15T09:32:11.394614",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 2.06438,
+        "total_duration_ms": 315598,
+        "total_api_duration_ms": 185412,
+        "total_lines_added": 137,
+        "total_lines_removed": 35
+      },
+      "context_window": {
+        "total_input_tokens": 10179,
+        "total_output_tokens": 8204,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Opus 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-12-15T09:32:12.154651",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 2.06438,
+        "total_duration_ms": 316365,
+        "total_api_duration_ms": 185412,
+        "total_lines_added": 137,
+        "total_lines_removed": 35
+      },
+      "context_window": {
+        "total_input_tokens": 10179,
+        "total_output_tokens": 8204,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Opus 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.json does not exist"
+  },
+  {
+    "timestamp": "2025-12-15T09:32:12.163463",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 2.06438,
+        "total_duration_ms": 316365,
+        "total_api_duration_ms": 185412,
+        "total_lines_added": 137,
+        "total_lines_removed": 35
+      },
+      "context_window": {
+        "total_input_tokens": 10179,
+        "total_output_tokens": 8204,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Opus 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-12-15T09:32:12.763270",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 2.06438,
+        "total_duration_ms": 316973,
+        "total_api_duration_ms": 185412,
+        "total_lines_added": 137,
+        "total_lines_removed": 35
+      },
+      "context_window": {
+        "total_input_tokens": 10179,
+        "total_output_tokens": 8204,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Opus 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.json does not exist"
+  },
+  {
+    "timestamp": "2025-12-15T09:32:12.772369",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 2.06438,
+        "total_duration_ms": 316973,
+        "total_api_duration_ms": 185412,
+        "total_lines_added": 137,
+        "total_lines_removed": 35
+      },
+      "context_window": {
+        "total_input_tokens": 10179,
+        "total_output_tokens": 8204,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Opus 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-12-15T09:32:13.403912",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 2.06438,
+        "total_duration_ms": 317602,
+        "total_api_duration_ms": 185412,
+        "total_lines_added": 137,
+        "total_lines_removed": 35
+      },
+      "context_window": {
+        "total_input_tokens": 10179,
+        "total_output_tokens": 8204,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Opus 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.json does not exist"
+  },
+  {
+    "timestamp": "2025-12-15T09:32:13.412492",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 2.06438,
+        "total_duration_ms": 317602,
+        "total_api_duration_ms": 185412,
+        "total_lines_added": 137,
+        "total_lines_removed": 35
+      },
+      "context_window": {
+        "total_input_tokens": 10179,
+        "total_output_tokens": 8204,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Opus 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-12-15T09:32:14.040737",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 2.139812,
+        "total_duration_ms": 318250,
+        "total_api_duration_ms": 191589,
+        "total_lines_added": 137,
+        "total_lines_removed": 35
+      },
+      "context_window": {
+        "total_input_tokens": 10187,
+        "total_output_tokens": 8613,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Opus 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.json does not exist"
+  },
+  {
+    "timestamp": "2025-12-15T09:32:14.049656",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 2.139812,
+        "total_duration_ms": 318250,
+        "total_api_duration_ms": 191589,
+        "total_lines_added": 137,
+        "total_lines_removed": 35
+      },
+      "context_window": {
+        "total_input_tokens": 10187,
+        "total_output_tokens": 8613,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Opus 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-12-15T09:32:19.551683",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 2.1418239999999997,
+        "total_duration_ms": 323722,
+        "total_api_duration_ms": 195373,
+        "total_lines_added": 137,
+        "total_lines_removed": 35
+      },
+      "context_window": {
+        "total_input_tokens": 11559,
+        "total_output_tokens": 8741,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Opus 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.json does not exist"
+  },
+  {
+    "timestamp": "2025-12-15T09:32:19.561544",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 2.1418239999999997,
+        "total_duration_ms": 323722,
+        "total_api_duration_ms": 195373,
+        "total_lines_added": 137,
+        "total_lines_removed": 35
+      },
+      "context_window": {
+        "total_input_tokens": 11559,
+        "total_output_tokens": 8741,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Opus 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-12-15T09:32:21.192141",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 2.2132852499999998,
+        "total_duration_ms": 325385,
+        "total_api_duration_ms": 201361,
+        "total_lines_added": 137,
+        "total_lines_removed": 35
+      },
+      "context_window": {
+        "total_input_tokens": 11567,
+        "total_output_tokens": 8917,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Opus 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.json does not exist"
+  },
+  {
+    "timestamp": "2025-12-15T09:32:21.201088",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 2.2132852499999998,
+        "total_duration_ms": 325385,
+        "total_api_duration_ms": 201361,
+        "total_lines_added": 137,
+        "total_lines_removed": 35
+      },
+      "context_window": {
+        "total_input_tokens": 11567,
+        "total_output_tokens": 8917,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Opus 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-12-15T09:32:26.379023",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 2.2141992499999996,
+        "total_duration_ms": 330588,
+        "total_api_duration_ms": 203066,
+        "total_lines_added": 137,
+        "total_lines_removed": 35
+      },
+      "context_window": {
+        "total_input_tokens": 12321,
+        "total_output_tokens": 8949,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Opus 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.json does not exist"
+  },
+  {
+    "timestamp": "2025-12-15T09:32:26.390002",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 2.2141992499999996,
+        "total_duration_ms": 330588,
+        "total_api_duration_ms": 203066,
+        "total_lines_added": 137,
+        "total_lines_removed": 35
+      },
+      "context_window": {
+        "total_input_tokens": 12321,
+        "total_output_tokens": 8949,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Opus 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-12-15T09:32:27.717553",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 2.2850972499999997,
+        "total_duration_ms": 331910,
+        "total_api_duration_ms": 209146,
+        "total_lines_added": 137,
+        "total_lines_removed": 35
+      },
+      "context_window": {
+        "total_input_tokens": 12329,
+        "total_output_tokens": 9107,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Opus 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.json does not exist"
+  },
+  {
+    "timestamp": "2025-12-15T09:32:27.726783",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 2.2850972499999997,
+        "total_duration_ms": 331910,
+        "total_api_duration_ms": 209146,
+        "total_lines_added": 137,
+        "total_lines_removed": 35
+      },
+      "context_window": {
+        "total_input_tokens": 12329,
+        "total_output_tokens": 9107,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Opus 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-12-15T09:32:37.291565",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 2.2871582499999996,
+        "total_duration_ms": 341482,
+        "total_api_duration_ms": 211592,
+        "total_lines_added": 137,
+        "total_lines_removed": 35
+      },
+      "context_window": {
+        "total_input_tokens": 13925,
+        "total_output_tokens": 9200,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Opus 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.json does not exist"
+  },
+  {
+    "timestamp": "2025-12-15T09:32:37.300259",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 2.2871582499999996,
+        "total_duration_ms": 341482,
+        "total_api_duration_ms": 211592,
+        "total_lines_added": 137,
+        "total_lines_removed": 35
+      },
+      "context_window": {
+        "total_input_tokens": 13925,
+        "total_output_tokens": 9200,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Opus 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
+  },
+  {
+    "timestamp": "2025-12-15T09:32:44.888896",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 2.3645012499999996,
+        "total_duration_ms": 349066,
+        "total_api_duration_ms": 223060,
+        "total_lines_added": 137,
+        "total_lines_removed": 35
+      },
+      "context_window": {
+        "total_input_tokens": 13933,
+        "total_output_tokens": 9587,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "[Opus 4.5] \ud83d\udcad No session data",
+    "error": "Session file .claude/data/sessions/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.json does not exist"
+  },
+  {
+    "timestamp": "2025-12-15T09:32:44.898034",
+    "input_data": {
+      "session_id": "8890b12f-f16f-4e7e-ba9e-2b79474a54dd",
+      "transcript_path": "/Users/juliano.barbosa/.claude/projects/-Users-juliano-barbosa-Repos-github-zsh--worktrees-add-direnv-to-workflow/8890b12f-f16f-4e7e-ba9e-2b79474a54dd.jsonl",
+      "cwd": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+      "model": {
+        "id": "claude-opus-4-5-20251101",
+        "display_name": "Opus 4.5"
+      },
+      "workspace": {
+        "current_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow",
+        "project_dir": "/Users/juliano.barbosa/Repos/github/zsh/.worktrees/add-direnv-to-workflow"
+      },
+      "version": "2.0.69",
+      "output_style": {
+        "name": "default"
+      },
+      "cost": {
+        "total_cost_usd": 2.3645012499999996,
+        "total_duration_ms": 349066,
+        "total_api_duration_ms": 223060,
+        "total_lines_added": 137,
+        "total_lines_removed": 35
+      },
+      "context_window": {
+        "total_input_tokens": 13933,
+        "total_output_tokens": 9587,
+        "context_window_size": 200000
+      },
+      "exceeds_200k_tokens": false
+    },
+    "status_line_output": "\u001b[36m[Opus 4.5]\u001b[0m \u001b[90m\ud83d\udcad No session data\u001b[0m"
   }
 ]

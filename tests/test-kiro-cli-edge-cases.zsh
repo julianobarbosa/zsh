@@ -1,5 +1,5 @@
 #!/usr/bin/env zsh
-# Edge case tests for Amazon Q CLI integration
+# Edge case tests for Kiro CLI integration
 # Tests security, filesystem, and configuration edge cases
 
 # Test framework setup
@@ -36,11 +36,11 @@ setup_test_env() {
   export TEST_MODE=true
   export ZSH_TOOL_CONFIG_DIR="/tmp/zsh-tool-edge-test-$$"
   export ZSH_TOOL_LOG_FILE="${ZSH_TOOL_CONFIG_DIR}/logs/test.log"
-  export AMAZONQ_CONFIG_DIR="${ZSH_TOOL_CONFIG_DIR}/amazonq"
-  export AMAZONQ_SETTINGS_FILE="${AMAZONQ_CONFIG_DIR}/settings.json"
+  export KIRO_CONFIG_DIR="${ZSH_TOOL_CONFIG_DIR}/kiro"
+  export KIRO_SETTINGS_FILE="${KIRO_CONFIG_DIR}/settings/cli.json"
 
   mkdir -p "${ZSH_TOOL_CONFIG_DIR}/logs"
-  mkdir -p "${AMAZONQ_CONFIG_DIR}"
+  mkdir -p "${KIRO_CONFIG_DIR}/settings"
 }
 
 # Cleanup test environment
@@ -67,8 +67,8 @@ load_modules() {
   # Load core utilities
   source "${lib_dir}/core/utils.zsh"
 
-  # Load Amazon Q integration
-  source "${lib_dir}/integrations/amazon-q.zsh"
+  # Load Kiro CLI integration
+  source "${lib_dir}/integrations/kiro-cli.zsh"
 }
 
 # ============================================================================
@@ -77,7 +77,7 @@ load_modules() {
 
 # Test 1: Command injection via semicolon
 test_security_injection_semicolon() {
-  _amazonq_validate_cli_name "atuin; rm -rf /" 2>/dev/null
+  _kiro_validate_cli_name "atuin; rm -rf /" 2>/dev/null
   local exit_code=$?
 
   if [[ $exit_code -ne 0 ]]; then
@@ -89,7 +89,7 @@ test_security_injection_semicolon() {
 
 # Test 2: Command injection via dollar sign
 test_security_injection_dollar() {
-  _amazonq_validate_cli_name "test\$(whoami)" 2>/dev/null
+  _kiro_validate_cli_name "test\$(whoami)" 2>/dev/null
   local exit_code=$?
 
   if [[ $exit_code -ne 0 ]]; then
@@ -101,7 +101,7 @@ test_security_injection_dollar() {
 
 # Test 3: Command injection via backtick
 test_security_injection_backtick() {
-  _amazonq_validate_cli_name "cli\`id\`" 2>/dev/null
+  _kiro_validate_cli_name "cli\`id\`" 2>/dev/null
   local exit_code=$?
 
   if [[ $exit_code -ne 0 ]]; then
@@ -113,7 +113,7 @@ test_security_injection_backtick() {
 
 # Test 4: Command injection via pipe
 test_security_injection_pipe() {
-  _amazonq_validate_cli_name "name|cat /etc/passwd" 2>/dev/null
+  _kiro_validate_cli_name "name|cat /etc/passwd" 2>/dev/null
   local exit_code=$?
 
   if [[ $exit_code -ne 0 ]]; then
@@ -125,7 +125,7 @@ test_security_injection_pipe() {
 
 # Test 5: Command injection via ampersand
 test_security_injection_ampersand() {
-  _amazonq_validate_cli_name "app&& echo pwned" 2>/dev/null
+  _kiro_validate_cli_name "app&& echo pwned" 2>/dev/null
   local exit_code=$?
 
   if [[ $exit_code -ne 0 ]]; then
@@ -137,7 +137,7 @@ test_security_injection_ampersand() {
 
 # Test 6: Special characters - forward slash
 test_security_special_slash() {
-  _amazonq_validate_cli_name "test/slash" 2>/dev/null
+  _kiro_validate_cli_name "test/slash" 2>/dev/null
   local exit_code=$?
 
   if [[ $exit_code -ne 0 ]]; then
@@ -149,7 +149,7 @@ test_security_special_slash() {
 
 # Test 7: Special characters - asterisk
 test_security_special_asterisk() {
-  _amazonq_validate_cli_name "test*star" 2>/dev/null
+  _kiro_validate_cli_name "test*star" 2>/dev/null
   local exit_code=$?
 
   if [[ $exit_code -ne 0 ]]; then
@@ -161,9 +161,9 @@ test_security_special_asterisk() {
 
 # Test 8: Special characters - quotes
 test_security_special_quotes() {
-  _amazonq_validate_cli_name "test'quote" 2>/dev/null
+  _kiro_validate_cli_name "test'quote" 2>/dev/null
   local exit1=$?
-  _amazonq_validate_cli_name 'test"doublequote' 2>/dev/null
+  _kiro_validate_cli_name 'test"doublequote' 2>/dev/null
   local exit2=$?
 
   if [[ $exit1 -ne 0 ]] && [[ $exit2 -ne 0 ]]; then
@@ -176,7 +176,7 @@ test_security_special_quotes() {
 # Test 9: Length limit enforcement
 test_security_length_limit() {
   local long_name=$(printf 'a%.0s' {1..65})  # 65 characters
-  _amazonq_validate_cli_name "$long_name" 2>/dev/null
+  _kiro_validate_cli_name "$long_name" 2>/dev/null
   local exit_code=$?
 
   if [[ $exit_code -ne 0 ]]; then
@@ -188,7 +188,7 @@ test_security_length_limit() {
 
 # Test 10: Empty name rejection
 test_security_empty_name() {
-  _amazonq_validate_cli_name "" 2>/dev/null
+  _kiro_validate_cli_name "" 2>/dev/null
   local exit_code=$?
 
   if [[ $exit_code -ne 0 ]]; then
@@ -204,7 +204,7 @@ test_security_valid_names() {
   local all_passed=true
 
   for name in "${valid_names[@]}"; do
-    if ! _amazonq_validate_cli_name "$name" 2>/dev/null; then
+    if ! _kiro_validate_cli_name "$name" 2>/dev/null; then
       all_passed=false
       break
     fi
@@ -224,16 +224,16 @@ test_security_valid_names() {
 # Test 12: Invalid JSON handling
 test_filesystem_invalid_json() {
   # Create invalid JSON
-  echo '{"disabledClis": [' > "$AMAZONQ_SETTINGS_FILE"  # Missing closing bracket
+  echo '{"disabledClis": [' > "$KIRO_SETTINGS_FILE"  # Missing closing bracket
 
   # Try to configure settings (should handle gracefully)
-  _amazonq_configure_settings "atuin" 2>/dev/null
+  _kiro_configure_settings "atuin" 2>/dev/null
   local exit_code=$?
 
   # With jq, it should detect and fix/reinitialize
-  if [[ -f "$AMAZONQ_SETTINGS_FILE" ]]; then
+  if [[ -f "$KIRO_SETTINGS_FILE" ]]; then
     # Check if file is now valid JSON
-    jq empty "$AMAZONQ_SETTINGS_FILE" 2>/dev/null
+    jq empty "$KIRO_SETTINGS_FILE" 2>/dev/null
     if [[ $? -eq 0 ]]; then
       test_result "Filesystem: handle invalid JSON" "PASS"
     else
@@ -246,21 +246,21 @@ test_filesystem_invalid_json() {
 
 # Test 13: Read-only directory
 test_filesystem_readonly_directory() {
-  local test_dir="/tmp/amazonq-readonly-$$"
+  local test_dir="/tmp/kiro-readonly-$$"
   mkdir -p "$test_dir"
   chmod 555 "$test_dir"
 
   # Try to create config in read-only parent
-  local old_config_dir="$AMAZONQ_CONFIG_DIR"
-  AMAZONQ_CONFIG_DIR="$test_dir/config"
-  AMAZONQ_SETTINGS_FILE="${AMAZONQ_CONFIG_DIR}/settings.json"
+  local old_config_dir="$KIRO_CONFIG_DIR"
+  KIRO_CONFIG_DIR="$test_dir/config"
+  KIRO_SETTINGS_FILE="${KIRO_CONFIG_DIR}/settings/cli.json"
 
-  _amazonq_configure_settings "test" 2>/dev/null
+  _kiro_configure_settings "test" 2>/dev/null
   local result=$?
 
   # Restore
-  AMAZONQ_CONFIG_DIR="$old_config_dir"
-  AMAZONQ_SETTINGS_FILE="${AMAZONQ_CONFIG_DIR}/settings.json"
+  KIRO_CONFIG_DIR="$old_config_dir"
+  KIRO_SETTINGS_FILE="${KIRO_CONFIG_DIR}/settings/cli.json"
 
   # Cleanup
   chmod 755 "$test_dir"
@@ -280,7 +280,7 @@ test_filesystem_no_jq() {
   export PATH="/usr/bin:/bin"
 
   # Try to configure settings
-  _amazonq_configure_settings "test" 2>/dev/null
+  _kiro_configure_settings "test" 2>/dev/null
   local result=$?
 
   # Restore PATH
@@ -310,7 +310,7 @@ test_config_symlink_detection() {
   ln -s "$real_zshrc" "$link_zshrc"
 
   # Try to setup lazy loading (should detect symlink)
-  local result=$(HOME="$test_home" _amazonq_setup_lazy_loading 2>&1)
+  local result=$(HOME="$test_home" _kiro_setup_lazy_loading 2>&1)
   local contains_symlink=false
 
   if [[ "$result" == *"symlink"* ]]; then
@@ -336,13 +336,13 @@ test_config_idempotent_lazy_loading() {
   # Run twice in subshell to avoid polluting environment
   local first_result=$(
     HOME="$test_home"
-    _amazonq_setup_lazy_loading >/dev/null 2>&1
+    _kiro_setup_lazy_loading >/dev/null 2>&1
     cat "${HOME}/.zshrc"
   )
 
   local second_result=$(
     HOME="$test_home"
-    _amazonq_setup_lazy_loading >/dev/null 2>&1
+    _kiro_setup_lazy_loading >/dev/null 2>&1
     cat "${HOME}/.zshrc"
   )
 
@@ -364,7 +364,7 @@ test_config_backup_creation() {
   echo "original content" > "$test_home/.zshrc"
 
   # Setup lazy loading (should create backup)
-  HOME="$test_home" _amazonq_setup_lazy_loading >/dev/null 2>&1
+  HOME="$test_home" _kiro_setup_lazy_loading >/dev/null 2>&1
 
   # Check for backup files
   local backup_count=$(ls "$test_home"/.zshrc.backup-* 2>/dev/null | wc -l)
@@ -386,7 +386,7 @@ test_config_missing_zshrc() {
   # Don't create .zshrc
 
   # Try to setup lazy loading
-  HOME="$test_home" _amazonq_setup_lazy_loading 2>/dev/null
+  HOME="$test_home" _kiro_setup_lazy_loading 2>/dev/null
   local result=$?
 
   # Cleanup
@@ -420,7 +420,7 @@ alias ls='ls -la'"
   # Run test in isolated subshell and capture result
   result=$(
     HOME="$test_home"
-    _amazonq_setup_lazy_loading >/dev/null 2>&1
+    _kiro_setup_lazy_loading >/dev/null 2>&1
     func_exit=$?
 
     # Restore write permission to check content
@@ -463,7 +463,7 @@ test_error_multiple_invalid_names() {
   local all_rejected=true
 
   for name in "${invalid_names[@]}"; do
-    if _amazonq_validate_cli_name "$name" 2>/dev/null; then
+    if _kiro_validate_cli_name "$name" 2>/dev/null; then
       all_rejected=false
       break
     fi
@@ -479,7 +479,7 @@ test_error_multiple_invalid_names() {
 # Test 21: Configure with mix of valid and invalid names
 test_error_mixed_valid_invalid() {
   # Should fail on first invalid name
-  _amazonq_configure_settings "atuin" "test;bad" "valid-cli" 2>/dev/null
+  _kiro_configure_settings "atuin" "test;bad" "valid-cli" 2>/dev/null
   local result=$?
 
   if [[ $result -ne 0 ]]; then
@@ -496,12 +496,12 @@ test_error_mixed_valid_invalid() {
 # Test 22: Concurrent settings configuration
 test_concurrent_settings_updates() {
   # Reset to clean state
-  echo '{"disabledClis":[]}' > "$AMAZONQ_SETTINGS_FILE"
+  echo '{"disabledClis":[]}' > "$KIRO_SETTINGS_FILE"
 
   # Launch multiple background processes
   local pids=()
   for i in {1..5}; do
-    (_amazonq_configure_settings "cli$i" >/dev/null 2>&1) &
+    (_kiro_configure_settings "cli$i" >/dev/null 2>&1) &
     pids+=($!)
   done
 
@@ -511,15 +511,14 @@ test_concurrent_settings_updates() {
   done
 
   # Verify file is still valid JSON
-  if ! jq empty "$AMAZONQ_SETTINGS_FILE" 2>/dev/null; then
+  if ! jq empty "$KIRO_SETTINGS_FILE" 2>/dev/null; then
     test_result "Concurrent: parallel settings updates" "FAIL" "JSON corrupted by concurrent writes"
     return
   fi
 
   # Verify data integrity: at least one cliN should exist (last write wins)
-  # Each concurrent call sets a single CLI, so one will win the race
-  local cli_count=$(jq -r '.disabledClis | length' "$AMAZONQ_SETTINGS_FILE" 2>/dev/null)
-  local cli_value=$(jq -r '.disabledClis[0] // empty' "$AMAZONQ_SETTINGS_FILE" 2>/dev/null)
+  local cli_count=$(jq -r '.disabledClis | length' "$KIRO_SETTINGS_FILE" 2>/dev/null)
+  local cli_value=$(jq -r '.disabledClis[0] // empty' "$KIRO_SETTINGS_FILE" 2>/dev/null)
 
   # Validate: exactly one entry exists and it matches cli[1-5] pattern
   if [[ "$cli_count" -eq 1 ]] && [[ "$cli_value" =~ ^cli[1-5]$ ]]; then
@@ -534,12 +533,12 @@ test_concurrent_settings_updates() {
 # Test 23: Concurrent file creation
 test_concurrent_file_creation() {
   # Remove settings file
-  rm -f "$AMAZONQ_SETTINGS_FILE"
+  rm -f "$KIRO_SETTINGS_FILE"
 
   # Launch multiple processes trying to create file simultaneously
   local pids=()
   for i in {1..3}; do
-    (_amazonq_configure_settings "concurrent$i" >/dev/null 2>&1) &
+    (_kiro_configure_settings "concurrent$i" >/dev/null 2>&1) &
     pids+=($!)
   done
 
@@ -549,7 +548,7 @@ test_concurrent_file_creation() {
   done
 
   # Check file exists and is valid
-  if [[ -f "$AMAZONQ_SETTINGS_FILE" ]] && jq empty "$AMAZONQ_SETTINGS_FILE" 2>/dev/null; then
+  if [[ -f "$KIRO_SETTINGS_FILE" ]] && jq empty "$KIRO_SETTINGS_FILE" 2>/dev/null; then
     test_result "Concurrent: file creation race" "PASS"
   else
     test_result "Concurrent: file creation race" "FAIL" "File not created or corrupted"
@@ -562,15 +561,15 @@ test_concurrent_high_volume_access() {
   setopt local_options nullglob
 
   # Initialize clean state
-  echo '{"disabledClis":[]}' > "$AMAZONQ_SETTINGS_FILE"
+  echo '{"disabledClis":[]}' > "$KIRO_SETTINGS_FILE"
 
   # Clean up any orphaned temp files
-  rm -f "${AMAZONQ_SETTINGS_FILE}".tmp.* 2>/dev/null
+  rm -f "${KIRO_SETTINGS_FILE}".tmp.* 2>/dev/null
 
   # Launch 10 concurrent processes to stress test the temp file naming
   local pids=()
   for i in {1..10}; do
-    (_amazonq_configure_settings "stress$i" >/dev/null 2>&1) &
+    (_kiro_configure_settings "stress$i" >/dev/null 2>&1) &
     pids+=($!)
   done
 
@@ -581,19 +580,18 @@ test_concurrent_high_volume_access() {
 
   # Verify no orphaned temp files remain (indicates proper cleanup)
   local orphaned_temps
-  orphaned_temps=$(echo "${AMAZONQ_SETTINGS_FILE}".tmp.* 2>/dev/null | wc -w | tr -d ' ')
-  # If no files exist, nullglob causes the pattern to expand to empty string
-  [[ -z "${AMAZONQ_SETTINGS_FILE}".tmp.*(N) ]] && orphaned_temps=0
+  orphaned_temps=$(echo "${KIRO_SETTINGS_FILE}".tmp.* 2>/dev/null | wc -w | tr -d ' ')
+  [[ -z "${KIRO_SETTINGS_FILE}".tmp.*(N) ]] && orphaned_temps=0
 
   # Verify final file is valid JSON
-  if ! jq empty "$AMAZONQ_SETTINGS_FILE" 2>/dev/null; then
+  if ! jq empty "$KIRO_SETTINGS_FILE" 2>/dev/null; then
     test_result "Concurrent: high-volume access" "FAIL" "JSON corrupted after stress test"
     return
   fi
 
   # Verify one CLI entry exists (last write wins)
-  local cli_count=$(jq -r '.disabledClis | length' "$AMAZONQ_SETTINGS_FILE" 2>/dev/null)
-  local cli_value=$(jq -r '.disabledClis[0] // empty' "$AMAZONQ_SETTINGS_FILE" 2>/dev/null)
+  local cli_count=$(jq -r '.disabledClis | length' "$KIRO_SETTINGS_FILE" 2>/dev/null)
+  local cli_value=$(jq -r '.disabledClis[0] // empty' "$KIRO_SETTINGS_FILE" 2>/dev/null)
 
   if [[ "$orphaned_temps" -gt 0 ]]; then
     test_result "Concurrent: high-volume access" "FAIL" "Orphaned temp files: $orphaned_temps"
@@ -604,13 +602,13 @@ test_concurrent_high_volume_access() {
   fi
 }
 
-# Test 24: Unicode character handling
+# Test 25: Unicode character handling
 test_security_unicode_characters() {
-  local unicode_names=("test🚀cli" "café" "日本語" "tëst")
+  local unicode_names=("test:rocket:cli" "cafe" "test")
   local all_rejected=true
 
   for name in "${unicode_names[@]}"; do
-    if _amazonq_validate_cli_name "$name" 2>/dev/null; then
+    if _kiro_validate_cli_name "$name" 2>/dev/null; then
       all_rejected=false
       break
     fi
@@ -623,15 +621,15 @@ test_security_unicode_characters() {
   fi
 }
 
-# Test 25: Newlines and tabs in CLI names
+# Test 26: Newlines and tabs in CLI names
 test_security_whitespace_characters() {
-  _amazonq_validate_cli_name "test\nname" 2>/dev/null
+  _kiro_validate_cli_name "test\nname" 2>/dev/null
   local newline_result=$?
 
-  _amazonq_validate_cli_name "test\tname" 2>/dev/null
+  _kiro_validate_cli_name "test\tname" 2>/dev/null
   local tab_result=$?
 
-  _amazonq_validate_cli_name "test name" 2>/dev/null
+  _kiro_validate_cli_name "test name" 2>/dev/null
   local space_result=$?
 
   if [[ $newline_result -ne 0 ]] && [[ $tab_result -ne 0 ]] && [[ $space_result -ne 0 ]]; then
@@ -641,22 +639,23 @@ test_security_whitespace_characters() {
   fi
 }
 
-# Test 26: Unwritable settings file
+# Test 27: Unwritable settings file
 test_filesystem_unwritable_file() {
   # Create settings file and make both directory and file read-only
-  echo '{"disabledClis":[]}' > "$AMAZONQ_SETTINGS_FILE"
-  chmod 444 "$AMAZONQ_SETTINGS_FILE"
+  echo '{"disabledClis":[]}' > "$KIRO_SETTINGS_FILE"
+  chmod 444 "$KIRO_SETTINGS_FILE"
 
   # Also restrict directory to prevent mv from working
-  local old_perms=$(stat -f "%p" "$AMAZONQ_CONFIG_DIR" 2>/dev/null | tail -c 4)
-  chmod 555 "$AMAZONQ_CONFIG_DIR"
+  local settings_dir="${KIRO_CONFIG_DIR}/settings"
+  local old_perms=$(stat -f "%p" "$settings_dir" 2>/dev/null | tail -c 4)
+  chmod 555 "$settings_dir"
 
-  _amazonq_configure_settings "atuin" 2>/dev/null
+  _kiro_configure_settings "atuin" 2>/dev/null
   local result=$?
 
   # Restore permissions for cleanup
-  chmod "$old_perms" "$AMAZONQ_CONFIG_DIR" 2>/dev/null || chmod 755 "$AMAZONQ_CONFIG_DIR"
-  chmod 644 "$AMAZONQ_SETTINGS_FILE"
+  chmod "$old_perms" "$settings_dir" 2>/dev/null || chmod 755 "$settings_dir"
+  chmod 644 "$KIRO_SETTINGS_FILE"
 
   if [[ $result -ne 0 ]]; then
     test_result "Filesystem: detect unwritable file" "PASS"
@@ -665,17 +664,17 @@ test_filesystem_unwritable_file() {
   fi
 }
 
-# Test 27: Partial JSON structure
+# Test 28: Partial JSON structure
 test_filesystem_partial_json() {
   # Create file with empty JSON object (missing disabledClis)
-  echo '{}' > "$AMAZONQ_SETTINGS_FILE"
+  echo '{}' > "$KIRO_SETTINGS_FILE"
 
-  _amazonq_configure_settings "atuin" 2>/dev/null
+  _kiro_configure_settings "atuin" 2>/dev/null
   local result=$?
 
   if [[ $result -eq 0 ]]; then
     # Verify disabledClis was added
-    local content=$(jq -r '.disabledClis[]' "$AMAZONQ_SETTINGS_FILE" 2>/dev/null)
+    local content=$(jq -r '.disabledClis[]' "$KIRO_SETTINGS_FILE" 2>/dev/null)
     if [[ "$content" == "atuin" ]]; then
       test_result "Filesystem: handle partial JSON" "PASS"
     else
@@ -693,7 +692,7 @@ test_filesystem_partial_json() {
 run_edge_case_tests() {
   echo ""
   echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-  echo "  Amazon Q CLI Integration - Edge Case Test Suite"
+  echo "  Kiro CLI Integration - Edge Case Test Suite"
   echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
   echo ""
 

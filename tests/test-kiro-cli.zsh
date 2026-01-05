@@ -1,5 +1,5 @@
 #!/usr/bin/env zsh
-# Test suite for Amazon Q CLI integration
+# Test suite for Kiro CLI integration
 # Tests installation, configuration, and integration functions
 
 # Test framework setup
@@ -36,14 +36,14 @@ setup_test_env() {
   export TEST_MODE=true
   export ZSH_TOOL_CONFIG_DIR="/tmp/zsh-tool-test-$$"
   export ZSH_TOOL_LOG_FILE="${ZSH_TOOL_CONFIG_DIR}/logs/test.log"
-  export AMAZONQ_CONFIG_DIR="${ZSH_TOOL_CONFIG_DIR}/amazonq"
+  export KIRO_CONFIG_DIR="${ZSH_TOOL_CONFIG_DIR}/kiro"
 
   mkdir -p "${ZSH_TOOL_CONFIG_DIR}/logs"
-  mkdir -p "${AMAZONQ_CONFIG_DIR}"
+  mkdir -p "${KIRO_CONFIG_DIR}/settings"
 
   # Create test config
   cat > "${ZSH_TOOL_CONFIG_DIR}/config.yaml" <<EOF
-amazon_q:
+kiro_cli:
   enabled: true
   lazy_loading: true
   atuin_compatibility: true
@@ -83,22 +83,22 @@ load_modules() {
   # Load config parser
   source "${lib_dir}/install/config.zsh"
 
-  # Load Amazon Q integration
-  source "${lib_dir}/integrations/amazon-q.zsh"
+  # Load Kiro CLI integration
+  source "${lib_dir}/integrations/kiro-cli.zsh"
 }
 
 # Test 1: Module loading
 test_module_loading() {
-  if [[ $(type _amazonq_detect 2>/dev/null) ]]; then
+  if [[ $(type _kiro_detect 2>/dev/null) ]]; then
     test_result "Module loading" "PASS"
   else
-    test_result "Module loading" "FAIL" "_amazonq_detect function not found"
+    test_result "Module loading" "FAIL" "_kiro_detect function not found"
   fi
 }
 
 # Test 2: Config parsing - enabled flag
 test_config_parsing_enabled() {
-  local enabled=$(_zsh_tool_parse_amazon_q_enabled)
+  local enabled=$(_zsh_tool_parse_kiro_enabled)
 
   if [[ "$enabled" == "true" ]]; then
     test_result "Config parsing: enabled flag" "PASS"
@@ -109,7 +109,7 @@ test_config_parsing_enabled() {
 
 # Test 3: Config parsing - lazy loading flag
 test_config_parsing_lazy_loading() {
-  local lazy=$(_zsh_tool_parse_amazon_q_lazy_loading)
+  local lazy=$(_zsh_tool_parse_kiro_lazy_loading)
 
   if [[ "$lazy" == "true" ]]; then
     test_result "Config parsing: lazy loading flag" "PASS"
@@ -120,7 +120,7 @@ test_config_parsing_lazy_loading() {
 
 # Test 4: Config parsing - atuin compatibility flag
 test_config_parsing_atuin() {
-  local atuin=$(_zsh_tool_parse_amazon_q_atuin_compatibility)
+  local atuin=$(_zsh_tool_parse_kiro_atuin_compatibility)
 
   if [[ "$atuin" == "true" ]]; then
     test_result "Config parsing: atuin compatibility flag" "PASS"
@@ -131,7 +131,7 @@ test_config_parsing_atuin() {
 
 # Test 5: Config parsing - disabled CLIs list
 test_config_parsing_disabled_clis() {
-  local disabled=$(_zsh_tool_parse_amazon_q_disabled_clis)
+  local disabled=$(_zsh_tool_parse_kiro_disabled_clis)
 
   if [[ "$disabled" =~ "atuin" ]]; then
     test_result "Config parsing: disabled CLIs" "PASS"
@@ -142,12 +142,12 @@ test_config_parsing_disabled_clis() {
 
 # Test 6: Detection function exists
 test_detection_function() {
-  # Mock q command not available
-  if _amazonq_detect 2>/dev/null; then
-    # If q is actually installed, this passes
+  # Mock kiro-cli command not available
+  if _kiro_detect 2>/dev/null; then
+    # If kiro-cli is actually installed, this passes
     test_result "Detection function: execution" "PASS"
   else
-    # If q is not installed, function should return 1
+    # If kiro-cli is not installed, function should return 1
     if [[ $? -eq 1 ]]; then
       test_result "Detection function: execution" "PASS"
     else
@@ -158,7 +158,7 @@ test_detection_function() {
 
 # Test 7: Is installed check
 test_is_installed_check() {
-  if type _amazonq_is_installed >/dev/null 2>&1; then
+  if type _kiro_is_installed >/dev/null 2>&1; then
     test_result "Is installed check function" "PASS"
   else
     test_result "Is installed check function" "FAIL" "Function not defined"
@@ -168,10 +168,10 @@ test_is_installed_check() {
 # Test 8: Configure settings function
 test_configure_settings() {
   # Test settings configuration with disabled CLIs
-  _amazonq_configure_settings "atuin" "history" >/dev/null 2>&1
+  _kiro_configure_settings "atuin" "history" >/dev/null 2>&1
 
-  if [[ -f "${AMAZONQ_CONFIG_DIR}/settings.json" ]]; then
-    local content=$(cat "${AMAZONQ_CONFIG_DIR}/settings.json")
+  if [[ -f "${KIRO_CONFIG_DIR}/settings/cli.json" ]]; then
+    local content=$(cat "${KIRO_CONFIG_DIR}/settings/cli.json")
 
     if [[ "$content" =~ "atuin" ]]; then
       test_result "Configure settings: creates settings file" "PASS"
@@ -185,10 +185,10 @@ test_configure_settings() {
 
 # Test 9: Atuin compatibility configuration
 test_atuin_compatibility_config() {
-  _amazonq_configure_atuin_compatibility >/dev/null 2>&1
+  _kiro_configure_atuin_compatibility >/dev/null 2>&1
 
-  if [[ -f "${AMAZONQ_CONFIG_DIR}/settings.json" ]]; then
-    local content=$(cat "${AMAZONQ_CONFIG_DIR}/settings.json")
+  if [[ -f "${KIRO_CONFIG_DIR}/settings/cli.json" ]]; then
+    local content=$(cat "${KIRO_CONFIG_DIR}/settings/cli.json")
 
     if [[ "$content" =~ "atuin" ]]; then
       test_result "Atuin compatibility: configuration" "PASS"
@@ -217,10 +217,10 @@ test_lazy_loading_setup() {
     touch "${HOME}/.zshrc"
 
     # Run the function under test
-    _amazonq_setup_lazy_loading >/dev/null 2>&1
+    _kiro_setup_lazy_loading >/dev/null 2>&1
 
     # Check if lazy loading marker was added
-    if grep -q "Amazon Q lazy loading" "${HOME}/.zshrc"; then
+    if grep -q "Kiro CLI lazy loading" "${HOME}/.zshrc"; then
       echo "PASS"
     else
       echo "FAIL"
@@ -241,7 +241,7 @@ test_lazy_loading_setup() {
 
 # Test 11: Shell integration configuration function exists
 test_shell_integration_function() {
-  if type _amazonq_configure_shell_integration >/dev/null 2>&1; then
+  if type _kiro_configure_shell_integration >/dev/null 2>&1; then
     test_result "Shell integration: function exists" "PASS"
   else
     test_result "Shell integration: function exists" "FAIL" "Function not defined"
@@ -250,7 +250,7 @@ test_shell_integration_function() {
 
 # Test 12: Health check function exists
 test_health_check_function() {
-  if type _amazonq_health_check >/dev/null 2>&1; then
+  if type _kiro_health_check >/dev/null 2>&1; then
     test_result "Health check: function exists" "PASS"
   else
     test_result "Health check: function exists" "FAIL" "Function not defined"
@@ -259,33 +259,33 @@ test_health_check_function() {
 
 # Test 13: Main integration function exists
 test_main_integration_function() {
-  if type amazonq_install_integration >/dev/null 2>&1; then
+  if type kiro_install_integration >/dev/null 2>&1; then
     test_result "Main integration: function exists" "PASS"
   else
     test_result "Main integration: function exists" "FAIL" "Function not defined"
   fi
 }
 
-# Test 14: Error handling - missing q command
-test_error_handling_missing_q() {
-  # Ensure q is not available for this test
-  local result=$(_amazonq_configure_shell_integration 2>&1)
+# Test 14: Error handling - missing kiro-cli command
+test_error_handling_missing_kiro() {
+  # Ensure kiro-cli is not available for this test
+  local result=$(_kiro_configure_shell_integration 2>&1)
   local exit_code=$?
 
   if [[ $exit_code -ne 0 ]]; then
-    test_result "Error handling: missing q command" "PASS"
+    test_result "Error handling: missing kiro-cli command" "PASS"
   else
-    # If q is actually installed, this test can't properly validate error handling
-    test_result "Error handling: missing q command" "PASS" "q is installed, skipping error test"
+    # If kiro-cli is actually installed, this test can't properly validate error handling
+    test_result "Error handling: missing kiro-cli command" "PASS" "kiro-cli is installed, skipping error test"
   fi
 }
 
 # Test 15: Integration with config system
 test_integration_with_config() {
   # Test that config parsing integrates properly
-  local enabled=$(_zsh_tool_parse_amazon_q_enabled)
-  local lazy=$(_zsh_tool_parse_amazon_q_lazy_loading)
-  local atuin=$(_zsh_tool_parse_amazon_q_atuin_compatibility)
+  local enabled=$(_zsh_tool_parse_kiro_enabled)
+  local lazy=$(_zsh_tool_parse_kiro_lazy_loading)
+  local atuin=$(_zsh_tool_parse_kiro_atuin_compatibility)
 
   if [[ "$enabled" == "true" ]] && [[ "$lazy" == "true" ]] && [[ "$atuin" == "true" ]]; then
     test_result "Integration with config system" "PASS"
@@ -294,8 +294,8 @@ test_integration_with_config() {
   fi
 }
 
-# Test 16: Integration test for amazonq_install_integration main flow
-test_amazonq_install_integration_flow() {
+# Test 16: Integration test for kiro_install_integration main flow
+test_kiro_install_integration_flow() {
   local test_home="/tmp/test-integration-$$"
 
   # Create isolated test environment
@@ -304,40 +304,40 @@ test_amazonq_install_integration_flow() {
 
   # Set up isolated environment
   local old_home="$HOME"
-  local old_config_dir="$AMAZONQ_CONFIG_DIR"
-  local old_settings_file="$AMAZONQ_SETTINGS_FILE"
+  local old_config_dir="$KIRO_CONFIG_DIR"
+  local old_settings_file="$KIRO_SETTINGS_FILE"
 
   export HOME="$test_home"
-  export AMAZONQ_CONFIG_DIR="${test_home}/.aws/amazonq"
-  export AMAZONQ_SETTINGS_FILE="${AMAZONQ_CONFIG_DIR}/settings.json"
-  mkdir -p "$AMAZONQ_CONFIG_DIR"
+  export KIRO_CONFIG_DIR="${test_home}/.kiro"
+  export KIRO_SETTINGS_FILE="${KIRO_CONFIG_DIR}/settings/cli.json"
+  mkdir -p "${KIRO_CONFIG_DIR}/settings"
   touch "${HOME}/.zshrc"
 
   # Save original functions
-  local orig_is_installed=$(declare -f _amazonq_is_installed)
-  local orig_detect=$(declare -f _amazonq_detect)
-  local orig_install=$(declare -f _amazonq_install)
-  local orig_health_check=$(declare -f _amazonq_health_check)
+  local orig_is_installed=$(declare -f _kiro_is_installed)
+  local orig_detect=$(declare -f _kiro_detect)
+  local orig_install=$(declare -f _kiro_install)
+  local orig_health_check=$(declare -f _kiro_health_check)
 
   # Mock functions for successful flow
-  _amazonq_is_installed() { return 0; }
-  _amazonq_detect() { return 0; }
-  _amazonq_install() { return 0; }
-  _amazonq_health_check() { return 0; }
+  _kiro_is_installed() { return 0; }
+  _kiro_detect() { return 0; }
+  _kiro_install() { return 0; }
+  _kiro_health_check() { return 0; }
 
   # Test: Full integration flow with all options
   local test_passed=true
   local fail_msg=""
 
   # Test with lazy loading and atuin enabled
-  if ! amazonq_install_integration "true" "true" >/dev/null 2>&1; then
+  if ! kiro_install_integration "true" "true" >/dev/null 2>&1; then
     test_passed=false
     fail_msg="Integration flow should succeed"
   fi
 
   # Verify atuin was added to settings
-  if [[ "$test_passed" == "true" ]] && [[ -f "$AMAZONQ_SETTINGS_FILE" ]]; then
-    if ! grep -q "atuin" "$AMAZONQ_SETTINGS_FILE" 2>/dev/null; then
+  if [[ "$test_passed" == "true" ]] && [[ -f "$KIRO_SETTINGS_FILE" ]]; then
+    if ! grep -q "atuin" "$KIRO_SETTINGS_FILE" 2>/dev/null; then
       test_passed=false
       fail_msg="Atuin not in settings"
     fi
@@ -345,7 +345,7 @@ test_amazonq_install_integration_flow() {
 
   # Verify lazy loading was added to .zshrc
   if [[ "$test_passed" == "true" ]]; then
-    if ! grep -q "Amazon Q lazy loading" "${HOME}/.zshrc" 2>/dev/null; then
+    if ! grep -q "Kiro CLI lazy loading" "${HOME}/.zshrc" 2>/dev/null; then
       test_passed=false
       fail_msg="Lazy loading not in zshrc"
     fi
@@ -359,17 +359,17 @@ test_amazonq_install_integration_flow() {
 
   # Restore environment
   export HOME="$old_home"
-  export AMAZONQ_CONFIG_DIR="$old_config_dir"
-  export AMAZONQ_SETTINGS_FILE="$old_settings_file"
+  export KIRO_CONFIG_DIR="$old_config_dir"
+  export KIRO_SETTINGS_FILE="$old_settings_file"
 
   # Cleanup
   rm -rf "$test_home" 2>/dev/null
   trap - EXIT INT TERM
 
   if [[ "$test_passed" == "true" ]]; then
-    test_result "Integration: amazonq_install_integration flow" "PASS"
+    test_result "Integration: kiro_install_integration flow" "PASS"
   else
-    test_result "Integration: amazonq_install_integration flow" "FAIL" "$fail_msg"
+    test_result "Integration: kiro_install_integration flow" "FAIL" "$fail_msg"
   fi
 }
 
@@ -377,7 +377,7 @@ test_amazonq_install_integration_flow() {
 run_tests() {
   echo ""
   echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-  echo "  Amazon Q CLI Integration - Test Suite"
+  echo "  Kiro CLI Integration - Test Suite"
   echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
   echo ""
 
@@ -399,9 +399,9 @@ run_tests() {
   test_shell_integration_function
   test_health_check_function
   test_main_integration_function
-  test_error_handling_missing_q
+  test_error_handling_missing_kiro
   test_integration_with_config
-  test_amazonq_install_integration_flow
+  test_kiro_install_integration_flow
 
   # Teardown
   teardown_test_env

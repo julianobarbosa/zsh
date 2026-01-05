@@ -1,12 +1,15 @@
 # Story: Amazon Q CLI Integration with zsh-tool
 
+> **DEPRECATED (2026-01-05)**: Amazon Q Developer CLI was rebranded to **Kiro CLI** in November 2025.
+> See migration story: [story-kiro-cli-migration.md](story-kiro-cli-migration.md)
+
 **Story ID**: ZSHTOOL-003
 **Epic**: Epic 3 - Advanced Integrations
-**Priority**: High
+**Priority**: ~~High~~ Deprecated
 **Estimate**: 8 points
-**Status**: Done
+**Status**: Done → Deprecated
 **Created**: 2025-10-02
-**Updated**: 2025-10-02
+**Updated**: 2026-01-05
 
 ## Story
 

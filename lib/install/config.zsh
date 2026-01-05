@@ -203,27 +203,28 @@ _zsh_tool_extract_yaml_section() {
   done <<< "$config"
 }
 
-# Parse Amazon Q configuration
-_zsh_tool_parse_amazon_q_enabled() {
+# Parse Kiro CLI configuration (formerly Amazon Q)
+_zsh_tool_parse_kiro_enabled() {
   local config=$(_zsh_tool_load_config)
-  local section=$(_zsh_tool_extract_yaml_section "amazon_q" "$config")
+  local section=$(_zsh_tool_extract_yaml_section "kiro_cli" "$config")
   echo "$section" | grep '^\s*enabled:' | head -1 | awk '{print $2}' | tr -d ' '
 }
 
-_zsh_tool_parse_amazon_q_lazy_loading() {
+_zsh_tool_parse_kiro_lazy_loading() {
   local config=$(_zsh_tool_load_config)
-  local section=$(_zsh_tool_extract_yaml_section "amazon_q" "$config")
+  local section=$(_zsh_tool_extract_yaml_section "kiro_cli" "$config")
   echo "$section" | grep '^\s*lazy_loading:' | head -1 | awk '{print $2}' | tr -d ' '
 }
 
-_zsh_tool_parse_amazon_q_atuin_compatibility() {
+_zsh_tool_parse_kiro_atuin_compatibility() {
   local config=$(_zsh_tool_load_config)
-  local section=$(_zsh_tool_extract_yaml_section "amazon_q" "$config")
+  local section=$(_zsh_tool_extract_yaml_section "kiro_cli" "$config")
   echo "$section" | grep '^\s*atuin_compatibility:' | head -1 | awk '{print $2}' | tr -d ' '
 }
 
-_zsh_tool_parse_amazon_q_disabled_clis() {
+_zsh_tool_parse_kiro_disabled_clis() {
   local config=$(_zsh_tool_load_config) || return 1
+  local section=$(_zsh_tool_extract_yaml_section "kiro_cli" "$config")
   local in_disabled_clis=false
 
   while IFS= read -r line; do
@@ -238,7 +239,24 @@ _zsh_tool_parse_amazon_q_disabled_clis() {
       # Safely access match array
       [[ -n "${match[1]:-}" ]] && echo "${match[1]} "
     fi
-  done <<< "$config"
+  done <<< "$section"
+}
+
+# DEPRECATED: Amazon Q parsing functions (kept for backward compatibility during migration)
+_zsh_tool_parse_amazon_q_enabled() {
+  _zsh_tool_parse_kiro_enabled
+}
+
+_zsh_tool_parse_amazon_q_lazy_loading() {
+  _zsh_tool_parse_kiro_lazy_loading
+}
+
+_zsh_tool_parse_amazon_q_atuin_compatibility() {
+  _zsh_tool_parse_kiro_atuin_compatibility
+}
+
+_zsh_tool_parse_amazon_q_disabled_clis() {
+  _zsh_tool_parse_kiro_disabled_clis
 }
 
 # Parse Atuin configuration

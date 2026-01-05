@@ -60,8 +60,9 @@ development_status:
   2-5-git-integration-for-dotfiles: backlog
   epic-2-retrospective: optional
 
-  # Epic 3: Advanced Integrations (2 stories, 13 points)
+  # Epic 3: Advanced Integrations (3 stories, 26 points)
   epic-3: in-progress
   3-1-atuin-shell-history-integration: in-progress  # Review: 7 issues (3H, 3M, 1L)
-  3-2-amazon-q-cli-integration: backlog
+  3-2-amazon-q-cli-integration: done  # Completed 2025-10-02, now deprecated - replaced by Kiro CLI
+  3-3-kiro-cli-migration: ready-for-dev  # CRITICAL: Amazon Q rebranded to Kiro CLI (Nov 2025) - 13 points
   epic-3-retrospective: optional

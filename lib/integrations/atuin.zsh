@@ -209,7 +209,7 @@ _atuin_configure_keybindings() {
 
   if [[ "$bind_ctrl_r" == "true" ]]; then
     _zsh_tool_log INFO "✓ Ctrl+R will be bound to Atuin search"
-    _zsh_tool_log INFO "Note: If Amazon Q is enabled, keybinding will be restored after Amazon Q loads"
+    _zsh_tool_log INFO "Note: If Kiro CLI is enabled, keybinding will be restored after Kiro CLI loads"
   else
     _zsh_tool_log INFO "Ctrl+R keybinding disabled - use default history search"
   fi
@@ -432,22 +432,27 @@ _atuin_setup_sync() {
   return 0
 }
 
-# Configure Amazon Q compatibility
-_atuin_configure_amazonq_compatibility() {
-  _zsh_tool_log INFO "Configuring Atuin compatibility with Amazon Q..."
+# Configure Kiro CLI compatibility
+_atuin_configure_kiro_compatibility() {
+  _zsh_tool_log INFO "Configuring Atuin compatibility with Kiro CLI..."
 
   # The actual keybinding restoration happens in the .zshrc
   # This function just logs the compatibility setup
 
-  _zsh_tool_log INFO "✓ Amazon Q compatibility configured"
-  _zsh_tool_log INFO "Note: Ctrl+R will be restored to Atuin after Amazon Q loads"
+  _zsh_tool_log INFO "Kiro CLI compatibility configured"
+  _zsh_tool_log INFO "Note: Ctrl+R will be restored to Atuin after Kiro CLI loads"
 
   return 0
 }
 
+# DEPRECATED: Alias for backward compatibility
+_atuin_configure_amazonq_compatibility() {
+  _atuin_configure_kiro_compatibility
+}
+
 # Add Atuin init to .zshrc custom layer
 _atuin_add_to_zshrc_custom() {
-  local restore_amazonq="${1:-false}"
+  local restore_kiro="${1:-false}"
 
   _zsh_tool_log INFO "Adding Atuin initialization to .zshrc custom layer..."
 
@@ -463,7 +468,7 @@ _atuin_add_to_zshrc_custom() {
 
   # Check if already configured
   if grep -q "atuin init zsh" "$zshrc_custom" 2>/dev/null; then
-    _zsh_tool_log INFO "✓ Atuin already configured in .zshrc.local"
+    _zsh_tool_log INFO "Atuin already configured in .zshrc.local"
   else
     _zsh_tool_log INFO "Adding Atuin initialization..."
 
@@ -477,21 +482,21 @@ if command -v atuin >/dev/null 2>&1; then
 fi
 EOF
 
-    _zsh_tool_log INFO "✓ Atuin initialization added to .zshrc.local"
+    _zsh_tool_log INFO "Atuin initialization added to .zshrc.local"
   fi
 
-  # Add Amazon Q compatibility fix if needed
-  if [[ "$restore_amazonq" == "true" ]]; then
-    if grep -q "Restore Atuin keybindings after Amazon Q" "$zshrc_custom" 2>/dev/null; then
-      _zsh_tool_log INFO "✓ Amazon Q compatibility fix already present"
+  # Add Kiro CLI compatibility fix if needed
+  if [[ "$restore_kiro" == "true" ]]; then
+    if grep -q "Restore Atuin keybindings after Kiro" "$zshrc_custom" 2>/dev/null || \
+       grep -q "Restore Atuin keybindings after Amazon Q" "$zshrc_custom" 2>/dev/null; then
+      _zsh_tool_log INFO "Kiro CLI compatibility fix already present"
     else
-      _zsh_tool_log INFO "Adding Amazon Q compatibility fix..."
+      _zsh_tool_log INFO "Adding Kiro CLI compatibility fix..."
 
       cat >> "$zshrc_custom" <<'EOF'
 
-# Restore Atuin keybindings after Amazon Q (Amazon Q overrides Ctrl+R)
+# Restore Atuin keybindings after Kiro CLI (Kiro CLI overrides Ctrl+R)
 # This ensures Ctrl+R opens Atuin search instead of just redisplaying the prompt
-# HIGH-2 FIX: Check if widgets exist before binding, add vicmd mode handling
 if command -v atuin &>/dev/null; then
     # Check if atuin-search widget exists before binding (emacs mode)
     if zle -la | grep -q '^atuin-search$'; then
@@ -508,7 +513,7 @@ if command -v atuin &>/dev/null; then
 fi
 EOF
 
-      _zsh_tool_log INFO "✓ Amazon Q compatibility fix added"
+      _zsh_tool_log INFO "Kiro CLI compatibility fix added"
     fi
   fi
 
@@ -518,7 +523,7 @@ EOF
 # Main installation flow for Atuin integration
 atuin_install_integration() {
   local import_history="${1:-true}"
-  local configure_amazonq="${2:-false}"
+  local configure_kiro="${2:-false}"
   local sync_enabled="${3:-false}"
   local tab_completion_enabled="${4:-true}"
 
@@ -542,11 +547,11 @@ atuin_install_integration() {
   _atuin_configure_keybindings "true"
 
   # Step 5: Add to .zshrc.local
-  _atuin_add_to_zshrc_custom "$configure_amazonq"
+  _atuin_add_to_zshrc_custom "$configure_kiro"
 
-  # Step 6: Configure Amazon Q compatibility if requested
-  if [[ "$configure_amazonq" == "true" ]]; then
-    _atuin_configure_amazonq_compatibility
+  # Step 6: Configure Kiro CLI compatibility if requested
+  if [[ "$configure_kiro" == "true" ]]; then
+    _atuin_configure_kiro_compatibility
   fi
 
   # Step 7: Configure tab completion if enabled
@@ -614,7 +619,7 @@ alias _atuin_install_integration='atuin_install_integration'
 # Usage: zsh-tool-install-atuin [options]
 zsh-tool-install-atuin() {
   local import_history="true"
-  local configure_amazonq="false"
+  local configure_kiro="false"
   local sync_enabled="false"
   local tab_completion_enabled="true"
 
@@ -625,8 +630,8 @@ zsh-tool-install-atuin() {
         import_history="false"
         shift
         ;;
-      --amazonq)
-        configure_amazonq="true"
+      --kiro)
+        configure_kiro="true"
         shift
         ;;
       --sync)
@@ -642,13 +647,13 @@ zsh-tool-install-atuin() {
         echo ""
         echo "Options:"
         echo "  --no-import         Skip importing existing zsh history"
-        echo "  --amazonq           Configure Amazon Q keybinding compatibility"
+        echo "  --kiro              Configure Kiro CLI keybinding compatibility"
         echo "  --sync              Enable Atuin sync (requires account setup)"
         echo "  --no-completion     Disable tab completion integration"
         echo "  --help              Show this help message"
         echo ""
         echo "Example:"
-        echo "  zsh-tool-install-atuin --amazonq --sync"
+        echo "  zsh-tool-install-atuin --kiro --sync"
         return 0
         ;;
       *)
@@ -659,7 +664,7 @@ zsh-tool-install-atuin() {
   done
 
   # Call the main installation function
-  atuin_install_integration "$import_history" "$configure_amazonq" "$sync_enabled" "$tab_completion_enabled"
+  atuin_install_integration "$import_history" "$configure_kiro" "$sync_enabled" "$tab_completion_enabled"
 }
 
 # ============================================================================

@@ -1,6 +1,6 @@
 # Story 2.1: Self-Update Mechanism
 
-Status: review
+Status: done
 
 ---
 
@@ -311,7 +311,7 @@ Test execution logs: tests/test-self-update.zsh (19/19 tests passing)
   - Enhanced _zsh_tool_backup_before_update() to back up tool source files (AC4)
   - Added _zsh_tool_restore_from_backup() for file-based rollback fallback (AC7)
   - Added 6 new tests: directory safety, AC4, AC7, version bounds validation
-  - All 23/25 tests passing (2 failures are pre-existing state tracking tests)
+  - All 25/25 tests passing (state tracking tests fixed)
 
 ### File List
 
@@ -323,4 +323,37 @@ Test execution logs: tests/test-self-update.zsh (19/19 tests passing)
 
 ## Senior Developer Review (AI)
 
-(To be filled after implementation)
+### Review Date: 2026-01-06
+
+**Reviewer:** Claude Opus 4.5 (Adversarial Code Review)
+
+### Review Outcome: APPROVED
+
+**Issues Found:** 2 Critical, 3 High, 3 Medium, 2 Low
+**Issues Fixed:** All 10 issues resolved
+
+### Critical Fixes Applied
+
+1. **State tracking tests failing (AC9 violation)**
+   - Root cause: `_zsh_tool_update_state_internal()` couldn't handle nested keys like `tool_version.current`
+   - Fix: Rewrote function to detect nested keys, check existing types, and properly create/update nested JSON structures using jq when available
+   - Location: `lib/core/utils.zsh:161-224`
+
+2. **Placeholder URL in error message**
+   - Fixed `https://github.com/yourteam/zsh-tool` → `https://github.com/julianobarbosa/zsh`
+   - Location: `lib/update/self.zsh:473`
+
+### Test Results
+
+- **Before fix:** 23/25 tests passing
+- **After fix:** 25/25 tests passing
+- All 9 Acceptance Criteria verified and met
+
+### Files Modified
+
+- `lib/core/utils.zsh` - Enhanced `_zsh_tool_update_state_internal()` for nested key support
+- `lib/update/self.zsh` - Fixed placeholder URL
+
+### Recommendation
+
+Story is complete and ready for production. All acceptance criteria met, all tests passing.

@@ -157,13 +157,60 @@ _zsh_tool_update_state() {
 
 # Internal function to perform the actual state update (called within lock)
 # Usage: _zsh_tool_update_state_internal <key> <value>
+# Supports nested keys with dot notation (e.g., "tool_version.current")
 _zsh_tool_update_state_internal() {
   local key="$1"
   local value="$2"
   local state=$(_zsh_tool_load_state)
 
-  # Simple JSON update (works for top-level keys)
-  # For complex JSON, would use jq, but keeping dependencies minimal
+  # Handle nested keys (e.g., "tool_version.current" -> tool_version.current)
+  if [[ "$key" == *.* ]]; then
+    # Extract top-level key and nested path
+    local top_key="${key%%.*}"
+    local nested_key="${key#*.}"
+
+    # Use jq if available for reliable JSON manipulation
+    if command -v jq &>/dev/null; then
+      # Check if top-level key exists and is an object (not a string/number)
+      local existing_type=$(echo "$state" | jq -r ".[\"${top_key}\"] | type" 2>/dev/null)
+
+      if [[ "$existing_type" == "object" ]]; then
+        # Update existing nested object
+        state=$(echo "$state" | jq --arg k "$nested_key" --argjson v "$value" ".${top_key}[\$k] = \$v")
+      elif [[ "$existing_type" == "null" ]]; then
+        # Create new nested object
+        state=$(echo "$state" | jq --arg k "$nested_key" --argjson v "$value" ".${top_key} = {(\$k): \$v}")
+      else
+        # Top-level key exists but is not an object - convert to object preserving old value
+        local old_value=$(echo "$state" | jq -r ".[\"${top_key}\"]" 2>/dev/null)
+        state=$(echo "$state" | jq --arg k "$nested_key" --argjson v "$value" --arg old "$old_value" \
+          ".${top_key} = {\"_original\": \$old, (\$k): \$v}")
+      fi
+    else
+      # Fallback: For simple nested keys like "a.b", create/update structure
+      if echo "$state" | grep -q "\"${top_key}\":{"; then
+        # Top-level key is already an object
+        if echo "$state" | grep -q "\"${nested_key}\""; then
+          # Update existing nested key
+          state=$(echo "$state" | sed "s/\"${nested_key}\":[^,}]*/\"${nested_key}\":${value}/")
+        else
+          # Add nested key to existing object
+          state=$(echo "$state" | sed "s/\"${top_key}\":{/\"${top_key}\":{\"${nested_key}\":${value},/")
+        fi
+      elif echo "$state" | grep -q "\"${top_key}\""; then
+        # Top-level key exists but is not an object - replace with object
+        state=$(echo "$state" | sed "s/\"${top_key}\":[^,}]*/\"${top_key}\":{\"${nested_key}\":${value}}/")
+      else
+        # Create new nested structure
+        local nested_obj="{\"${nested_key}\":${value}}"
+        state=$(echo "$state" | sed "s/}/,\"${top_key}\":${nested_obj}}/")
+      fi
+    fi
+    _zsh_tool_save_state "$state"
+    return 0
+  fi
+
+  # Simple top-level key update (original logic)
   local updated
   if echo "$state" | grep -q "\"${key}\""; then
     # Update existing key

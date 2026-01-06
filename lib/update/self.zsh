@@ -470,7 +470,7 @@ _zsh_tool_self_update() {
     _zsh_tool_log WARN "Tool not installed as git repository"
     echo ""
     echo "To enable self-update, reinstall with:"
-    echo "  git clone https://github.com/yourteam/zsh-tool ~/.local/bin/zsh-tool"
+    echo "  git clone https://github.com/julianobarbosa/zsh ~/.local/bin/zsh-tool"
     echo "  ~/.local/bin/zsh-tool/install.sh"
     echo ""
     return 1

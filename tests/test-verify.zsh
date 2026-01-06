@@ -876,6 +876,89 @@ ENDCONFIG
 }
 
 # ============================================
+# NON-INTERACTIVE / NON-TTY TESTS
+# ============================================
+
+# Test: TTY detection works correctly
+test_is_tty_detection() {
+  # When piped, should return false (non-TTY)
+  local result
+  result=$(echo "test" | zsh -c 'source "'"${PROJECT_ROOT}/lib/core/utils.zsh"'" && source "'"${PROJECT_ROOT}/lib/install/verify.zsh"'" && _zsh_tool_is_tty && echo "tty" || echo "not-tty"' 2>/dev/null)
+
+  # In piped context, should detect non-TTY
+  [[ "$result" == "not-tty" ]]
+}
+
+# Test: Echo status uses ASCII fallback in non-TTY
+test_echo_status_ascii_fallback() {
+  # Run in non-TTY context (piped)
+  local result
+  result=$(echo "" | zsh -c '
+    source "'"${PROJECT_ROOT}/lib/core/utils.zsh"'"
+    source "'"${PROJECT_ROOT}/lib/install/verify.zsh"'"
+    _zsh_tool_echo_status "success" "test message"
+  ' 2>/dev/null)
+
+  # Should contain ASCII fallback [OK] instead of ✓
+  [[ "$result" == *"[OK]"* ]]
+}
+
+# Test: Summary uses ASCII borders in non-TTY
+test_summary_ascii_borders_non_tty() {
+  local orig_zsh="$ZSH"
+  export ZSH="${PROJECT_ROOT}/.oh-my-zsh-test-noninteractive"
+  mkdir -p "$ZSH/plugins" "$ZSH/themes"
+  echo "" > "$ZSH/oh-my-zsh.sh"
+
+  # Run summary in non-TTY context
+  local result
+  result=$(echo "" | zsh -c '
+    export ZSH="'"$ZSH"'"
+    export ZSH_TOOL_CONFIG_DIR="'"${ZSH_TOOL_CONFIG_DIR}"'"
+    source "'"${PROJECT_ROOT}/lib/core/utils.zsh"'"
+    source "'"${PROJECT_ROOT}/lib/install/verify.zsh"'"
+    _zsh_tool_display_summary 2>/dev/null
+  ' 2>/dev/null)
+
+  rm -rf "$ZSH"
+  [[ -n "$orig_zsh" ]] && export ZSH="$orig_zsh" || unset ZSH
+
+  # Should contain ASCII equals signs instead of unicode box drawing
+  [[ "$result" == *"========"* ]]
+}
+
+# Test: Verification works in non-interactive shell
+test_verification_non_interactive() {
+  local orig_zsh="$ZSH"
+  local zsh_custom="${ZSH_CUSTOM:-}"
+  local test_zsh="${PROJECT_ROOT}/.oh-my-zsh-test-noninteractive2"
+
+  # Create OMZ structure matching what setup_test_env's config.yaml expects
+  mkdir -p "$test_zsh/plugins/git" "$test_zsh/themes"
+  mkdir -p "$test_zsh/custom/plugins/zsh-syntax-highlighting"
+  mkdir -p "$test_zsh/custom/plugins/zsh-autosuggestions"
+  echo "" > "$test_zsh/oh-my-zsh.sh"
+  echo "" > "$test_zsh/themes/robbyrussell.zsh-theme"
+
+  # Run verification functions directly with skip flag set
+  export ZSH="$test_zsh"
+  export ZSH_CUSTOM="$test_zsh/custom"
+  export ZSH_TOOL_SKIP_SUBSHELL_VERIFY=1
+
+  # Call verification directly (already in a test subshell context)
+  _zsh_tool_verify_installation >/dev/null 2>&1
+  local result=$?
+
+  unset ZSH_TOOL_SKIP_SUBSHELL_VERIFY
+  rm -rf "$test_zsh"
+  [[ -n "$orig_zsh" ]] && export ZSH="$orig_zsh" || unset ZSH
+  [[ -n "$zsh_custom" ]] && export ZSH_CUSTOM="$zsh_custom" || unset ZSH_CUSTOM
+
+  # Should succeed (return 0)
+  [[ $result -eq 0 ]]
+}
+
+# ============================================
 # RUN TESTS
 # ============================================
 
@@ -948,6 +1031,21 @@ run_test "Theme parser rejects path traversal" test_theme_parser_rejects_path_tr
 run_test "Theme parser rejects command injection" test_theme_parser_rejects_command_injection
 run_test "Theme check rejects path traversal" test_theme_check_rejects_path_traversal
 run_test "Plugin check handles malicious config" test_plugin_check_handles_malicious_config
+
+echo ""
+echo "${BLUE}Non-Interactive Shell Tests:${NC}"
+cleanup_test_env
+setup_test_env
+run_test "TTY detection works in piped context" test_is_tty_detection
+cleanup_test_env
+setup_test_env
+run_test "Echo status uses ASCII fallback in non-TTY" test_echo_status_ascii_fallback
+cleanup_test_env
+setup_test_env
+run_test "Summary uses ASCII borders in non-TTY" test_summary_ascii_borders_non_tty
+cleanup_test_env
+setup_test_env
+run_test "Verification works in non-interactive shell" test_verification_non_interactive
 
 # Cleanup
 echo ""

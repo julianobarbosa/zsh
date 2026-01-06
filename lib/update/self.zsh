@@ -171,33 +171,51 @@ _zsh_tool_check_for_updates() {
   esac
 }
 
-# Create backup before update with timestamped directory
+# Create backup of tool source files before update with timestamped directory
+# This backs up the TOOL ITSELF (for rollback), not user configs (AC4 requirement)
 _zsh_tool_backup_before_update() {
   local backup_reason="${1:-update}"
   local timestamp=$(date '+%Y-%m-%d-%H%M%S')
-  local backup_dir="${ZSH_TOOL_CONFIG_DIR}/backups/backup-${timestamp}"
+  local backup_dir="${ZSH_TOOL_CONFIG_DIR}/backups/tool-backup-${timestamp}"
 
-  _zsh_tool_log INFO "Creating backup: ${backup_dir}"
+  _zsh_tool_log INFO "Creating tool backup: ${backup_dir}"
 
-  # Create backup directory
-  mkdir -p "$backup_dir"
-
-  # If create_backup function exists (from backup.zsh), use it
-  if type _zsh_tool_create_backup &>/dev/null; then
-    _zsh_tool_create_backup "$backup_reason"
-    return $?
+  # Create backup directory with secure permissions
+  if ! mkdir -p -m 700 "$backup_dir"; then
+    _zsh_tool_log ERROR "Failed to create tool backup directory"
+    return 1
   fi
 
-  # Otherwise, simple file copy
+  # Back up tool source files for rollback capability (AC4/AC7)
   if [[ -d "$ZSH_TOOL_INSTALL_DIR" ]]; then
-    cp -R "$ZSH_TOOL_INSTALL_DIR"/* "$backup_dir/" 2>/dev/null || {
-      _zsh_tool_log ERROR "Backup failed"
-      return 1
-    }
-    _zsh_tool_log INFO "Backup created successfully"
+    # Copy critical directories and files
+    local -a items_to_backup=(
+      "lib"
+      "templates"
+      "VERSION"
+      "install.sh"
+    )
+
+    for item in "${items_to_backup[@]}"; do
+      local source="${ZSH_TOOL_INSTALL_DIR}/${item}"
+      if [[ -e "$source" ]]; then
+        if ! cp -Rp "$source" "$backup_dir/" 2>/dev/null; then
+          _zsh_tool_log ERROR "Failed to backup: $item"
+          rm -rf "$backup_dir"
+          return 1
+        fi
+      fi
+    done
+
+    # Store backup path in state for potential file-based recovery
+    _zsh_tool_update_state "tool_version.last_backup_dir" "\"${backup_dir}\""
+    _zsh_tool_update_state "tool_version.last_backup_time" "\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\""
+
+    _zsh_tool_log INFO "Tool backup created successfully: ${backup_dir}"
     return 0
   fi
 
+  _zsh_tool_log ERROR "Install directory not found: $ZSH_TOOL_INSTALL_DIR"
   return 1
 }
 
@@ -207,27 +225,45 @@ _zsh_tool_display_changelog() {
     return 1
   fi
 
-  cd "$ZSH_TOOL_INSTALL_DIR"
-
   local current_version=$(_zsh_tool_get_current_version)
-  local remote_branch=$(git rev-parse --abbrev-ref origin/HEAD 2>/dev/null | sed 's|origin/||' || echo "main")
-  local new_version=$(git describe --tags origin/$remote_branch 2>/dev/null || git rev-parse --short origin/$remote_branch 2>/dev/null)
+
+  # Use subshell to avoid cd pollution and handle errors
+  local changelog_info
+  changelog_info=$(
+    cd "$ZSH_TOOL_INSTALL_DIR" || exit 1
+
+    local remote_branch=$(git rev-parse --abbrev-ref origin/HEAD 2>/dev/null | sed 's|origin/||' || echo "main")
+    local new_version=$(git describe --tags origin/$remote_branch 2>/dev/null || git rev-parse --short origin/$remote_branch 2>/dev/null)
+
+    echo "REMOTE_BRANCH=$remote_branch"
+    echo "NEW_VERSION=$new_version"
+    echo "---COMMITS---"
+    git log HEAD..origin/$remote_branch --oneline --no-decorate 2>/dev/null
+  )
+
+  if [[ $? -ne 0 ]]; then
+    _zsh_tool_log ERROR "Failed to access install directory for changelog"
+    return 1
+  fi
+
+  # Parse changelog info
+  local remote_branch=$(echo "$changelog_info" | grep "^REMOTE_BRANCH=" | cut -d= -f2)
+  local new_version=$(echo "$changelog_info" | grep "^NEW_VERSION=" | cut -d= -f2)
+  local commits=$(echo "$changelog_info" | sed -n '/^---COMMITS---$/,$p' | tail -n +2)
 
   echo ""
   echo "Updates available:"
   echo ""
 
   # Show commits between current and remote
-  git log HEAD..origin/$remote_branch --oneline --no-decorate 2>/dev/null | while read line; do
-    echo "  - $line"
+  echo "$commits" | while read line; do
+    [[ -n "$line" ]] && echo "  - $line"
   done
 
   echo ""
   echo "Current version: $current_version"
   echo "New version: $new_version"
   echo ""
-
-  cd - >/dev/null
 }
 
 # Apply update (git pull)
@@ -239,25 +275,39 @@ _zsh_tool_apply_update() {
 
   _zsh_tool_log INFO "Applying update..."
 
-  # Create backup before update
-  _zsh_tool_create_backup "pre-update" || {
-    _zsh_tool_log ERROR "Backup failed, aborting update"
+  # Create backup before update (AC4 requirement)
+  # Back up tool source files for rollback capability
+  _zsh_tool_backup_before_update "pre-update" || {
+    _zsh_tool_log ERROR "Backup of tool files failed, aborting update"
     return 1
   }
 
-  cd "$ZSH_TOOL_INSTALL_DIR"
+  # Also back up user config files
+  _zsh_tool_create_backup "pre-update" 2>/dev/null || {
+    _zsh_tool_log WARN "User config backup skipped or failed (continuing anyway)"
+  }
+
+  # Use pushd/popd for safe directory change with proper error handling
+  if ! pushd "$ZSH_TOOL_INSTALL_DIR" >/dev/null 2>&1; then
+    _zsh_tool_log ERROR "Failed to access install directory: $ZSH_TOOL_INSTALL_DIR"
+    return 1
+  fi
 
   local current_sha=$(git rev-parse HEAD)
   local remote_branch=$(git rev-parse --abbrev-ref origin/HEAD 2>/dev/null | sed 's|origin/||' || echo "main")
 
-  # Pull latest changes
-  git pull origin $remote_branch 2>&1 | tee -a "$ZSH_TOOL_LOG_FILE" >/dev/null
-  local pull_status=${pipestatus[1]}
+  # Pull latest changes - capture git status directly
+  local pull_output
+  pull_output=$(git pull origin $remote_branch 2>&1)
+  local pull_status=$?
+
+  # Log the output
+  echo "$pull_output" >> "$ZSH_TOOL_LOG_FILE"
 
   if [[ $pull_status -ne 0 ]]; then
     _zsh_tool_log ERROR "Update failed, rolling back..."
-    git reset --hard $current_sha 2>&1 | tee -a "$ZSH_TOOL_LOG_FILE" >/dev/null
-    cd - >/dev/null
+    git reset --hard $current_sha >> "$ZSH_TOOL_LOG_FILE" 2>&1
+    popd >/dev/null 2>&1
     return 1
   fi
 
@@ -291,15 +341,15 @@ _zsh_tool_apply_update() {
     fi
   done
 
-  # If validation failed, rollback
+  # If validation failed, rollback (AC7 requirement)
   if [[ "$validation_failed" == true ]]; then
     _zsh_tool_log ERROR "Post-update validation failed, rolling back..."
-    git reset --hard $current_sha 2>&1 | tee -a "$ZSH_TOOL_LOG_FILE" >/dev/null
-    cd - >/dev/null
+    git reset --hard $current_sha >> "$ZSH_TOOL_LOG_FILE" 2>&1
+    popd >/dev/null 2>&1
     return 1
   fi
 
-  cd - >/dev/null
+  popd >/dev/null 2>&1
 
   # Update state
   local new_version=$(_zsh_tool_get_current_version)
@@ -316,33 +366,95 @@ _zsh_tool_apply_update() {
   return 0
 }
 
-# Rollback to previous version
+# Restore from file-based backup (fallback for git failures)
+_zsh_tool_restore_from_backup() {
+  local backup_dir="$1"
+
+  if [[ -z "$backup_dir" ]]; then
+    # Try to get last backup from state
+    local state=$(_zsh_tool_load_state 2>/dev/null)
+    if [[ -n "$state" ]]; then
+      backup_dir=$(echo "$state" | grep -o '"last_backup_dir"[[:space:]]*:[[:space:]]*"[^"]*"' | cut -d'"' -f4)
+    fi
+  fi
+
+  if [[ -z "$backup_dir" ]] || [[ ! -d "$backup_dir" ]]; then
+    _zsh_tool_log ERROR "No valid backup directory found for restore"
+    return 1
+  fi
+
+  _zsh_tool_log INFO "Restoring from backup: $backup_dir"
+
+  # Restore files from backup
+  local -a items_to_restore=(
+    "lib"
+    "templates"
+    "VERSION"
+    "install.sh"
+  )
+
+  for item in "${items_to_restore[@]}"; do
+    local backup_source="${backup_dir}/${item}"
+    local restore_dest="${ZSH_TOOL_INSTALL_DIR}/${item}"
+
+    if [[ -e "$backup_source" ]]; then
+      # Remove existing and restore from backup
+      rm -rf "$restore_dest" 2>/dev/null
+      if ! cp -Rp "$backup_source" "$restore_dest" 2>/dev/null; then
+        _zsh_tool_log ERROR "Failed to restore: $item"
+        return 1
+      fi
+    fi
+  done
+
+  _zsh_tool_log INFO "✓ Restored from backup successfully"
+  return 0
+}
+
+# Rollback to previous version (AC7 requirement)
 _zsh_tool_rollback_update() {
   local target_version="${1:-HEAD~1}"
 
-  if ! _zsh_tool_is_git_repo; then
-    _zsh_tool_log ERROR "Tool not installed as git repository, cannot rollback"
-    return 1
+  # Try git-based rollback first
+  if _zsh_tool_is_git_repo; then
+    _zsh_tool_log INFO "Rolling back to: $target_version"
+
+    # Use pushd/popd for safe directory change with proper error handling
+    if ! pushd "$ZSH_TOOL_INSTALL_DIR" >/dev/null 2>&1; then
+      _zsh_tool_log ERROR "Failed to access install directory: $ZSH_TOOL_INSTALL_DIR"
+      # Fall through to file-based restore
+    else
+      # Capture git checkout status directly
+      local checkout_output
+      checkout_output=$(git checkout "$target_version" 2>&1)
+      local checkout_status=$?
+
+      # Log the output
+      echo "$checkout_output" >> "$ZSH_TOOL_LOG_FILE"
+
+      popd >/dev/null 2>&1
+
+      if [[ $checkout_status -eq 0 ]]; then
+        local version=$(_zsh_tool_get_current_version)
+        _zsh_tool_log INFO "✓ Rolled back to: $version"
+        _zsh_tool_update_state "tool_version.current" "\"$version\""
+        return 0
+      fi
+
+      _zsh_tool_log WARN "Git rollback failed, trying file-based restore..."
+    fi
   fi
 
-  _zsh_tool_log INFO "Rolling back to: $target_version"
-
-  cd "$ZSH_TOOL_INSTALL_DIR"
-
-  git checkout "$target_version" 2>&1 | tee -a "$ZSH_TOOL_LOG_FILE" >/dev/null
-  local checkout_status=${pipestatus[1]}
-
-  cd - >/dev/null
-
-  if [[ $checkout_status -eq 0 ]]; then
+  # Fallback: file-based restore from backup
+  if _zsh_tool_restore_from_backup; then
     local version=$(_zsh_tool_get_current_version)
-    _zsh_tool_log INFO "✓ Rolled back to: $version"
+    _zsh_tool_log INFO "✓ Restored to: $version"
     _zsh_tool_update_state "tool_version.current" "\"$version\""
     return 0
-  else
-    _zsh_tool_log ERROR "Rollback failed"
-    return 1
   fi
+
+  _zsh_tool_log ERROR "Rollback failed - both git and file-based restore failed"
+  return 1
 }
 
 # Main self-update command

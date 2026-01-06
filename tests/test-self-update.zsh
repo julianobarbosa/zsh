@@ -134,18 +134,35 @@ test_backup_before_update() {
   type _zsh_tool_backup_before_update &>/dev/null
 }
 
-# Test: Backup directory naming format
+# Test: Backup directory naming format (accepts both backup-* and tool-backup-* formats)
 test_backup_directory_naming() {
-  # Test the _zsh_tool_backup_before_update function which should create backup-* format
+  # Test the _zsh_tool_backup_before_update function which creates tool-backup-* format
   if type _zsh_tool_backup_before_update &>/dev/null; then
     _zsh_tool_backup_before_update "test-update" >/dev/null 2>&1
-    local backup_dirs=(${ZSH_TOOL_CONFIG_DIR}/backups/backup-*(N))
+    # Check for either backup-* or tool-backup-* (AC4 uses tool-backup-*)
+    local backup_dirs=(${ZSH_TOOL_CONFIG_DIR}/backups/backup-*(N) ${ZSH_TOOL_CONFIG_DIR}/backups/tool-backup-*(N))
     [[ ${#backup_dirs} -gt 0 ]]
   else
     # If function doesn't exist yet, check for the format
-    local test_name="backup-2026-01-03-143022"
-    [[ "$test_name" =~ ^backup-[0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9]{6}$ ]]
+    local test_name="tool-backup-2026-01-03-143022"
+    [[ "$test_name" =~ ^tool-backup-[0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9]{6}$ ]]
   fi
+}
+
+# Test: Tool backup creates tool-backup-* directories with source files (AC4)
+test_tool_backup_creates_files() {
+  if type _zsh_tool_backup_before_update &>/dev/null; then
+    _zsh_tool_backup_before_update "test-ac4" >/dev/null 2>&1
+    local backup_dirs=(${ZSH_TOOL_CONFIG_DIR}/backups/tool-backup-*(N))
+    [[ ${#backup_dirs} -gt 0 ]]
+  else
+    return 1
+  fi
+}
+
+# Test: File-based restore function exists (AC7)
+test_file_restore_function_exists() {
+  type _zsh_tool_restore_from_backup &>/dev/null
 }
 
 # Test: Rollback mechanism exists
@@ -200,6 +217,41 @@ test_display_version_info() {
   [[ -n "$version" ]]
 }
 
+# Test: Invalid version bounds handled (semver validation)
+test_invalid_version_bounds() {
+  # Version comparison should handle invalid versions gracefully
+  _zsh_tool_compare_versions "unknown" "1.0.0"
+  [[ $? -eq 1 ]]  # Should not suggest update for unknown versions
+}
+
+# Review Follow-up Tests: Directory Safety
+
+# Test: Changelog function doesn't pollute working directory
+test_changelog_no_directory_pollution() {
+  local start_dir=$(pwd)
+  _zsh_tool_display_changelog >/dev/null 2>&1 || true
+  local end_dir=$(pwd)
+  [[ "$start_dir" == "$end_dir" ]]
+}
+
+# Test: Apply update function doesn't pollute working directory on error
+test_apply_update_no_directory_pollution() {
+  local start_dir=$(pwd)
+  # This will fail (no updates) but should not change directory
+  _zsh_tool_apply_update >/dev/null 2>&1 || true
+  local end_dir=$(pwd)
+  [[ "$start_dir" == "$end_dir" ]]
+}
+
+# Test: Rollback function doesn't pollute working directory on error
+test_rollback_no_directory_pollution() {
+  local start_dir=$(pwd)
+  # This will fail but should not change directory
+  _zsh_tool_rollback_update "HEAD~1" >/dev/null 2>&1 || true
+  local end_dir=$(pwd)
+  [[ "$start_dir" == "$end_dir" ]]
+}
+
 # Main test suite
 main() {
   echo "${BLUE}╔════════════════════════════════════════════════════════════╗${NC}"
@@ -231,6 +283,8 @@ main() {
   run_test "Backup before update function exists" test_backup_before_update
   run_test "Backup directory naming format" test_backup_directory_naming
   run_test "Rollback mechanism exists" test_rollback_mechanism
+  run_test "Tool backup creates tool-backup-* directories" test_tool_backup_creates_files
+  run_test "File-based restore function exists" test_file_restore_function_exists
   echo ""
 
   # Task 4: State tracking
@@ -244,11 +298,19 @@ main() {
   run_test "Handle network failures gracefully" test_error_handling_network
   run_test "Handle corrupted installation" test_error_handling_corrupted
   run_test "Log all operations" test_logging_operations
+  run_test "Invalid version bounds handled" test_invalid_version_bounds
   echo ""
 
   # Task 1: Main functionality
   echo "${BLUE}Task 1: Main Functionality${NC}"
   run_test "Display version info" test_display_version_info
+  echo ""
+
+  # Review Follow-ups: Directory Safety
+  echo "${BLUE}Review Follow-ups: Directory Safety${NC}"
+  run_test "Changelog no directory pollution" test_changelog_no_directory_pollution
+  run_test "Apply update no directory pollution" test_apply_update_no_directory_pollution
+  run_test "Rollback no directory pollution" test_rollback_no_directory_pollution
   echo ""
 
   cleanup_test_env

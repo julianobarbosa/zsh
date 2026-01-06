@@ -141,13 +141,44 @@ _zsh_tool_install_git_component() {
 
   _zsh_tool_log INFO "Installing ${component_type}: $component_name from $git_url"
 
-  # Clone repository - capture output for better error reporting
+  # Clone repository with progress spinner (AC10 compliance)
   local clone_output
-  clone_output=$(git clone --depth 1 "$git_url" "$target_dir" 2>&1)
-  local clone_status=$?
+  local clone_status
+
+  # Use spinner for visual feedback during potentially slow git clone
+  echo -n "  Cloning ${component_name}... "
+  local spin='-\|/'
+  local i=0
+
+  # Create temp file for output capture (background processes can't use $())
+  local temp_output=$(mktemp)
+
+  # Run git clone in background, redirect output to temp file
+  git clone --depth 1 "$git_url" "$target_dir" > "$temp_output" 2>&1 &
+  local clone_pid=$!
+
+  # Show spinner while cloning
+  while kill -0 $clone_pid 2>/dev/null; do
+    i=$(( (i+1) % 4 ))
+    printf "\r  Cloning ${component_name}... ${spin:$i:1}"
+    sleep 0.1
+  done
+
+  wait $clone_pid
+  clone_status=$?
+
+  # Read output from temp file
+  clone_output=$(<"$temp_output")
+  rm -f "$temp_output"
+
+  if [[ $clone_status -eq 0 ]]; then
+    printf "\r  Cloning ${component_name}... ✓\n"
+  else
+    printf "\r  Cloning ${component_name}... ✗\n"
+  fi
 
   # Log output
-  echo "$clone_output" >> "$ZSH_TOOL_LOG_FILE"
+  [[ -n "$clone_output" ]] && echo "$clone_output" >> "$ZSH_TOOL_LOG_FILE"
 
   if [[ $clone_status -eq 0 ]]; then
     _zsh_tool_log INFO "✓ ${(C)component_type} $component_name installed"

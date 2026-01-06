@@ -1,6 +1,6 @@
 # Story 1.5: Theme Installation and Selection
 
-Status: in-progress
+Status: done
 
 ---
 
@@ -92,11 +92,19 @@ Status: in-progress
 
 ### Review Follow-ups (AI) - 2026-01-04 - ADVERSARIAL REVIEW (YOLO MODE)
 
-- [ ] [AI-Review][HIGH] Code duplication with plugins.zsh - 90% identical logic [lib/install/themes.zsh] - RESOLVED: Now uses shared component-manager.zsh
+- [x] [AI-Review][HIGH] Code duplication with plugins.zsh - 90% identical logic [lib/install/themes.zsh] - RESOLVED: Now uses shared component-manager.zsh
 - [x] [AI-Review][MEDIUM] Static built-in theme list will become stale as OMZ updates [lib/install/themes.zsh:105] - FIXED: Added _zsh_tool_get_builtin_themes() for dynamic detection from OMZ themes directory
 - [ ] [AI-Review][MEDIUM] Theme set doesn't validate theme works before applying [lib/install/themes.zsh:set] - DEFERRED: Would require sourcing theme which could have side effects
 - [x] [AI-Review][MEDIUM] Only 2-3 themes in registry - insufficient for team choice [lib/install/themes.zsh:10-12] - FIXED: Expanded THEME_URLS with 7 popular themes (powerlevel10k, spaceship-prompt, pure, agkozak-zsh-prompt, starship, bullet-train, alien)
-- [ ] [AI-Review][LOW] No test for theme conflicts (multiple themes with same name) [tests/test-themes.zsh]
+- [ ] [AI-Review][LOW] No test for theme conflicts (multiple themes with same name) [tests/test-themes.zsh] - DEFERRED: Edge case with low real-world impact; built-in detection takes precedence by design
+
+### Review Follow-ups (AI) - 2026-01-06 - ADVERSARIAL REVIEW R2
+
+- [x] [AI-Review][CRITICAL] Progress spinner for git clone NOT implemented - AC10 marked done but missing [component-manager.zsh:146] - FIXED: Added spinner with temp file output capture
+- [x] [AI-Review][CRITICAL] sed replaces ALL ZSH_THEME lines, not just managed section - corrupts user config [themes.zsh:236] - FIXED: Changed to awk, only replaces within managed section markers
+- [x] [AI-Review][HIGH] Remove `pure` and `starship` from THEME_URLS - incompatible installation models [themes.zsh:19-21] - FIXED: Removed, added dracula and lambda-gitster instead
+- [x] [AI-Review][HIGH] No warning when installed theme has no theme file [themes.zsh:284-299] - FIXED: Added warnings for missing/non-standard theme files
+- [x] [AI-Review][MEDIUM] Missing test for non-standard theme file structures [tests/test-themes.zsh] - FIXED: Added 2 new tests (40 total)
 
 ---
 
@@ -271,6 +279,14 @@ None yet.
 
 ### Change Log
 
+- 2026-01-06: [AI-Review R2] Fixed 5 issues found during adversarial review:
+  - CRITICAL: Added progress spinner to git clone in component-manager.zsh (was marked done but missing)
+  - CRITICAL: Fixed ZSH_THEME sed replacement to only affect managed section (was corrupting user config)
+  - HIGH: Removed incompatible themes (pure, starship) from registry, added dracula, lambda-gitster
+  - HIGH: Added warnings when installed theme has no standard theme file
+  - MEDIUM: Added 2 new tests for non-standard theme structures (40 total tests)
+- 2026-01-06: All 40 tests pass - story moved to done status
+- 2026-01-06: Final review items resolved, marked remaining LOW items as DEFERRED, story moved to review status
 - 2026-01-01: Story file created from epic definition and tech-spec analysis
 - 2026-01-01: Fixed PIPESTATUS → pipestatus and typeset -A → typeset -gA
 - 2026-01-01: Extended themes.zsh with ~200 lines of new functions
@@ -288,11 +304,12 @@ None yet.
 ### File List
 
 **Implementation:**
-- `lib/install/themes.zsh` - Theme management system with built-in/custom theme detection, installation, and switching capabilities (Last modified: 2026-01-03)
+- `lib/install/themes.zsh` - Theme management system with built-in/custom theme detection, installation, and switching capabilities (Last modified: 2026-01-06)
+- `lib/core/component-manager.zsh` - Shared component manager with progress spinner for git clone (Last modified: 2026-01-06)
 - `lib/core/utils.zsh` - Core utilities dependency (validated)
 
 **Tests:**
-- `tests/test-themes.zsh` - 38 comprehensive tests covering theme detection, installation, switching, and public commands, all passing (Last modified: 2026-01-01)
+- `tests/test-themes.zsh` - 40 comprehensive tests covering theme detection, installation, switching, non-standard structures, and public commands, all passing (Last modified: 2026-01-06)
 
 **Documentation:**
 - `docs/implementation-artifacts/1-5-theme-installation-and-selection.md` - This story file

@@ -501,6 +501,62 @@ test_dispatcher_current() {
 }
 
 # ============================================
+# TEST CASES - NON-STANDARD THEME STRUCTURES
+# ============================================
+
+# Test: Theme without standard .zsh-theme file triggers warning
+test_nonstandard_theme_no_theme_file() {
+  HOME="$TEST_HOME"
+
+  # Create custom theme directory without .zsh-theme file
+  local theme_dir="${OMZ_CUSTOM_THEMES}/broken-theme"
+  mkdir -p "$theme_dir"
+  echo "# Not a theme file" > "$theme_dir/README.md"
+
+  # Create .zshrc with managed section
+  cat > "${HOME}/.zshrc" << 'EOF'
+# ===== ZSH-TOOL MANAGED SECTION BEGIN =====
+ZSH_THEME="robbyrussell"
+# ===== ZSH-TOOL MANAGED SECTION END =====
+EOF
+
+  # Set to the broken theme - should fallback with warning
+  local output=$(_zsh_tool_theme_set "broken-theme" 2>&1)
+
+  # Should warn about missing theme file
+  echo "$output" | grep -qi "no standard theme file found\|not found"
+}
+
+# Test: ZSH_THEME replacement only affects managed section
+test_zshrc_theme_only_managed_section() {
+  HOME="$TEST_HOME"
+
+  # Create .zshrc with user theme OUTSIDE managed section
+  cat > "${HOME}/.zshrc" << 'EOF'
+# User's own theme setting (should NOT be changed)
+ZSH_THEME="user-custom-theme"
+
+# ===== ZSH-TOOL MANAGED SECTION BEGIN =====
+ZSH_THEME="managed-theme"
+plugins=(git)
+# ===== ZSH-TOOL MANAGED SECTION END =====
+
+# More user content
+alias myalias="echo hello"
+EOF
+
+  # Update theme via zsh-tool
+  _zsh_tool_update_zshrc_theme "new-managed-theme" >/dev/null 2>&1
+
+  # User's theme should be preserved
+  if grep -q 'ZSH_THEME="user-custom-theme"' "${HOME}/.zshrc" && \
+     grep -q 'ZSH_THEME="new-managed-theme"' "${HOME}/.zshrc"; then
+    return 0
+  fi
+  return 1
+}
+
+# ============================================
 # TEST CASES - INTEGRATION
 # ============================================
 
@@ -659,6 +715,16 @@ run_test "Dispatcher list action" test_dispatcher_list
 run_test "Dispatcher default action is list" test_dispatcher_default_list
 run_test "Dispatcher set without theme shows error" test_dispatcher_set_no_theme
 run_test "Dispatcher current shows current theme" test_dispatcher_current
+
+# Non-Standard Theme Structure Tests
+echo ""
+echo "${BLUE}Non-Standard Theme Structure Tests${NC}"
+cleanup_test_env
+setup_test_env
+run_test "Theme without standard file triggers warning" test_nonstandard_theme_no_theme_file
+cleanup_test_env
+setup_test_env
+run_test "ZSH_THEME replacement only affects managed section" test_zshrc_theme_only_managed_section
 
 # Integration Tests
 echo ""

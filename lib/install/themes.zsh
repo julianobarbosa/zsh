@@ -9,18 +9,19 @@ source "${ZSH_TOOL_LIB_DIR}/core/component-manager.zsh"
 
 OMZ_CUSTOM_THEMES="${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}/themes"
 
-# Theme URL registry (for custom themes)
+# Theme URL registry (for custom themes that follow standard OMZ structure)
 # Use -g for global scope when sourced from within a function
-# MEDIUM FIX: Expanded registry with more popular themes for team choice
+# NOTE: Only themes with standard OMZ structure (.zsh-theme file) are supported
+# Themes with non-standard installation (pure, starship) require manual setup
 typeset -gA THEME_URLS
 THEME_URLS=(
   "powerlevel10k" "https://github.com/romkatv/powerlevel10k.git"
   "spaceship-prompt" "https://github.com/spaceship-prompt/spaceship-prompt.git"
-  "pure" "https://github.com/sindresorhus/pure.git"
   "agkozak-zsh-prompt" "https://github.com/agkozak/agkozak-zsh-prompt.git"
-  "starship" "https://github.com/starship/starship.git"
   "bullet-train" "https://github.com/caiogondim/bullet-train.zsh.git"
   "alien" "https://github.com/eendroroy/alien.git"
+  "dracula" "https://github.com/dracula/zsh.git"
+  "lambda-gitster" "https://github.com/ergenekonyigit/lambda-gitster.git"
 )
 
 # Default fallback theme
@@ -233,7 +234,14 @@ _zsh_tool_update_zshrc_theme() {
   escaped_theme="${escaped_theme//&/\\&}"       # Escape ampersand
   escaped_theme="${escaped_theme//\//\\/}"      # Escape forward slashes
 
-  if sed "s/^ZSH_THEME=.*/ZSH_THEME=\"${escaped_theme}\"/" "$zshrc" > "$temp_zshrc" 2>/dev/null; then
+  # CRITICAL FIX: Only replace ZSH_THEME within managed section, not user's own theme lines
+  # Use awk to process only lines between managed section markers
+  if awk -v theme="$escaped_theme" '
+    /ZSH-TOOL MANAGED SECTION BEGIN/ { in_managed=1 }
+    /ZSH-TOOL MANAGED SECTION END/ { in_managed=0 }
+    in_managed && /^ZSH_THEME=/ { print "ZSH_THEME=\"" theme "\""; next }
+    { print }
+  ' "$zshrc" > "$temp_zshrc" 2>/dev/null; then
     # Restore original permissions before moving
     if ! chmod "$orig_perms" "$temp_zshrc" 2>/dev/null; then
       _zsh_tool_log WARN "Could not restore file permissions"
@@ -283,15 +291,29 @@ _zsh_tool_theme_set() {
 
   # Verify theme file exists before committing
   local theme_file=""
+  local theme_dir=""
   if _zsh_tool_is_builtin_theme "$theme"; then
     theme_file="${HOME}/.oh-my-zsh/themes/${theme}.zsh-theme"
   elif _zsh_tool_is_custom_theme_installed "$theme"; then
+    theme_dir="${OMZ_CUSTOM_THEMES}/${theme}"
     # Custom themes use directory structure - look for .zsh-theme file or init file
-    if [[ -f "${OMZ_CUSTOM_THEMES}/${theme}/${theme}.zsh-theme" ]]; then
-      theme_file="${OMZ_CUSTOM_THEMES}/${theme}/${theme}.zsh-theme"
-    elif [[ -f "${OMZ_CUSTOM_THEMES}/${theme}/${theme}.plugin.zsh" ]]; then
-      theme_file="${OMZ_CUSTOM_THEMES}/${theme}/${theme}.plugin.zsh"
+    # Also check for powerlevel10k style (theme-name/theme-name.zsh-theme)
+    if [[ -f "${theme_dir}/${theme}.zsh-theme" ]]; then
+      theme_file="${theme_dir}/${theme}.zsh-theme"
+    elif [[ -f "${theme_dir}/${theme}.plugin.zsh" ]]; then
+      theme_file="${theme_dir}/${theme}.plugin.zsh"
+    elif [[ -f "${theme_dir}/prompt_${theme}_setup" ]]; then
+      # Pure-style prompt (requires manual setup - warn user)
+      _zsh_tool_log WARN "Theme '${theme}' uses prompt_setup style - may require manual configuration"
+      _zsh_tool_log WARN "  See theme documentation for proper initialization"
     fi
+  fi
+
+  # HIGH FIX: Warn when no theme file found for installed custom theme
+  if [[ -n "$theme_dir" && -z "$theme_file" && -d "$theme_dir" ]]; then
+    _zsh_tool_log WARN "Theme '${theme}' installed but no standard theme file found"
+    _zsh_tool_log WARN "  Expected: ${theme_dir}/${theme}.zsh-theme"
+    _zsh_tool_log WARN "  Theme may not work correctly - check theme documentation"
   fi
 
   if [[ -n "$theme_file" && ! -s "$theme_file" ]]; then

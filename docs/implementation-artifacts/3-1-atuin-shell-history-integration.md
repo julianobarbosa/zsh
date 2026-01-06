@@ -74,19 +74,28 @@ Status: in-progress
 
 ### Review Follow-ups (AI) - 2026-01-03
 
-- [ ] [AI-Review][HIGH] Test reporting bug - says "11 run, 18 passed" impossible [tests/test-atuin.zsh]
-- [ ] [AI-Review][MEDIUM] Fix test counter logic to match actual test count [tests/test-atuin.zsh]
+- [x] [AI-Review][HIGH] Test reporting bug - says "11 run, 18 passed" impossible [tests/test-atuin.zsh]
+  - **RESOLVED 2026-01-06:** Separated test count (TESTS_RUN/PASSED/FAILED) from assertion count (ASSERTIONS_PASSED/FAILED). Now correctly reports "12 tests, 24 assertions".
+- [x] [AI-Review][MEDIUM] Fix test counter logic to match actual test count [tests/test-atuin.zsh]
+  - **RESOLVED 2026-01-06:** Added test_end() function that properly tracks test completion vs assertions.
 - [ ] [AI-Review][LOW] Git status shows new files - commit or document untracked files [story file, tests]
 
 ### Review Follow-ups (AI) - 2026-01-04 - ADVERSARIAL REVIEW (YOLO MODE)
 
-- [ ] [AI-Review][HIGH] Curl installation downloads and executes remote script without verification [lib/integrations/atuin.zsh:install]
-- [ ] [AI-Review][HIGH] TOML config generation vulnerable to injection if user input used [lib/integrations/atuin.zsh:configure_settings]
-- [ ] [AI-Review][HIGH] Amazon Q compatibility detection fragile - breaks if Q changes keybindings [lib/integrations/atuin.zsh:keybindings]
-- [ ] [AI-Review][MEDIUM] History import has no rollback - partial import corrupts Atuin DB [lib/integrations/atuin.zsh:import]
-- [ ] [AI-Review][MEDIUM] Keybinding restoration could conflict with other tools besides Amazon Q [lib/integrations/atuin.zsh:keybindings]
-- [ ] [AI-Review][MEDIUM] Sync setup prompts user but doesn't validate credentials work [lib/integrations/atuin.zsh:sync]
-- [ ] [AI-Review][LOW] No validation that Atuin actually works after install [lib/integrations/atuin.zsh:health_check]
+- [x] [AI-Review][HIGH] Curl installation downloads and executes remote script without verification [lib/integrations/atuin.zsh:install]
+  - **RESOLVED 2026-01-06:** Completely redesigned installation flow. Never pipes curl to bash. Downloads script to temp file, prompts user to review with pager, then execute. Added Cargo as secure alternative. Prioritizes Homebrew as most secure option.
+- [x] [AI-Review][HIGH] TOML config generation vulnerable to injection if user input used [lib/integrations/atuin.zsh:configure_settings]
+  - **RESOLVED 2026-01-06:** Added `_atuin_sanitize_toml_string()`, `_atuin_validate_enum()`, and `_atuin_validate_number()` functions. All user inputs are now validated against allowlists (enums) or sanitized (strings). Added security test suite with 6 injection prevention tests.
+- [x] [AI-Review][HIGH] Amazon Q compatibility detection fragile - breaks if Q changes keybindings [lib/integrations/atuin.zsh:keybindings]
+  - **RESOLVED 2026-01-06:** Added `_atuin_detect_keybinding_conflicts()` that detects multiple tools (Kiro/Amazon Q, FZF, McFly, hstr). Keybinding restoration is now widget-based (detects atuin-search* widgets) not tool-specific. Added precmd hook for lazy-loading tools.
+- [x] [AI-Review][MEDIUM] History import has no rollback - partial import corrupts Atuin DB [lib/integrations/atuin.zsh:import]
+  - **RESOLVED 2026-01-06:** `_atuin_import_history()` now creates timestamped backup before import. On failure, offers to restore from backup. Backup retained on success with rollback instructions.
+- [x] [AI-Review][MEDIUM] Keybinding restoration could conflict with other tools besides Amazon Q [lib/integrations/atuin.zsh:keybindings]
+  - **RESOLVED 2026-01-06:** Keybinding restoration is now generalized with `_restore_atuin_keybindings()` function. Detects multiple tools, uses widget-based binding, includes fallback detection, and runs via precmd hook for lazy-loading compatibility.
+- [x] [AI-Review][MEDIUM] Sync setup prompts user but doesn't validate credentials work [lib/integrations/atuin.zsh:sync]
+  - **RESOLVED 2026-01-06:** Added `_atuin_verify_sync()` function that checks `atuin status` and attempts `atuin sync --force` to verify connectivity. Returns specific error codes for different failure modes.
+- [x] [AI-Review][LOW] No validation that Atuin actually works after install [lib/integrations/atuin.zsh:health_check]
+  - **RESOLVED 2026-01-06:** Completely rewrote `_atuin_health_check()` with 9 comprehensive checks: installation, command availability, executable permissions, version verification, database directory, database accessibility, config validity, shell integration, and functional search test. Generates detailed health report with warnings/errors.
 
 ---
 
@@ -353,10 +362,20 @@ All acceptance criteria validated via unit tests in `tests/test-atuin.zsh`
   - Created comprehensive test suite (tests/test-atuin.zsh)
   - All 9 acceptance criteria validated and passing
 
+- 2026-01-06: Security hardening and adversarial review fixes
+  - **HIGH**: Secure installation - no more piping curl to bash, script review required
+  - **HIGH**: TOML injection prevention - input validation/sanitization functions added
+  - **HIGH**: Robust keybinding detection - widget-based, supports multiple tools
+  - **MEDIUM**: History import rollback - automatic backup before import
+  - **MEDIUM**: General keybinding restoration - works with any tool that overrides Ctrl+R
+  - **MEDIUM**: Sync credential validation - verifies connectivity before claiming success
+  - **LOW**: Comprehensive health checks - 9-point validation with detailed reporting
+  - Added 12 tests with 24 assertions (was 11 tests, 18 assertions)
+
 ### File List
 
-- lib/integrations/atuin.zsh (modified - added public command, state tracking)
-- tests/test-atuin.zsh (new - comprehensive test suite)
+- lib/integrations/atuin.zsh (modified - security hardening, robust keybinding handling, comprehensive health checks)
+- tests/test-atuin.zsh (modified - added TOML injection prevention tests, fixed test/assertion counting)
 
 ---
 

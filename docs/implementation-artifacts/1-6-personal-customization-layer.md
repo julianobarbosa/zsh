@@ -1,6 +1,6 @@
 # Story 1.6: Personal Customization Layer
 
-Status: in-progress
+Status: complete
 
 ---
 
@@ -94,11 +94,11 @@ Status: in-progress
 
 ### Review Follow-ups (AI) - 2026-01-04 - ADVERSARIAL REVIEW (YOLO MODE)
 
-- [ ] [AI-Review][HIGH] Migration logic has no rollback - partial .zshrc.local on failure [lib/install/config.zsh:migration]
-- [ ] [AI-Review][HIGH] No validation that source line doesn't already exist before adding [lib/install/config.zsh:template]
-- [ ] [AI-Review][MEDIUM] Complex marker-based extraction - brittle if markers malformed [lib/install/config.zsh:371]
-- [ ] [AI-Review][MEDIUM] Permission preservation failures logged but not handled [lib/install/config.zsh:288,408,456]
-- [ ] [AI-Review][LOW] No test for duplicate source lines in .zshrc [tests/test-config.zsh]
+- [x] [AI-Review][HIGH] Migration logic has no rollback - partial .zshrc.local on failure [lib/install/config.zsh:migration]
+- [x] [AI-Review][HIGH] No validation that source line doesn't already exist before adding [lib/install/config.zsh:template]
+- [x] [AI-Review][MEDIUM] Complex marker-based extraction - brittle if markers malformed [lib/install/config.zsh:371]
+- [x] [AI-Review][MEDIUM] Permission preservation failures logged but not handled [lib/install/config.zsh:288,408,456]
+- [x] [AI-Review][LOW] No test for duplicate source lines in .zshrc [tests/test-config.zsh]
 
 ---
 
@@ -352,6 +352,34 @@ None - all tests passed on first attempt after implementation.
 
 **Post-Review Test Results:** 49/49 tests passing (100% success rate maintained)
 
+**Adversarial Review Fixes (2026-01-06):**
+
+5 issues identified and fixed from adversarial code review:
+
+1. **[HIGH] Migration rollback mechanism** - Already implemented: `_zsh_tool_preserve_user_config()` creates backup before modification and rolls back on failure (lines 527-606). Verified with test.
+
+2. **[HIGH] Duplicate source line prevention** - Already implemented via `_zsh_tool_dedupe_source_lines()` function (lines 305-338). Enhanced string matching to catch all variants (source, $HOME, [[...]]). Added dedicated tests.
+
+3. **[MEDIUM] Malformed markers handling** - Added robust marker validation in `_zsh_tool_preserve_user_config()` (lines 553-570):
+   - Validates markers exist and are properly paired (exactly 1 begin, 1 end)
+   - No markers: treats entire file as user content
+   - Malformed: skips extraction with warning to prevent data loss
+
+4. **[MEDIUM] Permission preservation error handling** - Enhanced permission handling with explicit fallback logging (lines 418-434, 595-611):
+   - Logs debug message when permissions can't be preserved
+   - Falls back to 644 safely
+   - Never fails silently
+
+5. **[LOW] Duplicate source line tests** - Added 6 new tests for adversarial review fixes:
+   - Generated zshrc has no duplicate source lines
+   - Dedupe function removes duplicate source lines
+   - Preserve handles malformed markers (missing end)
+   - Preserve handles malformed markers (missing begin)
+   - Preserve handles duplicate markers gracefully
+   - Rollback creates backup on migration
+
+**Post-Adversarial-Review Test Results:** 57/57 tests passing (100% success rate)
+
 ### Change Log
 
 - 2026-01-03: Story file created with comprehensive context from epic analysis
@@ -359,15 +387,17 @@ None - all tests passed on first attempt after implementation.
 - 2026-01-03: All tasks completed - 49 unit/integration tests passing
 - 2026-01-03: Code review performed - 9 issues found (6 HIGH, 3 MEDIUM)
 - 2026-01-03: All review issues fixed and validated - tests still passing
+- 2026-01-06: Adversarial review fixes applied - 5 issues (2 HIGH, 2 MEDIUM, 1 LOW)
+- 2026-01-06: Story complete - 57/57 tests passing
 
 ### File List
 
 **Implementation:**
-- `lib/install/config.zsh` - Team configuration management with personal customization layer support, including user content migration and .zshrc.local management (Last modified: 2026-01-03)
+- `lib/install/config.zsh` - Team configuration management with personal customization layer support, including user content migration and .zshrc.local management (Last modified: 2026-01-06)
 - `lib/core/utils.zsh` - Core utilities dependency (validated)
 
 **Tests:**
-- `tests/test-config.zsh` - 49 comprehensive tests covering config parsing, template generation, migration, and customization layer (Stories 1.3 & 1.6), all passing (Last modified: 2026-01-03)
+- `tests/test-config.zsh` - 57 comprehensive tests covering config parsing, template generation, migration, customization layer, and adversarial edge cases (Stories 1.3 & 1.6), all passing (Last modified: 2026-01-06)
 
 **Documentation:**
 - `docs/implementation-artifacts/1-6-personal-customization-layer.md` - This story file

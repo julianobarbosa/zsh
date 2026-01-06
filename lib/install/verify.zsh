@@ -372,14 +372,15 @@ _zsh_tool_is_tty() {
 }
 
 # Safe echo with optional color support
-# Usage: _zsh_tool_echo_status <status> <message>
-# status: "success" (✓), "failure" (✗), "warning" (⚠), "info" (•)
+# Usage: _zsh_tool_echo_status <status_type> <message>
+# status_type: "success" (✓), "failure" (✗), "warning" (⚠), "info" (•)
+# Note: Using 'status_type' instead of 'status' because 'status' is a read-only zsh variable
 _zsh_tool_echo_status() {
-  local status="$1"
+  local status_type="$1"
   local message="$2"
 
   local prefix=""
-  case "$status" in
+  case "$status_type" in
     success) prefix="✓" ;;
     failure) prefix="✗" ;;
     warning) prefix="⚠" ;;
@@ -389,7 +390,7 @@ _zsh_tool_echo_status() {
 
   # In non-TTY environments, use ASCII fallbacks
   if ! _zsh_tool_is_tty; then
-    case "$status" in
+    case "$status_type" in
       success) prefix="[OK]" ;;
       failure) prefix="[FAIL]" ;;
       warning) prefix="[WARN]" ;;

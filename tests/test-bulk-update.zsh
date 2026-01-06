@@ -47,15 +47,15 @@ create_mock_git_plugin() {
 
   mkdir -p "$plugin_dir"
   cd "$plugin_dir"
-  git init >/dev/null 2>&1
+  git init --initial-branch=main >/dev/null 2>&1
   git config user.name "Test" >/dev/null 2>&1
   git config user.email "test@test.com" >/dev/null 2>&1
   git config commit.gpgsign false >/dev/null 2>&1
   git config tag.gpgsign false >/dev/null 2>&1
   echo "# $plugin_name" > README.md
   git add . >/dev/null 2>&1
-  git commit -m "Initial commit" >/dev/null 2>&1
-  git tag -a v1.0.0 -m "Version 1.0.0" >/dev/null 2>&1
+  git commit --no-verify -m "Initial commit" >/dev/null 2>&1
+  git tag -a v1.0.0 -m "Version 1.0.0" --no-sign >/dev/null 2>&1
   cd - >/dev/null
 }
 
@@ -65,15 +65,15 @@ create_mock_git_theme() {
 
   mkdir -p "$theme_dir"
   cd "$theme_dir"
-  git init >/dev/null 2>&1
+  git init --initial-branch=main >/dev/null 2>&1
   git config user.name "Test" >/dev/null 2>&1
   git config user.email "test@test.com" >/dev/null 2>&1
   git config commit.gpgsign false >/dev/null 2>&1
   git config tag.gpgsign false >/dev/null 2>&1
   echo "# $theme_name" > theme.zsh
   git add . >/dev/null 2>&1
-  git commit -m "Initial commit" >/dev/null 2>&1
-  git tag -a v1.0.0 -m "Version 1.0.0" >/dev/null 2>&1
+  git commit --no-verify -m "Initial commit" >/dev/null 2>&1
+  git tag -a v1.0.0 -m "Version 1.0.0" --no-sign >/dev/null 2>&1
   cd - >/dev/null
 }
 
@@ -352,12 +352,13 @@ test_omz_version_detection() {
 
   # Create mock OMZ git repo
   cd "$OMZ_INSTALL_DIR"
-  git init >/dev/null 2>&1
+  git init --initial-branch=main >/dev/null 2>&1
   git config user.name "Test" >/dev/null 2>&1
   git config user.email "test@test.com" >/dev/null 2>&1
+  git config commit.gpgsign false >/dev/null 2>&1
   echo "# OMZ" > README.md
   git add . >/dev/null 2>&1
-  git commit -m "Initial commit" >/dev/null 2>&1
+  git commit --no-verify -m "Initial commit" >/dev/null 2>&1
   cd - >/dev/null
 
   local version=$(_zsh_tool_get_omz_version)

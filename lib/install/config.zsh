@@ -313,10 +313,14 @@ _zsh_tool_dedupe_source_lines() {
 
   while IFS= read -r line || [[ -n "$line" ]]; do
     # Check if this is a source line for .zshrc.local (various formats)
-    if [[ "$line" =~ source[[:space:]]+~/.zshrc.local ]] || \
-       [[ "$line" =~ source[[:space:]]+\$HOME/.zshrc.local ]] || \
-       [[ "$line" =~ source[[:space:]]+\"\$HOME/.zshrc.local\" ]] || \
-       [[ "$line" =~ '\[\[.*\.zshrc\.local.*\]\].*source' ]]; then
+    # Use simple string matching for reliability across zsh versions
+    local is_source_local=false
+    if [[ "$line" == *"source"*".zshrc.local"* ]] || \
+       [[ "$line" == *"[["*".zshrc.local"*"]]"*"source"* ]]; then
+      is_source_local=true
+    fi
+
+    if [[ "$is_source_local" == true ]]; then
       # Check if we've seen a source for .zshrc.local before
       if [[ "$seen_sources" == *"zshrc.local"* ]]; then
         # Skip duplicate source line
@@ -416,10 +420,19 @@ _zsh_tool_install_config() {
   fi
 
   # Preserve permissions if .zshrc exists
+  # MEDIUM-4: Enhanced permission handling with explicit fallback logging
   if [[ -f "$zshrc" ]]; then
     # macOS and Linux compatible permission preservation
-    local perms=$(stat -f "%OLp" "$zshrc" 2>/dev/null || stat -c "%a" "$zshrc" 2>/dev/null || echo "644")
-    chmod "$perms" "$temp_zshrc" 2>/dev/null || chmod 644 "$temp_zshrc"
+    local perms=$(stat -f "%OLp" "$zshrc" 2>/dev/null || stat -c "%a" "$zshrc" 2>/dev/null || echo "")
+    if [[ -n "$perms" ]]; then
+      if ! chmod "$perms" "$temp_zshrc" 2>/dev/null; then
+        _zsh_tool_log DEBUG "Could not preserve .zshrc permissions ($perms), using default 644"
+        chmod 644 "$temp_zshrc"
+      fi
+    else
+      _zsh_tool_log DEBUG "Could not read .zshrc permissions, using default 644"
+      chmod 644 "$temp_zshrc"
+    fi
   else
     chmod 644 "$temp_zshrc"
   fi
@@ -541,8 +554,25 @@ _zsh_tool_preserve_user_config() {
   local begin_marker=$(printf '%s\n' "$ZSH_TOOL_MANAGED_BEGIN" | sed 's/[][\\.*^$()+?{|/&]/\\&/g')
   local end_marker=$(printf '%s\n' "$ZSH_TOOL_MANAGED_END" | sed 's/[][\\.*^$()+?{|/&]/\\&/g')
 
-  # Extract user content (everything outside managed section)
-  local user_content=$(sed -n "/${begin_marker}/,/${end_marker}/!p" "$zshrc" 2>/dev/null || echo "")
+  # MEDIUM-3: Validate markers exist and are properly paired before extraction
+  # This prevents brittle behavior with malformed markers
+  local has_begin has_end
+  has_begin=$(grep -cF "$ZSH_TOOL_MANAGED_BEGIN" "$zshrc" 2>/dev/null) || has_begin=0
+  has_end=$(grep -cF "$ZSH_TOOL_MANAGED_END" "$zshrc" 2>/dev/null) || has_end=0
+
+  local user_content=""
+  if [[ "$has_begin" -eq 1 && "$has_end" -eq 1 ]]; then
+    # Both markers found exactly once - safe to extract
+    user_content=$(sed -n "/${begin_marker}/,/${end_marker}/!p" "$zshrc" 2>/dev/null || echo "")
+  elif [[ "$has_begin" -eq 0 && "$has_end" -eq 0 ]]; then
+    # No markers - entire file is user content
+    user_content=$(cat "$zshrc" 2>/dev/null || echo "")
+    _zsh_tool_log DEBUG "No managed markers found - treating entire file as user content"
+  else
+    # Malformed markers (missing one, or duplicates)
+    _zsh_tool_log WARN "Malformed managed section markers (begin=$has_begin, end=$has_end) - skipping extraction to avoid data loss"
+    return 0
+  fi
 
   # Skip if no user content
   if [[ -z "$user_content" ]] || [[ "$user_content" =~ ^[[:space:]]*$ ]]; then
@@ -577,10 +607,19 @@ _zsh_tool_preserve_user_config() {
   fi
 
   # Atomic write with permission preservation
+  # MEDIUM-4: Enhanced permission handling with explicit fallback logging
   if [[ -f "$zshrc_local" ]]; then
     # macOS and Linux compatible permission preservation
-    local perms=$(stat -f "%OLp" "$zshrc_local" 2>/dev/null || stat -c "%a" "$zshrc_local" 2>/dev/null || echo "644")
-    chmod "$perms" "$temp_local" 2>/dev/null || chmod 644 "$temp_local"
+    local perms=$(stat -f "%OLp" "$zshrc_local" 2>/dev/null || stat -c "%a" "$zshrc_local" 2>/dev/null || echo "")
+    if [[ -n "$perms" ]]; then
+      if ! chmod "$perms" "$temp_local" 2>/dev/null; then
+        _zsh_tool_log DEBUG "Could not preserve permissions ($perms), using default 644"
+        chmod 644 "$temp_local"
+      fi
+    else
+      _zsh_tool_log DEBUG "Could not read original permissions, using default 644"
+      chmod 644 "$temp_local"
+    fi
   else
     chmod 644 "$temp_local"
   fi

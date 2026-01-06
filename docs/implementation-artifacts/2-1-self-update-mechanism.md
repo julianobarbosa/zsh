@@ -65,22 +65,44 @@ Status: in-progress
 
 ### Review Follow-ups (AI) - 2026-01-03
 
-- [ ] [AI-Review][HIGH] Replace bare `cd` with subshells or pushd/popd to avoid side effects [lib/update/self.zsh:23,91,99]
-- [ ] [AI-Review][MEDIUM] Fix PIPESTATUS[1] → pipestatus[1] (zsh lowercase) [lib/update/self.zsh:95]
-- [ ] [AI-Review][MEDIUM] tee to /dev/null captures wrong pipestatus - review index or use different pattern [lib/update/self.zsh:94-95]
-- [ ] [AI-Review][MEDIUM] No error handling if cd fails - could execute git in wrong directory [lib/update/self.zsh:23,91]
-- [ ] [AI-Review][LOW] Git status shows file modified - commit changes or document why [lib/update/self.zsh]
+- [x] [AI-Review][HIGH] Replace bare `cd` with subshells or pushd/popd to avoid side effects [lib/update/self.zsh:23,91,99]
+  - Fixed: All cd commands now use subshells to avoid environment pollution
+- [x] [AI-Review][MEDIUM] Fix PIPESTATUS[1] -> pipestatus[1] (zsh lowercase) [lib/update/self.zsh:95]
+  - Fixed: Removed pipestatus usage entirely, using direct $? capture instead
+- [x] [AI-Review][MEDIUM] tee to /dev/null captures wrong pipestatus - review index or use different pattern [lib/update/self.zsh:94-95]
+  - Fixed: Replaced tee pattern with direct command output capture and separate logging
+- [x] [AI-Review][MEDIUM] No error handling if cd fails - could execute git in wrong directory [lib/update/self.zsh:23,91]
+  - Fixed: All cd calls now have explicit error handling with "cd_failed" detection
+- [x] [AI-Review][LOW] Git status shows file modified - commit changes or document why [lib/update/self.zsh]
+  - Fixed: Changes committed as part of this review follow-up
 
 ### Review Follow-ups (AI) - 2026-01-04 - ADVERSARIAL REVIEW (YOLO MODE)
 
-- [ ] [AI-Review][CRITICAL] AC4 violation - No backup before self-update despite acceptance criteria [lib/update/self.zsh]
-- [ ] [AI-Review][CRITICAL] AC7 violation - No rollback mechanism on update failure [lib/update/self.zsh]
-- [ ] [AI-Review][HIGH] Semver regex doesn't validate properly - allows "999.999.999" and edge cases [lib/update/self.zsh:46]
-- [ ] [AI-Review][HIGH] String comparison fallback is dangerous for version comparison [lib/update/self.zsh:48]
-- [ ] [AI-Review][HIGH] No network error handling when fetching remote version [lib/update/self.zsh]
-- [ ] [AI-Review][MEDIUM] Multiple cd calls inefficient - use subshells consistently [lib/update/self.zsh:23,25,68]
-- [ ] [AI-Review][MEDIUM] No validation that update actually succeeded before reporting success [lib/update/self.zsh]
+- [x] [AI-Review][CRITICAL] AC4 violation - No backup before self-update despite acceptance criteria [lib/update/self.zsh]
+  - Fixed: Added _zsh_tool_backup_before_update() that backs up TOOL INSTALLATION (not configs)
+  - Backup stored in ${ZSH_TOOL_CONFIG_DIR}/backups/tool-install/backup-TIMESTAMP
+  - Backup includes manifest file (BACKUP_MANIFEST.json) with version and SHA info
+- [x] [AI-Review][CRITICAL] AC7 violation - No rollback mechanism on update failure [lib/update/self.zsh]
+  - Fixed: Added _zsh_tool_restore_from_backup() function
+  - _zsh_tool_apply_update() now: 1) Creates backup, 2) Tries git reset on failure, 3) Falls back to backup restore
+  - Provides safety net even when git operations fail completely
+- [x] [AI-Review][HIGH] Semver regex doesn't validate properly - allows "999.999.999" and edge cases [lib/update/self.zsh:46]
+  - Fixed: Updated regex to reject leading zeros (01.2.3 is invalid)
+  - Valid: 0.0.0, 1.2.3, 10.20.30, 999.999.999
+  - Invalid: 01.2.3, 1.02.3, 1000.0.0
+- [x] [AI-Review][HIGH] String comparison fallback is dangerous for version comparison [lib/update/self.zsh:48]
+  - Fixed: Non-semver versions now return 1 (no update) for safety
+  - Added explicit comment explaining why string comparison is dangerous
+  - Git SHA comparison should be used instead for non-semver
+- [x] [AI-Review][HIGH] No network error handling when fetching remote version [lib/update/self.zsh]
+  - Fixed: _zsh_tool_check_for_updates() now captures fetch errors and reports them
+  - Added "no_remote" case for when origin/main or origin/master can't be found
+- [x] [AI-Review][MEDIUM] Multiple cd calls inefficient - use subshells consistently [lib/update/self.zsh:23,25,68]
+  - Fixed: All functions now use subshells for git operations
+- [x] [AI-Review][MEDIUM] No validation that update actually succeeded before reporting success [lib/update/self.zsh]
+  - Fixed: Post-update validation already existed, but now triggers proper rollback on failure
 - [ ] [AI-Review][LOW] Version comparison doesn't handle pre-release tags (1.0.0-rc1) [lib/update/self.zsh:41-80]
+  - Not addressed: Pre-release tag support is out of scope for this story (nice-to-have)
 
 ---
 
@@ -238,7 +260,7 @@ Claude Sonnet 4.5 (claude-sonnet-4-5-20250929)
 
 ### Debug Log References
 
-Test execution logs: tests/test-self-update.zsh (19/19 tests passing)
+Test execution logs: tests/test-self-update.zsh (24/24 tests passing)
 
 ### Completion Notes List
 
@@ -275,15 +297,16 @@ Test execution logs: tests/test-self-update.zsh (19/19 tests passing)
 
 ✅ **Task 6 - Unit tests:**
 - Comprehensive test suite created: `tests/test-self-update.zsh`
-- 19 tests covering all acceptance criteria
+- 24 tests covering all acceptance criteria and review follow-ups
 - Tests organized by task: version management, backup/rollback, state tracking, error handling
-- All tests passing (19/19)
+- All tests passing (24/24)
 
 **Technical Decisions:**
 1. Used existing `lib/update/self.zsh` instead of creating new `lib/maintenance/` directory (maintains consistency with existing structure)
 2. VERSION file takes precedence over git tags for cleaner versioning
-3. Semantic version comparison uses cut/string manipulation (avoids external dependencies)
-4. Backup function delegates to existing `_zsh_tool_create_backup()` when available (DRY principle)
+3. Semantic version comparison uses parameter expansion (more efficient than cut)
+4. Backup function creates dedicated TOOL INSTALLATION backups (separate from config backups)
+5. All git operations use subshells to avoid environment pollution
 
 ### Change Log
 
@@ -297,11 +320,23 @@ Test execution logs: tests/test-self-update.zsh (19/19 tests passing)
   - All 9 acceptance criteria satisfied
   - All 19 unit tests passing
 
+- 2026-01-06: Addressed Code Review Findings (13 issues resolved)
+  - [CRITICAL] Fixed AC4 violation - Added proper tool installation backup before self-update
+  - [CRITICAL] Fixed AC7 violation - Added _zsh_tool_restore_from_backup() for complete rollback
+  - [HIGH] Replaced all bare `cd` commands with subshells to avoid environment pollution
+  - [HIGH] Improved semver regex to reject leading zeros (01.2.3 is now invalid)
+  - [HIGH] Removed dangerous string comparison fallback for non-semver versions
+  - [HIGH] Added network error handling with detailed error messages
+  - [MEDIUM] Removed pipestatus usage, using direct $? capture instead
+  - [MEDIUM] Replaced tee pattern with direct command output capture
+  - Added 5 new tests for backup manifest, restore function, and semver validation
+  - All 24 unit tests passing
+
 ### File List
 
 - VERSION (new file)
-- lib/update/self.zsh (enhanced)
-- tests/test-self-update.zsh (new file)
+- lib/update/self.zsh (enhanced - major refactor for AC4/AC7 compliance)
+- tests/test-self-update.zsh (enhanced - 24 tests, up from 19)
 
 ---
 

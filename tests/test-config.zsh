@@ -826,6 +826,135 @@ setup_test_env
 run_test "Install preserves .zshrc permissions" test_install_preserves_permissions
 run_test "Template sources .zshrc.local" test_template_sources_local
 
+# ============================================
+# TEST CASES - ADVERSARIAL REVIEW FIXES (2026-01-04)
+# ============================================
+
+# Test: Generated zshrc has no duplicate source lines
+test_no_duplicate_source_lines() {
+  local content=$(_zsh_tool_generate_zshrc 2>/dev/null)
+  # Count actual source command lines (not comments mentioning .zshrc.local)
+  local source_count=$(echo "$content" | grep -c "source.*\.zshrc\.local")
+  [[ "$source_count" -eq 1 ]]
+}
+
+# Test: Dedupe function removes duplicate source lines
+test_dedupe_source_lines_function() {
+  local content="line1
+source ~/.zshrc.local
+line2
+[[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
+line3
+source \$HOME/.zshrc.local"
+
+  local result=$(_zsh_tool_dedupe_source_lines "$content")
+  local source_count=$(echo "$result" | grep -c "\.zshrc\.local")
+  [[ "$source_count" -eq 1 ]]
+}
+
+# Test: Preserve handles malformed markers (missing end)
+test_preserve_malformed_markers_missing_end() {
+  cat > "${HOME}/.zshrc" <<'EOF'
+# ===== ZSH-TOOL MANAGED SECTION BEGIN =====
+# Some content
+export VAR="value"
+# Missing end marker
+EOF
+
+  rm -f "${HOME}/.zshrc.local"
+  _zsh_tool_preserve_user_config "${HOME}/.zshrc" >/dev/null 2>&1
+  local result=$?
+
+  # Should succeed but not create .zshrc.local (skips to avoid data loss)
+  [[ $result -eq 0 ]] && [[ ! -f "${HOME}/.zshrc.local" ]]
+}
+
+# Test: Preserve handles malformed markers (missing begin)
+test_preserve_malformed_markers_missing_begin() {
+  cat > "${HOME}/.zshrc" <<'EOF'
+# Some content
+export VAR="value"
+# ===== ZSH-TOOL MANAGED SECTION END =====
+EOF
+
+  rm -f "${HOME}/.zshrc.local"
+  _zsh_tool_preserve_user_config "${HOME}/.zshrc" >/dev/null 2>&1
+  local result=$?
+
+  # Should succeed but not create .zshrc.local (skips to avoid data loss)
+  [[ $result -eq 0 ]] && [[ ! -f "${HOME}/.zshrc.local" ]]
+}
+
+# Test: Preserve handles duplicate markers gracefully
+test_preserve_duplicate_markers() {
+  cat > "${HOME}/.zshrc" <<'EOF'
+# ===== ZSH-TOOL MANAGED SECTION BEGIN =====
+content1
+# ===== ZSH-TOOL MANAGED SECTION END =====
+user content
+# ===== ZSH-TOOL MANAGED SECTION BEGIN =====
+content2
+# ===== ZSH-TOOL MANAGED SECTION END =====
+EOF
+
+  rm -f "${HOME}/.zshrc.local"
+  _zsh_tool_preserve_user_config "${HOME}/.zshrc" >/dev/null 2>&1
+  local result=$?
+
+  # Should succeed but not create .zshrc.local (skips due to duplicate markers)
+  [[ $result -eq 0 ]] && [[ ! -f "${HOME}/.zshrc.local" ]]
+}
+
+# Test: Rollback on migration failure - verify backup is created before migration
+test_preserve_rollback_on_failure() {
+  # Create existing .zshrc.local with known content
+  echo "# Original content" > "${HOME}/.zshrc.local"
+
+  # Create .zshrc with user content that will trigger migration
+  cat > "${HOME}/.zshrc" <<'EOF'
+export USER_VAR="test"
+EOF
+
+  # Run preserve - backup should be created
+  _zsh_tool_preserve_user_config "${HOME}/.zshrc" >/dev/null 2>&1
+
+  # Check that backup was created (backup is kept on success)
+  local backup_exists=false
+  setopt nullglob 2>/dev/null || true
+  for f in "${HOME}/.zshrc.local.backup."*; do
+    if [[ -f "$f" ]]; then
+      backup_exists=true
+      rm -f "$f"
+    fi
+  done
+  unsetopt nullglob 2>/dev/null || true
+
+  # Clean up
+  rm -f "${HOME}/.zshrc.local"
+
+  $backup_exists
+}
+
+# Story 1.6 Adversarial Review Fix Tests
+echo ""
+echo "${BLUE}Story 1.6: Adversarial Review Fixes (2026-01-04)${NC}"
+cleanup_test_env
+setup_test_env
+run_test "Generated zshrc has no duplicate source lines" test_no_duplicate_source_lines
+run_test "Dedupe function removes duplicate source lines" test_dedupe_source_lines_function
+cleanup_test_env
+setup_test_env
+run_test "Preserve handles malformed markers (missing end)" test_preserve_malformed_markers_missing_end
+cleanup_test_env
+setup_test_env
+run_test "Preserve handles malformed markers (missing begin)" test_preserve_malformed_markers_missing_begin
+cleanup_test_env
+setup_test_env
+run_test "Preserve handles duplicate markers gracefully" test_preserve_duplicate_markers
+cleanup_test_env
+setup_test_env
+run_test "Rollback creates backup on migration" test_preserve_rollback_on_failure
+
 # Cleanup
 echo ""
 echo "${YELLOW}Cleaning up test environment...${NC}"

@@ -48,13 +48,13 @@ development_status:
   1-4-plugin-management-system: done  # Review R4: All 13 issues fixed (6H, 4M, 3L) - 39/39 tests passing, refactored with component-manager
   1-5-theme-installation-and-selection: done  # AI-Review R2: All 5 issues fixed (2C, 2H, 1M) - 40/40 tests passing
   1-6-personal-customization-layer: in-progress  # Review: 5 issues (2H, 2M, 1L)
-  1-7-installation-verification-and-summary: in-progress  # Review: 6 issues (2H, 3M, 1L)
+  1-7-installation-verification-and-summary: review  # Review R2: All 6 issues addressed (2H DEFERRED+documented, 2M FIXED, 1M DEFERRED+documented, 1L FIXED) - 45/45 tests passing
   epic-1-retrospective: optional
 
   # Epic 2: Maintenance & Lifecycle Management (5 stories, 17 points)
   epic-2: in-progress
   2-1-self-update-mechanism: in-progress  # Review: 8 issues (2C, 3H, 2M, 1L)
-  2-2-bulk-plugin-and-theme-updates: in-progress  # Review: 8 issues (1C, 3H, 3M, 1L)
+  2-2-bulk-plugin-and-theme-updates: review  # Review follow-up complete: 7/8 issues resolved, 1 LOW deferred - 22/22 tests passing
   2-3-configuration-backup-management: backlog
   2-4-configuration-restore-from-backup: backlog
   2-5-git-integration-for-dotfiles: backlog

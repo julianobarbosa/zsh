@@ -179,6 +179,67 @@ test_atuin_config_generation() {
   test_end
 }
 
+# =============================================================================
+# SECURITY: TOML injection prevention tests (HIGH priority fix)
+# =============================================================================
+
+test_atuin_toml_sanitization() {
+  test_start "SECURITY: TOML injection prevention"
+
+  # Test 1: Sanitize string with injection attempt
+  local malicious='fuzzy"; auto_sync = true; evil = "injected'
+  local sanitized=$(_atuin_sanitize_toml_string "$malicious")
+  # Should remove quotes and newlines
+  if [[ "$sanitized" != *'"'* ]]; then
+    test_pass "Removes quotes from malicious input"
+  else
+    test_fail "Should remove quotes from input" "no quotes" "$sanitized"
+  fi
+
+  # Test 2: Validate enum rejects invalid values
+  local invalid_mode="evil_mode"
+  local validated=$(_atuin_validate_enum "$invalid_mode" "fuzzy" "fuzzy" "prefix" "fulltext")
+  test_assert_equals "$validated" "fuzzy" "Rejects invalid enum, returns default"
+
+  # Test 3: Validate enum accepts valid values
+  local valid_mode="prefix"
+  validated=$(_atuin_validate_enum "$valid_mode" "fuzzy" "fuzzy" "prefix" "fulltext")
+  test_assert_equals "$validated" "prefix" "Accepts valid enum value"
+
+  # Test 4: Validate number rejects out of range
+  local bad_number="999"
+  local validated_num=$(_atuin_validate_number "$bad_number" "20" 1 50)
+  test_assert_equals "$validated_num" "20" "Rejects out-of-range number"
+
+  # Test 5: Validate number rejects non-numeric
+  local non_number="abc"
+  validated_num=$(_atuin_validate_number "$non_number" "20" 1 50)
+  test_assert_equals "$validated_num" "20" "Rejects non-numeric input"
+
+  # Test 6: Config generation with malicious inputs
+  local test_config_dir="${HOME}/.config/atuin-security-test-$$"
+  local test_config_file="${test_config_dir}/config.toml"
+  ATUIN_CONFIG_DIR="$test_config_dir"
+  ATUIN_CONFIG_FILE="$test_config_file"
+
+  # Try to inject via search_mode parameter
+  _atuin_configure_settings "true" "25" 'fuzzy"; evil = "injected' "global" "auto" >/dev/null 2>&1
+
+  if [[ -f "$test_config_file" ]]; then
+    local content=$(cat "$test_config_file")
+    # Should NOT contain injected content
+    if [[ "$content" != *"evil"* ]]; then
+      test_pass "Config generation prevents TOML injection"
+    else
+      test_fail "Config should not contain injected content" "no 'evil' string" "found injection"
+    fi
+  fi
+
+  # Cleanup
+  rm -rf "$test_config_dir"
+  test_end
+}
+
 test_atuin_config_preserves_existing() {
   test_start "AC3: Existing configuration preservation"
 
@@ -384,6 +445,9 @@ run_all_tests() {
   # AC3: Configuration
   test_atuin_config_generation
   test_atuin_config_preserves_existing
+
+  # SECURITY: TOML injection prevention (HIGH priority fix)
+  test_atuin_toml_sanitization
 
   # AC5: Keybindings
   test_atuin_keybinding_configuration

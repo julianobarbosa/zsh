@@ -744,6 +744,91 @@ test_install_preserves_permissions() {
   [[ "$perms" == "600" ]]
 }
 
+# Test: Dedupe removes duplicate source lines for .zshrc.local
+test_dedupe_source_lines() {
+  local content="# Header
+[[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
+some other line
+source ~/.zshrc.local
+more content
+[[ -f ~/.zshrc.local ]] && source ~/.zshrc.local"
+
+  local result=$(_zsh_tool_dedupe_source_lines "$content")
+  local source_count=$(echo "$result" | grep -c "\.zshrc\.local" 2>/dev/null || echo "0")
+  [[ "$source_count" -eq 1 ]]
+}
+
+# Test: Dedupe preserves single source line
+test_dedupe_single_source_line() {
+  local content="# Header
+[[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
+some other line"
+
+  local result=$(_zsh_tool_dedupe_source_lines "$content")
+  echo "$result" | grep -q '\[\[ -f ~/.zshrc.local \]\] && source ~/.zshrc.local'
+}
+
+# Test: Dedupe handles various source formats
+test_dedupe_source_formats() {
+  local content='source ~/.zshrc.local
+source $HOME/.zshrc.local
+source "$HOME/.zshrc.local"'
+
+  local result=$(_zsh_tool_dedupe_source_lines "$content")
+  local source_count=$(echo "$result" | grep -c "\.zshrc\.local" 2>/dev/null || echo "0")
+  # Should only keep first occurrence
+  [[ "$source_count" -eq 1 ]]
+}
+
+# Test: Preserve handles missing markers (entire file is user content)
+test_preserve_no_markers() {
+  # Create .zshrc without managed section markers
+  cat > "${HOME}/.zshrc" <<'EOF'
+# My custom config
+export MY_VAR="value"
+alias ll="ls -la"
+EOF
+  rm -f "${HOME}/.zshrc.local"
+
+  _zsh_tool_preserve_user_config "${HOME}/.zshrc" >/dev/null 2>&1
+
+  # Should have created .zshrc.local with all content
+  [[ -f "${HOME}/.zshrc.local" ]] && grep -q "MY_VAR" "${HOME}/.zshrc.local"
+}
+
+# Test: Preserve handles partial begin marker only (malformed)
+test_preserve_partial_begin_only() {
+  # Create .zshrc with only BEGIN marker (malformed)
+  cat > "${HOME}/.zshrc" <<EOF
+# ===== ZSH-TOOL MANAGED SECTION BEGIN =====
+ZSH_THEME="robbyrussell"
+# Missing END marker
+export MY_VAR="value"
+EOF
+  rm -f "${HOME}/.zshrc.local"
+
+  _zsh_tool_preserve_user_config "${HOME}/.zshrc" >/dev/null 2>&1
+
+  # Should NOT create .zshrc.local (malformed markers - skip extraction)
+  [[ ! -f "${HOME}/.zshrc.local" ]]
+}
+
+# Test: Preserve handles partial end marker only (malformed)
+test_preserve_partial_end_only() {
+  # Create .zshrc with only END marker (malformed)
+  cat > "${HOME}/.zshrc" <<EOF
+ZSH_THEME="robbyrussell"
+export MY_VAR="value"
+# ===== ZSH-TOOL MANAGED SECTION END =====
+EOF
+  rm -f "${HOME}/.zshrc.local"
+
+  _zsh_tool_preserve_user_config "${HOME}/.zshrc" >/dev/null 2>&1
+
+  # Should NOT create .zshrc.local (malformed markers - skip extraction)
+  [[ ! -f "${HOME}/.zshrc.local" ]]
+}
+
 # Test: Template contains source line for .zshrc.local
 test_template_sources_local() {
   local content=$(_zsh_tool_generate_zshrc 2>/dev/null)
@@ -825,6 +910,30 @@ cleanup_test_env
 setup_test_env
 run_test "Install preserves .zshrc permissions" test_install_preserves_permissions
 run_test "Template sources .zshrc.local" test_template_sources_local
+
+echo ""
+echo "${BLUE}Story 1.6: Source Line Deduplication Tests${NC}"
+cleanup_test_env
+setup_test_env
+run_test "Dedupe removes duplicate source lines" test_dedupe_source_lines
+cleanup_test_env
+setup_test_env
+run_test "Dedupe preserves single source line" test_dedupe_single_source_line
+cleanup_test_env
+setup_test_env
+run_test "Dedupe handles various source formats" test_dedupe_source_formats
+
+echo ""
+echo "${BLUE}Story 1.6: Malformed Marker Handling Tests${NC}"
+cleanup_test_env
+setup_test_env
+run_test "Preserve handles missing markers" test_preserve_no_markers
+cleanup_test_env
+setup_test_env
+run_test "Preserve handles partial begin marker only" test_preserve_partial_begin_only
+cleanup_test_env
+setup_test_env
+run_test "Preserve handles partial end marker only" test_preserve_partial_end_only
 
 # Cleanup
 echo ""

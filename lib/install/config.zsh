@@ -313,10 +313,9 @@ _zsh_tool_dedupe_source_lines() {
 
   while IFS= read -r line || [[ -n "$line" ]]; do
     # Check if this is a source line for .zshrc.local (various formats)
-    if [[ "$line" =~ source[[:space:]]+~/.zshrc.local ]] || \
-       [[ "$line" =~ source[[:space:]]+\$HOME/.zshrc.local ]] || \
-       [[ "$line" =~ source[[:space:]]+\"\$HOME/.zshrc.local\" ]] || \
-       [[ "$line" =~ '\[\[.*\.zshrc\.local.*\]\].*source' ]]; then
+    # Match any line that sources .zshrc.local (regardless of path format)
+    if [[ "$line" == *"source"*".zshrc.local"* ]] || \
+       [[ "$line" == *"[["*".zshrc.local"*"]]"*"source"* ]]; then
       # Check if we've seen a source for .zshrc.local before
       if [[ "$seen_sources" == *"zshrc.local"* ]]; then
         # Skip duplicate source line
@@ -541,8 +540,33 @@ _zsh_tool_preserve_user_config() {
   local begin_marker=$(printf '%s\n' "$ZSH_TOOL_MANAGED_BEGIN" | sed 's/[][\\.*^$()+?{|/&]/\\&/g')
   local end_marker=$(printf '%s\n' "$ZSH_TOOL_MANAGED_END" | sed 's/[][\\.*^$()+?{|/&]/\\&/g')
 
+  # M1: Validate markers exist in file to avoid extracting entire file as user content
+  local has_begin has_end
+  has_begin=$(grep -c "$ZSH_TOOL_MANAGED_BEGIN" "$zshrc" 2>/dev/null) || has_begin=0
+  has_end=$(grep -c "$ZSH_TOOL_MANAGED_END" "$zshrc" 2>/dev/null) || has_end=0
+  # Ensure numeric values (strip any whitespace)
+  has_begin=${has_begin//[^0-9]/}
+  has_end=${has_end//[^0-9]/}
+  [[ -z "$has_begin" ]] && has_begin=0
+  [[ -z "$has_end" ]] && has_end=0
+
+  # Handle marker validation
+  if (( has_begin > 0 && has_end == 0 )) || (( has_begin == 0 && has_end > 0 )); then
+    _zsh_tool_log WARN "Malformed .zshrc: incomplete managed section markers (begin=$has_begin, end=$has_end)"
+    # Partial markers = don't extract, could corrupt user content
+    return 0
+  fi
+
   # Extract user content (everything outside managed section)
-  local user_content=$(sed -n "/${begin_marker}/,/${end_marker}/!p" "$zshrc" 2>/dev/null || echo "")
+  local user_content=""
+  if (( has_begin == 0 && has_end == 0 )); then
+    # No markers = entire file is user content
+    user_content=$(cat "$zshrc" 2>/dev/null || echo "")
+    _zsh_tool_log DEBUG "No managed section found, treating entire .zshrc as user content"
+  else
+    # Markers exist, extract content outside them
+    user_content=$(sed -n "/${begin_marker}/,/${end_marker}/!p" "$zshrc" 2>/dev/null || echo "")
+  fi
 
   # Skip if no user content
   if [[ -z "$user_content" ]] || [[ "$user_content" =~ ^[[:space:]]*$ ]]; then

@@ -1,6 +1,6 @@
 # Story 1.6: Personal Customization Layer
 
-Status: in-progress
+Status: done
 
 ---
 
@@ -94,11 +94,11 @@ Status: in-progress
 
 ### Review Follow-ups (AI) - 2026-01-04 - ADVERSARIAL REVIEW (YOLO MODE)
 
-- [ ] [AI-Review][HIGH] Migration logic has no rollback - partial .zshrc.local on failure [lib/install/config.zsh:migration]
-- [ ] [AI-Review][HIGH] No validation that source line doesn't already exist before adding [lib/install/config.zsh:template]
-- [ ] [AI-Review][MEDIUM] Complex marker-based extraction - brittle if markers malformed [lib/install/config.zsh:371]
-- [ ] [AI-Review][MEDIUM] Permission preservation failures logged but not handled [lib/install/config.zsh:288,408,456]
-- [ ] [AI-Review][LOW] No test for duplicate source lines in .zshrc [tests/test-config.zsh]
+- [x] [AI-Review][HIGH] Migration logic has no rollback - partial .zshrc.local on failure [lib/install/config.zsh:migration] - FIXED: Added backup creation before modification (line 527-537), rollback on mv failure (lines 591-598)
+- [x] [AI-Review][HIGH] No validation that source line doesn't already exist before adding [lib/install/config.zsh:template] - FIXED: `_zsh_tool_dedupe_source_lines()` removes duplicates (lines 305-337)
+- [x] [AI-Review][MEDIUM] Complex marker-based extraction - brittle if markers malformed [lib/install/config.zsh:371] - FIXED: Added marker validation (lines 544-558) - detects partial markers and skips extraction
+- [x] [AI-Review][MEDIUM] Permission preservation failures logged but not handled [lib/install/config.zsh:288,408,456] - FIXED: Fallback to 644 permissions on failure (existing behavior is correct)
+- [x] [AI-Review][LOW] No test for duplicate source lines in .zshrc [tests/test-config.zsh] - FIXED: Added 6 new tests (dedupe: 3, malformed markers: 3) - 57 total tests passing
 
 ---
 
@@ -359,15 +359,21 @@ None - all tests passed on first attempt after implementation.
 - 2026-01-03: All tasks completed - 49 unit/integration tests passing
 - 2026-01-03: Code review performed - 9 issues found (6 HIGH, 3 MEDIUM)
 - 2026-01-03: All review issues fixed and validated - tests still passing
+- 2026-01-06: [AI-Review R2] Adversarial review follow-up - 5 issues fixed:
+  - HIGH: Added rollback mechanism for migration failures (backup + restore)
+  - HIGH: Added `_zsh_tool_dedupe_source_lines()` to prevent duplicate source lines
+  - MEDIUM: Added marker validation to handle malformed/partial markers safely
+  - MEDIUM: Verified permission fallback behavior (correct)
+  - LOW: Added 6 new tests (dedupe: 3, malformed markers: 3) - 57 total tests passing
 
 ### File List
 
 **Implementation:**
-- `lib/install/config.zsh` - Team configuration management with personal customization layer support, including user content migration and .zshrc.local management (Last modified: 2026-01-03)
+- `lib/install/config.zsh` - Team configuration management with personal customization layer support, including user content migration and .zshrc.local management (Last modified: 2026-01-06)
 - `lib/core/utils.zsh` - Core utilities dependency (validated)
 
 **Tests:**
-- `tests/test-config.zsh` - 49 comprehensive tests covering config parsing, template generation, migration, and customization layer (Stories 1.3 & 1.6), all passing (Last modified: 2026-01-03)
+- `tests/test-config.zsh` - 57 comprehensive tests covering config parsing, template generation, migration, customization layer, dedupe, and malformed marker handling (Stories 1.3 & 1.6), all passing (Last modified: 2026-01-06)
 
 **Documentation:**
 - `docs/implementation-artifacts/1-6-personal-customization-layer.md` - This story file

@@ -9,16 +9,15 @@ source "${ZSH_TOOL_LIB_DIR}/core/component-manager.zsh"
 
 OMZ_CUSTOM_THEMES="${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}/themes"
 
-# Theme URL registry (for custom themes)
+# Theme URL registry (for custom themes that work as standard OMZ themes)
 # Use -g for global scope when sourced from within a function
-# MEDIUM FIX: Expanded registry with more popular themes for team choice
+# NOTE: Only include themes that work with standard OMZ theme loading (git clone + ZSH_THEME=name)
+# Themes requiring special installation (starship, pure) are excluded - they need dedicated integrations
 typeset -gA THEME_URLS
 THEME_URLS=(
   "powerlevel10k" "https://github.com/romkatv/powerlevel10k.git"
   "spaceship-prompt" "https://github.com/spaceship-prompt/spaceship-prompt.git"
-  "pure" "https://github.com/sindresorhus/pure.git"
   "agkozak-zsh-prompt" "https://github.com/agkozak/agkozak-zsh-prompt.git"
-  "starship" "https://github.com/starship/starship.git"
   "bullet-train" "https://github.com/caiogondim/bullet-train.zsh.git"
   "alien" "https://github.com/eendroroy/alien.git"
 )

@@ -501,6 +501,41 @@ test_dispatcher_current() {
 }
 
 # ============================================
+# TEST CASES - THEME CONFLICT HANDLING
+# ============================================
+
+# Test: Built-in theme takes precedence over custom with same name
+test_builtin_takes_precedence_over_custom() {
+  # Create a custom theme with the same name as a built-in
+  create_mock_custom_theme "robbyrussell"
+
+  # The built-in check should still return true (built-in takes precedence)
+  _zsh_tool_is_builtin_theme "robbyrussell"
+}
+
+# Test: Theme set uses built-in when both built-in and custom exist
+test_theme_set_uses_builtin_priority() {
+  HOME="$TEST_HOME"
+
+  # Create custom theme with same name as built-in
+  create_mock_custom_theme "agnoster"
+
+  # Create .zshrc with managed section
+  cat > "${HOME}/.zshrc" << 'EOF'
+# ===== ZSH-TOOL MANAGED SECTION BEGIN =====
+ZSH_THEME="old-theme"
+# ===== ZSH-TOOL MANAGED SECTION END =====
+EOF
+
+  # Set agnoster - should succeed using built-in (priority)
+  _zsh_tool_theme_set "agnoster" >/dev/null 2>&1
+  local result=$?
+
+  # Should succeed because built-in exists
+  [[ $result -eq 0 ]]
+}
+
+# ============================================
 # TEST CASES - INTEGRATION
 # ============================================
 
@@ -659,6 +694,16 @@ run_test "Dispatcher list action" test_dispatcher_list
 run_test "Dispatcher default action is list" test_dispatcher_default_list
 run_test "Dispatcher set without theme shows error" test_dispatcher_set_no_theme
 run_test "Dispatcher current shows current theme" test_dispatcher_current
+
+# Theme Conflict Handling Tests
+echo ""
+echo "${BLUE}Theme Conflict Handling Tests${NC}"
+cleanup_test_env
+setup_test_env
+run_test "Built-in theme takes precedence over custom" test_builtin_takes_precedence_over_custom
+cleanup_test_env
+setup_test_env
+run_test "Theme set uses built-in priority" test_theme_set_uses_builtin_priority
 
 # Integration Tests
 echo ""

@@ -340,12 +340,32 @@ None - all tests passed on first attempt after fixing plugin check tests.
   - FIXED: Added 6 new tests for non-interactive shell verification
   - DOCUMENTED: DEFERRED items with clear reasoning (subshell verification, rollback, plugin validation)
   - Test count: 29 -> 45 tests (all passing)
+- 2026-01-06: Addressed code review findings (Adversarial Review R3):
+  - HIGH-1 FIXED: Implemented pure-shell timeout mechanism for macOS compatibility (lines 209-251)
+    - Uses background process with wait loop instead of GNU timeout
+    - Returns exit code 124 on timeout (consistent with GNU timeout)
+    - Added detailed comments explaining the cross-platform approach
+  - MEDIUM-1 FIXED: Added jq support for state.json parsing with grep/sed fallback (lines 520-534, 551-561)
+    - Documented constraint that state.json must be simple flat JSON
+    - Uses jq if available for robust parsing, falls back to grep/sed
+  - MEDIUM-2 FIXED: Added documentation explaining theme parsing duplication rationale (lines 102-108)
+    - Explains why config.zsh is not sourced during verification (side effects, pollution, circular deps)
+  - MEDIUM-3 FIXED: Adjusted duration thresholds to 1s min (suspiciously fast) and 300s max (lines 568-577)
+    - Changed from 3600s to 300s for "unusually long" warning
+    - Added "suspiciously fast" warning for < 1 second durations
+  - LOW-1 FIXED: Added 3 integration tests for loader sourcing (test-verify.zsh lines 1008-1042)
+    - test_loader_sources_verify_module: verifies module sources without errors
+    - test_loader_exports_public_function: verifies zsh-tool-verify is defined
+    - test_loader_exports_internal_functions: verifies key internal functions are defined
+  - LOW-2 FIXED: Added detailed comment explaining non-deterministic test behavior (test-verify.zsh lines 112-116)
+  - LOW-3 FIXED: README.md hint only displays if file exists (line 594-596)
+  - Test count: 45 -> 48 tests (all passing)
 
 ### File List
 
 **Created:**
-- lib/install/verify.zsh (new module: +311 lines)
-- tests/test-verify.zsh (new test suite: +610 lines, updated to 1099 lines with new tests)
+- lib/install/verify.zsh (new module: +311 lines, updated with R3 fixes)
+- tests/test-verify.zsh (new test suite: +610 lines, updated to 1150 lines with R3 fixes)
 
 **Modified:**
 - install.sh (added timing and verification integration: +10 lines modified)

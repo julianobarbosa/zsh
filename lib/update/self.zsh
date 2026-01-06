@@ -8,6 +8,9 @@ ZSH_TOOL_INSTALL_DIR="${ZSH_TOOL_INSTALL_DIR:-${HOME}/.local/bin/zsh-tool}"
 # Backup directory for tool installation backups (separate from config backups)
 ZSH_TOOL_INSTALL_BACKUP_DIR="${ZSH_TOOL_CONFIG_DIR}/backups/tool-install"
 
+# Maximum number of tool installation backups to keep (cleanup mechanism)
+ZSH_TOOL_MAX_INSTALL_BACKUPS=${ZSH_TOOL_MAX_INSTALL_BACKUPS:-5}
+
 # Source backup utilities for pre-update backups
 # Use script directory to locate backup.zsh relative to this file
 _ZSH_TOOL_SELF_DIR="${0:A:h}"
@@ -20,15 +23,91 @@ _zsh_tool_is_git_repo() {
   [[ -d "${ZSH_TOOL_INSTALL_DIR}/.git" ]]
 }
 
-# Get local version from VERSION file or git
-_zsh_tool_get_local_version() {
-  # Try VERSION file first
-  if [[ -f "${ZSH_TOOL_INSTALL_DIR}/VERSION" ]]; then
-    cat "${ZSH_TOOL_INSTALL_DIR}/VERSION"
+# Validate VERSION file content is valid semver
+# Usage: _zsh_tool_validate_version_file
+# Returns: 0 if valid, 1 if invalid or missing
+_zsh_tool_validate_version_file() {
+  local version_file="${ZSH_TOOL_INSTALL_DIR}/VERSION"
+
+  if [[ ! -f "$version_file" ]]; then
+    _zsh_tool_log DEBUG "VERSION file not found: $version_file"
+    return 1
+  fi
+
+  if [[ ! -r "$version_file" ]]; then
+    _zsh_tool_log WARN "VERSION file not readable: $version_file"
+    return 1
+  fi
+
+  local version=$(cat "$version_file" 2>/dev/null | tr -d '[:space:]')
+
+  if [[ -z "$version" ]]; then
+    _zsh_tool_log WARN "VERSION file is empty"
+    return 1
+  fi
+
+  # Validate semver format (X.Y.Z without leading zeros except for 0)
+  if [[ ! "$version" =~ ^(0|[1-9][0-9]{0,2})\.(0|[1-9][0-9]{0,2})\.(0|[1-9][0-9]{0,2})$ ]]; then
+    _zsh_tool_log WARN "VERSION file contains invalid semver: $version"
+    return 1
+  fi
+
+  return 0
+}
+
+# Cleanup old tool installation backups (keep only most recent N)
+# Usage: _zsh_tool_cleanup_old_backups [max_to_keep]
+_zsh_tool_cleanup_old_backups() {
+  local max_to_keep="${1:-$ZSH_TOOL_MAX_INSTALL_BACKUPS}"
+
+  if [[ ! -d "$ZSH_TOOL_INSTALL_BACKUP_DIR" ]]; then
+    return 0  # Nothing to clean up
+  fi
+
+  # Get list of backup directories sorted by name (timestamp-based, oldest first)
+  local backup_dirs=()
+  for dir in "${ZSH_TOOL_INSTALL_BACKUP_DIR}"/backup-*(/N); do
+    backup_dirs+=("$dir")
+  done
+
+  local num_backups=${#backup_dirs[@]}
+
+  if [[ $num_backups -le $max_to_keep ]]; then
+    _zsh_tool_log DEBUG "Backup cleanup: $num_backups backups found, keeping all (max: $max_to_keep)"
     return 0
   fi
 
-  # Fall back to git (use subshell to avoid cd pollution)
+  # Sort backups by modification time (oldest first)
+  local sorted_backups=($(printf '%s\n' "${backup_dirs[@]}" | sort))
+
+  local to_remove=$((num_backups - max_to_keep))
+  _zsh_tool_log INFO "Cleaning up $to_remove old tool backup(s) (keeping $max_to_keep most recent)"
+
+  for ((i=0; i<to_remove; i++)); do
+    local old_backup="${sorted_backups[$((i+1))]}"  # zsh arrays are 1-indexed
+    if [[ -d "$old_backup" ]]; then
+      _zsh_tool_log DEBUG "Removing old backup: $old_backup"
+      rm -rf "$old_backup" 2>/dev/null
+      if [[ $? -eq 0 ]]; then
+        _zsh_tool_log INFO "Removed old backup: $(basename "$old_backup")"
+      else
+        _zsh_tool_log WARN "Failed to remove old backup: $old_backup"
+      fi
+    fi
+  done
+
+  return 0
+}
+
+# Get local version from VERSION file or git
+_zsh_tool_get_local_version() {
+  # Try VERSION file first (with validation)
+  if _zsh_tool_validate_version_file; then
+    cat "${ZSH_TOOL_INSTALL_DIR}/VERSION" | tr -d '[:space:]'
+    return 0
+  fi
+
+  # VERSION file missing or invalid - fall back to git (use subshell to avoid cd pollution)
   if _zsh_tool_is_git_repo; then
     local version=$(
       cd "$ZSH_TOOL_INSTALL_DIR" || exit 1
@@ -267,6 +346,9 @@ _zsh_tool_backup_before_update() {
 EOF
 
   _zsh_tool_log INFO "Tool installation backup created: ${backup_dir}"
+
+  # Cleanup old backups to prevent accumulation
+  _zsh_tool_cleanup_old_backups
 
   # Output backup directory path for use by callers
   echo "$backup_dir"
@@ -563,7 +645,7 @@ _zsh_tool_rollback_update() {
   fi
 }
 
-# Main self-update command
+# Main self-update command (internal implementation)
 _zsh_tool_self_update() {
   local check_only=false
 
@@ -582,24 +664,52 @@ _zsh_tool_self_update() {
     return 1
   fi
 
+  local current_version=$(_zsh_tool_get_current_version)
+
+  # Update last_check timestamp in state.json (AC9)
+  _zsh_tool_update_state "version.last_check" "\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\""
+  _zsh_tool_log DEBUG "Updated version check timestamp in state.json"
+
   # Check for updates
   if _zsh_tool_check_for_updates; then
     # Updates available
     _zsh_tool_display_changelog
 
     if [[ "$check_only" == true ]]; then
+      _zsh_tool_log INFO "Check-only mode: updates available but not installing"
       return 0
     fi
 
-    # Prompt to update
+    # AC3: Prompt to update (user confirmation before proceeding)
     if _zsh_tool_prompt_confirm "Update now?"; then
+      _zsh_tool_log INFO "User confirmed update, proceeding..."
       _zsh_tool_apply_update
+      local update_result=$?
+      if [[ $update_result -eq 0 ]]; then
+        _zsh_tool_log INFO "Update completed successfully"
+      else
+        _zsh_tool_log ERROR "Update failed with exit code $update_result"
+      fi
+      return $update_result
     else
-      _zsh_tool_log INFO "Update cancelled"
-      return 1
+      _zsh_tool_log INFO "Update cancelled by user"
+      return 2  # Distinct return code for user cancellation
     fi
   else
-    # No updates available or check failed
-    return 1
+    # AC2: Display current version when no updates available
+    echo ""
+    echo "Current version: $current_version"
+    echo "Status: Up to date (no updates available)"
+    echo ""
+    _zsh_tool_log INFO "Version check complete: $current_version is up to date"
+    return 0  # Return 0 for success when up-to-date (not an error condition)
   fi
+}
+
+# Public user-facing command (per Dev Notes naming convention)
+# Usage: zsh-tool-update [--check]
+#   --check: Only check for updates without installing
+zsh-tool-update() {
+  _zsh_tool_log INFO "Starting self-update check..."
+  _zsh_tool_self_update "$@"
 }

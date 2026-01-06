@@ -147,6 +147,8 @@ _zsh_tool_install_git_component() {
 
   # Use spinner for visual feedback during potentially slow git clone
   echo -n "  Cloning ${component_name}... "
+  # LOW-2 NOTE: Using ASCII characters (-\|/) intentionally for wide terminal compatibility
+  # Unicode spinners may not render correctly on all terminals/fonts
   local spin='-\|/'
   local i=0
 
@@ -240,9 +242,25 @@ _zsh_tool_update_components_parallel() {
   # Temp dir for parallel results
   local temp_dir=$(mktemp -d)
 
+  # MEDIUM-1 FIX: Save existing traps before overwriting to restore them on cleanup
+  # This prevents affecting the calling shell's trap handlers
+  local _old_exit_trap=$(trap -p EXIT)
+  local _old_int_trap=$(trap -p INT)
+  local _old_term_trap=$(trap -p TERM)
+  local _old_hup_trap=$(trap -p HUP)
+
+  # MEDIUM-2 FIX: Guard variable to prevent double cleanup in race conditions
+  local _cleanup_done=0
+
+  # Cleanup function that respects guard and restores original traps
+  _cleanup_temp_dir() {
+    [[ $_cleanup_done -eq 1 ]] && return
+    _cleanup_done=1
+    rm -rf "$temp_dir" 2>/dev/null
+  }
+
   # Ensure temp directory cleanup on exit, error, or signal
-  # Using a trap to clean up temp_dir on EXIT, INT, TERM, HUP
-  trap "rm -rf '$temp_dir' 2>/dev/null" EXIT INT TERM HUP
+  trap "_cleanup_temp_dir" EXIT INT TERM HUP
 
   # Launch updates in parallel (background jobs)
   for component_dir in ${components_dir}/*(N); do
@@ -290,9 +308,15 @@ _zsh_tool_update_components_parallel() {
   done
 
   # Cleanup (also handled by trap, but explicit cleanup is good practice)
-  rm -rf "$temp_dir" 2>/dev/null
-  # Reset trap to avoid affecting caller
+  _cleanup_temp_dir
+
+  # MEDIUM-1 FIX: Restore original traps to avoid affecting caller
+  # Reset current traps first, then restore any saved traps
   trap - EXIT INT TERM HUP
+  [[ -n "$_old_exit_trap" ]] && eval "$_old_exit_trap"
+  [[ -n "$_old_int_trap" ]] && eval "$_old_int_trap"
+  [[ -n "$_old_term_trap" ]] && eval "$_old_term_trap"
+  [[ -n "$_old_hup_trap" ]] && eval "$_old_hup_trap"
 
   _zsh_tool_log INFO "✓ ${(C)component_type}s: $updated_count updated, $skipped_count skipped, $failed_count failed (parallel execution)"
 

@@ -168,6 +168,21 @@ test_restore_from_backup_exists() {
   type _zsh_tool_restore_from_backup &>/dev/null
 }
 
+# Test: Public user-facing command exists (per Dev Notes)
+test_public_command_exists() {
+  type zsh-tool-update &>/dev/null
+}
+
+# Test: VERSION file validation function exists
+test_version_validation_exists() {
+  type _zsh_tool_validate_version_file &>/dev/null
+}
+
+# Test: Backup cleanup function exists
+test_backup_cleanup_exists() {
+  type _zsh_tool_cleanup_old_backups &>/dev/null
+}
+
 # Test: Backup creates manifest file
 test_backup_creates_manifest() {
   if type _zsh_tool_backup_before_update &>/dev/null; then
@@ -285,6 +300,7 @@ main() {
   run_test "Backup creates manifest file" test_backup_creates_manifest
   run_test "Rollback mechanism exists" test_rollback_mechanism
   run_test "Restore from backup function exists (AC7)" test_restore_from_backup_exists
+  run_test "Backup cleanup function exists" test_backup_cleanup_exists
   echo ""
 
   # Additional semver validation tests
@@ -310,6 +326,8 @@ main() {
   # Task 1: Main functionality
   echo "${BLUE}Task 1: Main Functionality${NC}"
   run_test "Display version info" test_display_version_info
+  run_test "Public user-facing command exists (zsh-tool-update)" test_public_command_exists
+  run_test "VERSION file validation function exists" test_version_validation_exists
   echo ""
 
   cleanup_test_env

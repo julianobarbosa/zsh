@@ -1,6 +1,6 @@
 # Story 1.6: Personal Customization Layer
 
-Status: complete
+Status: done
 
 ---
 

@@ -1,6 +1,6 @@
 # Story 2.2: Bulk Plugin and Theme Updates
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -79,6 +79,16 @@ Status: review
 - [x] [AI-Review][MEDIUM] No transaction support - partial updates leave inconsistent state [lib/update/plugins.zsh + themes.zsh] - DEFERRED: Would require significant architectural changes; not blocking for this story
 - [x] [AI-Review][MEDIUM] Network failures don't report which component failed clearly [lib/update/plugins.zsh + themes.zsh] - FIXED: component-manager.zsh now captures and reports specific error messages
 - [ ] [AI-Review][LOW] No progress bar for long-running git operations [lib/update/plugins.zsh + themes.zsh] - DEFERRED: Low priority enhancement for future iteration
+
+### Review Follow-ups (AI) - 2026-01-06 - CODE REVIEW R2
+
+- [x] [AI-Review][MEDIUM-1] Trap cleanup can affect calling shell scope [lib/core/component-manager.zsh:245-246,295] - FIXED: Save existing traps before overwriting and restore them on cleanup using pattern: save old traps, set new traps, restore old traps after cleanup
+- [x] [AI-Review][MEDIUM-2] Parallel temp directory cleanup race condition [lib/core/component-manager.zsh:293] - FIXED: Added guard variable `_cleanup_done` to prevent double cleanup
+- [x] [AI-Review][MEDIUM-3] _zsh_tool_check_omz_updates hardcodes origin/master [lib/update/omz.zsh:44,87] - FIXED: Now uses fallback pattern: `git rev-parse @{u}` || `origin/master` || `origin/main`; git pull uses tracking branch instead of hardcoded
+- [x] [AI-Review][MEDIUM-4] No test for zsh-tool-update command integration [tests/test-bulk-update.zsh] - FIXED: Added 4 integration tests (21-24) testing --check flag, invalid arguments, and component selection
+- [x] [AI-Review][LOW-2] Spinner uses ASCII characters [lib/core/component-manager.zsh:150,163] - DOCUMENTED: Added comment explaining this is intentional for wide terminal compatibility
+- [x] [AI-Review][LOW-3] Test file uses cd without checking return [tests/test-bulk-update.zsh:49,67,354-355,362,488-489] - FIXED: Wrapped cd operations in subshells for safety
+- [ ] [AI-Review][LOW-1] No progress bar for long-running operations - DEFERRED: Already documented as deferred enhancement
 
 ## Dev Notes
 
@@ -471,7 +481,7 @@ Claude Opus 4.5 (claude-opus-4-5-20251101) - Review follow-up session 2026-01-06
 
 ### Debug Log References
 
-Test execution logs: tests/test-bulk-update.zsh (22/22 tests passing)
+Test execution logs: tests/test-bulk-update.zsh (26/26 tests passing)
 
 ### Completion Notes List
 

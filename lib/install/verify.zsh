@@ -100,7 +100,12 @@ _zsh_tool_parse_yaml_list() {
 }
 
 # Safely parse theme from config file (for verification)
-# Note: Named differently from _zsh_tool_parse_theme in config.zsh to avoid collision
+# NOTE (MEDIUM-2): This function duplicates logic from _zsh_tool_parse_theme in config.zsh.
+# This is intentional to avoid sourcing config.zsh during verification, which could:
+#   1. Cause side effects from config initialization code
+#   2. Pollute the verification environment with config variables
+#   3. Create circular dependencies if config.zsh has verification requirements
+# The verification module should be self-contained and side-effect-free.
 # Returns: Prints validated theme name or empty string
 _zsh_tool_verify_parse_theme() {
   local config_file="$1"
@@ -207,13 +212,47 @@ _zsh_tool_verify_in_subshell() {
   local subshell_result
 
   # Use timeout to prevent hanging if there are issues
+  # Note: GNU timeout is not available by default on macOS. We implement a pure-shell
+  # timeout using a background process and kill. This ensures consistent behavior
+  # across Linux and macOS without requiring coreutils installation.
   if command -v timeout >/dev/null 2>&1; then
+    # GNU timeout available (Linux, or macOS with coreutils)
     subshell_output=$(timeout 30 zsh -c 'source ~/.zshrc && typeset -f omz' 2>&1)
     subshell_result=$?
   else
-    # Fallback without timeout (macOS may not have timeout by default)
-    subshell_output=$(zsh -c 'source ~/.zshrc && typeset -f omz' 2>&1)
-    subshell_result=$?
+    # Pure-shell timeout for macOS compatibility
+    # Run subshell in background, wait with timeout, kill if exceeded
+    local tmpfile
+    tmpfile=$(mktemp) || {
+      _zsh_tool_log ERROR "Failed to create temp file for subshell verification"
+      return 1
+    }
+
+    # Start the subshell in background, redirect output to temp file
+    ( zsh -c 'source ~/.zshrc && typeset -f omz' > "$tmpfile" 2>&1 ) &
+    local pid=$!
+
+    # Wait for up to 30 seconds
+    local waited=0
+    while [[ $waited -lt 30 ]] && kill -0 "$pid" 2>/dev/null; do
+      sleep 1
+      ((waited++))
+    done
+
+    # Check if process is still running (timeout occurred)
+    if kill -0 "$pid" 2>/dev/null; then
+      kill -9 "$pid" 2>/dev/null
+      wait "$pid" 2>/dev/null
+      subshell_result=124  # Same exit code as GNU timeout
+      subshell_output="Subshell verification timed out after 30 seconds"
+      _zsh_tool_log WARN "Subshell verification timed out"
+    else
+      wait "$pid"
+      subshell_result=$?
+      subshell_output=$(<"$tmpfile")
+    fi
+
+    rm -f "$tmpfile"
   fi
 
   if [[ $subshell_result -ne 0 ]]; then
@@ -484,10 +523,20 @@ _zsh_tool_display_summary() {
   echo ""
 
   # Backup Section
+  # NOTE (MEDIUM-1): State file JSON parsing uses grep/sed which requires simple flat JSON.
+  # Constraint: state.json must be flat (no nested objects) with one key-value per line.
+  # Example valid format: {"key1": "value1", "key2": "value2"}
+  # If jq is available, we use it for more robust parsing; otherwise fall back to grep/sed.
   local state_file="${ZSH_TOOL_STATE_FILE:-${HOME}/.local/share/zsh-tool/state.json}"
   if [[ -f "$state_file" ]]; then
-    local backup_location=$(grep '"backup_location"' "$state_file" 2>/dev/null | sed 's/.*: *"\(.*\)".*/\1/')
-    local backup_timestamp=$(grep '"backup_timestamp"' "$state_file" 2>/dev/null | sed 's/.*: *"\(.*\)".*/\1/')
+    local backup_location backup_timestamp
+    if command -v jq >/dev/null 2>&1; then
+      backup_location=$(jq -r '.backup_location // empty' "$state_file" 2>/dev/null)
+      backup_timestamp=$(jq -r '.backup_timestamp // empty' "$state_file" 2>/dev/null)
+    else
+      backup_location=$(grep '"backup_location"' "$state_file" 2>/dev/null | sed 's/.*: *"\(.*\)".*/\1/')
+      backup_timestamp=$(grep '"backup_timestamp"' "$state_file" 2>/dev/null | sed 's/.*: *"\(.*\)".*/\1/')
+    fi
 
     if [[ -n "$backup_location" ]] && [[ -d "$backup_location" ]]; then
       # SECURITY FIX (HIGH-6): Validate backup_location before using with find
@@ -504,23 +553,32 @@ _zsh_tool_display_summary() {
       fi
     fi
 
-    # Timing Section
-    local install_start=$(grep '"installation_start"' "$state_file" 2>/dev/null | sed 's/.*: *"\(.*\)".*/\1/')
-    local install_end=$(grep '"installation_end"' "$state_file" 2>/dev/null | sed 's/.*: *"\(.*\)".*/\1/')
+    # Timing Section - also uses jq if available (see MEDIUM-1 note above)
+    local install_start install_end duration_seconds
+    if command -v jq >/dev/null 2>&1; then
+      install_start=$(jq -r '.installation_start // empty' "$state_file" 2>/dev/null)
+      install_end=$(jq -r '.installation_end // empty' "$state_file" 2>/dev/null)
+      duration_seconds=$(jq -r '.installation_duration_seconds // empty' "$state_file" 2>/dev/null)
+    else
+      install_start=$(grep '"installation_start"' "$state_file" 2>/dev/null | sed 's/.*: *"\(.*\)".*/\1/')
+      install_end=$(grep '"installation_end"' "$state_file" 2>/dev/null | sed 's/.*: *"\(.*\)".*/\1/')
+      duration_seconds=$(grep '"installation_duration_seconds"' "$state_file" 2>/dev/null | sed 's/.*: *\([0-9]*\).*/\1/')
+    fi
 
     if [[ -n "$install_start" ]] && [[ -n "$install_end" ]]; then
       echo "Installation Timing:"
       _zsh_tool_echo_status "success" "Started: $install_start"
       _zsh_tool_echo_status "success" "Completed: $install_end"
 
-      # MEDIUM FIX: Validate duration with fallback for corrupted state
-      local duration_seconds=$(grep '"installation_duration_seconds"' "$state_file" 2>/dev/null | sed 's/.*: *\([0-9]*\).*/\1/')
+      # MEDIUM-3 FIX: Validate duration with reasonable thresholds
+      # Warn if < 1 second (suspiciously fast) or > 300 seconds (5 minutes, unusually long)
       if [[ -n "$duration_seconds" ]] && [[ "$duration_seconds" =~ ^[0-9]+$ ]]; then
-        # Validate duration is reasonable (less than 1 hour = 3600 seconds)
-        if [[ "$duration_seconds" -lt 3600 ]]; then
-          _zsh_tool_echo_status "success" "Duration: ${duration_seconds}s"
-        else
+        if [[ "$duration_seconds" -lt 1 ]]; then
+          _zsh_tool_echo_status "warning" "Duration: ${duration_seconds}s (suspiciously fast)"
+        elif [[ "$duration_seconds" -gt 300 ]]; then
           _zsh_tool_echo_status "warning" "Duration: ${duration_seconds}s (unusually long)"
+        else
+          _zsh_tool_echo_status "success" "Duration: ${duration_seconds}s"
         fi
       else
         _zsh_tool_echo_status "warning" "Duration: unavailable (state may be corrupted)"
@@ -533,7 +591,9 @@ _zsh_tool_display_summary() {
   echo "Next Steps:"
   _zsh_tool_echo_status "info" "Customize: Edit ~/.zshrc.local for personal settings"
   _zsh_tool_echo_status "info" "Verify: Run 'zsh-tool-verify' to check installation"
-  _zsh_tool_echo_status "info" "Docs: See ${ZSH_TOOL_CONFIG_DIR}/README.md"
+  # LOW-3 FIX: Only display README hint if file actually exists
+  [[ -f "${ZSH_TOOL_CONFIG_DIR}/README.md" ]] && \
+    _zsh_tool_echo_status "info" "Docs: See ${ZSH_TOOL_CONFIG_DIR}/README.md"
   echo ""
   if _zsh_tool_is_tty; then
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"

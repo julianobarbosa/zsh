@@ -1,6 +1,6 @@
 # Story 2.1: Self-Update Mechanism
 
-Status: in-progress
+Status: review
 
 ---
 
@@ -103,6 +103,35 @@ Status: in-progress
   - Fixed: Post-update validation already existed, but now triggers proper rollback on failure
 - [ ] [AI-Review][LOW] Version comparison doesn't handle pre-release tags (1.0.0-rc1) [lib/update/self.zsh:41-80]
   - Not addressed: Pre-release tag support is out of scope for this story (nice-to-have)
+
+### Review Follow-ups (AI) - 2026-01-06 - ADVERSARIAL REVIEW R3
+
+- [x] [AI-Review][CRITICAL] Missing public user-facing command zsh-tool-update() per Dev Notes naming convention [lib/update/self.zsh]
+  - Fixed: Added zsh-tool-update() as the public command that calls _zsh_tool_self_update()
+  - Now follows Dev Notes pattern: public functions use zsh-tool-* prefix
+- [x] [AI-Review][CRITICAL] AC2 violation - no version display when no updates available [lib/update/self.zsh:616-624]
+  - Fixed: When up-to-date, now displays current version and "Status: Up to date"
+  - Changed return code from 1 to 0 (up-to-date is not an error condition)
+- [x] [AI-Review][HIGH] AC9 incomplete - state.json last_check not updated on version check [lib/update/self.zsh:587-589]
+  - Fixed: _zsh_tool_self_update() now updates version.last_check timestamp in state.json
+  - Timestamp updated on every check, regardless of update availability
+- [x] [AI-Review][HIGH] No cleanup of old backups - accumulate indefinitely [lib/update/self.zsh:60-100]
+  - Fixed: Added _zsh_tool_cleanup_old_backups() function
+  - Keeps only ZSH_TOOL_MAX_INSTALL_BACKUPS (default: 5) most recent backups
+  - Cleanup runs automatically after each backup creation
+- [x] [AI-Review][HIGH] VERSION file content not validated before use [lib/update/self.zsh:26-56]
+  - Fixed: Added _zsh_tool_validate_version_file() function
+  - Validates file exists, is readable, non-empty, and contains valid semver
+  - _zsh_tool_get_local_version() now uses validation before reading VERSION
+- [x] [AI-Review][MEDIUM] Inconsistent return codes - 1 used for both errors AND no-updates [lib/update/self.zsh]
+  - Fixed: Return codes now: 0=success/up-to-date, 1=error, 2=user cancelled
+  - Clear distinction between success states and error states
+- [x] [AI-Review][MEDIUM] AC8 incomplete - success path lacks detailed logging [lib/update/self.zsh:603-622]
+  - Fixed: Added detailed logging for check-only mode, user confirmation, update success/failure
+  - All code paths now log appropriate INFO or ERROR messages
+- [x] [AI-Review][LOW] Module location mismatch - should be lib/maintenance/self-update.zsh per Dev Notes
+  - Not addressed: Existing lib/update/self.zsh location is consistent with project structure
+  - Dev Notes specified lib/maintenance/ but existing pattern uses lib/update/ - documented deviation
 
 ---
 
@@ -332,11 +361,23 @@ Test execution logs: tests/test-self-update.zsh (24/24 tests passing)
   - Added 5 new tests for backup manifest, restore function, and semver validation
   - All 24 unit tests passing
 
+- 2026-01-06: Addressed Adversarial Review R3 Findings (8 issues resolved)
+  - [CRITICAL] Added zsh-tool-update() public user-facing command per Dev Notes naming convention
+  - [CRITICAL] Fixed AC2 violation - now displays version info when up-to-date
+  - [HIGH] AC9 fixed - state.json last_check now updated on every version check
+  - [HIGH] Added _zsh_tool_cleanup_old_backups() - limits to 5 backups max (configurable)
+  - [HIGH] Added _zsh_tool_validate_version_file() - validates VERSION content before use
+  - [MEDIUM] Fixed return codes: 0=success/up-to-date, 1=error, 2=user cancelled
+  - [MEDIUM] Added detailed logging for all code paths (AC8 compliance)
+  - [LOW] Documented lib/update/ location deviation from Dev Notes lib/maintenance/
+  - Added 3 new tests for public command, version validation, and backup cleanup
+  - All 27 unit tests passing
+
 ### File List
 
 - VERSION (new file)
-- lib/update/self.zsh (enhanced - major refactor for AC4/AC7 compliance)
-- tests/test-self-update.zsh (enhanced - 24 tests, up from 19)
+- lib/update/self.zsh (enhanced - major refactor for AC compliance, added backup cleanup, version validation, public command)
+- tests/test-self-update.zsh (enhanced - 27 tests, up from 24)
 
 ---
 

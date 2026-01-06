@@ -41,7 +41,9 @@ _zsh_tool_check_omz_updates() {
 
     # Check if updates available
     local current_sha=$(git rev-parse HEAD 2>/dev/null)
-    local remote_sha=$(git rev-parse origin/master 2>/dev/null)
+    # MEDIUM-3 FIX: Use fallback pattern for remote head detection
+    # Tries upstream tracking branch first, then origin/master, then origin/main
+    local remote_sha=$(git rev-parse @{u} 2>/dev/null || git rev-parse origin/master 2>/dev/null || git rev-parse origin/main 2>/dev/null)
 
     if [[ "$current_sha" == "$remote_sha" ]]; then
       echo "no_updates"
@@ -83,8 +85,9 @@ _zsh_tool_update_omz() {
   update_result=$(
     cd "$OMZ_INSTALL_DIR" || { echo "cd_failed"; exit 1; }
 
-    # Pull latest changes
-    git pull origin master 2>&1 | tee -a "$ZSH_TOOL_LOG_FILE" >/dev/null
+    # MEDIUM-3 FIX: Pull from upstream tracking branch instead of hardcoded origin master
+    # This handles repos that use main or other branch names
+    git pull 2>&1 | tee -a "$ZSH_TOOL_LOG_FILE" >/dev/null
     local pull_status=${pipestatus[1]}
 
     if [[ $pull_status -ne 0 ]]; then

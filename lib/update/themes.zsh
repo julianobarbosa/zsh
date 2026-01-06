@@ -53,7 +53,7 @@ _zsh_tool_check_all_themes() {
 
   local updates_available=0
 
-  for theme_dir in ${OMZ_CUSTOM_THEMES}/*; do
+  for theme_dir in "${OMZ_CUSTOM_THEMES}"/*(N); do
     if [[ ! -d "$theme_dir" ]]; then
       continue
     fi

@@ -54,15 +54,15 @@ development_status:
   # Epic 2: Maintenance & Lifecycle Management (5 stories, 17 points)
   epic-2: in-progress
   2-1-self-update-mechanism: done  # R3: All 10 issues fixed, 25/25 tests passing, nested key state tracking fixed
-  2-2-bulk-plugin-and-theme-updates: in-progress  # Review: 8 issues (1C, 3H, 3M, 1L)
-  2-3-configuration-backup-management: backlog
+  2-2-bulk-plugin-and-theme-updates: done  # R4: All issues resolved, 22/22 tests passing, parallel updates with component-manager.zsh
+  2-3-configuration-backup-management: done  # R1: All 7 issues fixed (2C, 4H, 1M) - 30/30 tests, prune command added
   2-4-configuration-restore-from-backup: backlog
   2-5-git-integration-for-dotfiles: backlog
   epic-2-retrospective: optional
 
   # Epic 3: Advanced Integrations (3 stories, 26 points)
   epic-3: in-progress
-  3-1-atuin-shell-history-integration: in-progress  # Review: 7 issues (3H, 3M, 1L)
+  3-1-atuin-shell-history-integration: done  # R3: All 6 issues fixed (2C, 2H, 2M) - 12/12 tests, atomic config, PATH cleanup
   3-2-amazon-q-cli-integration: done  # Completed 2025-10-02, now deprecated - replaced by Kiro CLI
   3-3-kiro-cli-migration: ready-for-dev  # CRITICAL: Amazon Q rebranded to Kiro CLI (Nov 2025) - 13 points
   epic-3-retrospective: optional

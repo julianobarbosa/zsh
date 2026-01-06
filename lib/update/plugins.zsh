@@ -52,7 +52,7 @@ _zsh_tool_check_all_plugins() {
 
   local updates_available=0
 
-  for plugin_dir in ${OMZ_CUSTOM_PLUGINS}/*; do
+  for plugin_dir in "${OMZ_CUSTOM_PLUGINS}"/*(N); do
     if [[ ! -d "$plugin_dir" ]]; then
       continue
     fi

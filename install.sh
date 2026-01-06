@@ -370,9 +370,10 @@ zsh-tool-update() {
   esac
 }
 
-# Backup command
+# Backup command (Story 2.3: Configuration Backup Management)
 zsh-tool-backup() {
   local subcommand="${1:-create}"
+  shift 2>/dev/null || true
 
   case "$subcommand" in
     create)
@@ -381,11 +382,50 @@ zsh-tool-backup() {
     list)
       _zsh_tool_list_backups
       ;;
+    status)
+      _zsh_tool_backup_status
+      ;;
+    prune)
+      _zsh_tool_prune_old_backups
+      local count=$(_zsh_tool_get_backup_count)
+      echo ""
+      echo "Backup pruning complete."
+      echo "Remaining backups: $count / ${ZSH_TOOL_BACKUP_RETENTION:-10}"
+      echo ""
+      ;;
     remote)
       _zsh_tool_backup_to_remote
       ;;
+    remote-config)
+      _zsh_tool_configure_remote_backup "$@"
+      ;;
+    remote-disable)
+      _zsh_tool_disable_remote_backup
+      ;;
+    fetch)
+      _zsh_tool_fetch_remote_backups
+      ;;
     *)
-      echo "Usage: zsh-tool-backup [create|list|remote]"
+      cat <<BACKUP_HELP
+Usage: zsh-tool-backup [command]
+
+Commands:
+  create          Create a manual backup (default)
+  list            List all available backups
+  status          Show backup status summary
+  prune           Prune old backups beyond retention limit
+  remote          Push backups to configured remote
+  remote-config   Configure remote backup URL
+  remote-disable  Disable remote backup sync
+  fetch           Fetch backups from remote
+
+Examples:
+  zsh-tool-backup                           # Create backup
+  zsh-tool-backup list                      # List all backups
+  zsh-tool-backup prune                     # Prune old backups
+  zsh-tool-backup remote-config git@...     # Configure remote
+  zsh-tool-backup remote                    # Push to remote
+BACKUP_HELP
       return 1
       ;;
   esac
@@ -542,8 +582,12 @@ Epic 2 - Maintenance & Lifecycle:
 
   zsh-tool-backup [action]      Manage backups
     create                      Create manual backup (default)
-    list                        List all backups
-    remote                      Push backup to remote
+    list                        List all backups with metadata
+    status                      Show backup status summary
+    remote                      Push backups to remote
+    remote-config <url>         Configure remote backup URL
+    remote-disable              Disable remote sync
+    fetch                       Fetch backups from remote
 
   zsh-tool-restore [action]     Restore from backup
     list                        List available backups

@@ -207,14 +207,22 @@ _zsh_tool_update_components_parallel() {
   local -a component_names=()
 
   # Temp dir for parallel results
-  local temp_dir=$(mktemp -d)
+  local temp_dir=$(mktemp -d) || {
+    _zsh_tool_log ERROR "Failed to create temp directory for parallel updates"
+    return 1
+  }
+
+  # Save existing traps to restore later (avoid breaking caller's traps)
+  local old_exit_trap=$(trap -p EXIT)
+  local old_int_trap=$(trap -p INT)
+  local old_term_trap=$(trap -p TERM)
+  local old_hup_trap=$(trap -p HUP)
 
   # Ensure temp directory cleanup on exit, error, or signal
-  # Using a trap to clean up temp_dir on EXIT, INT, TERM, HUP
   trap "rm -rf '$temp_dir' 2>/dev/null" EXIT INT TERM HUP
 
   # Launch updates in parallel (background jobs)
-  for component_dir in ${components_dir}/*(N); do
+  for component_dir in "${components_dir}"/*(N); do
     if [[ ! -d "$component_dir" ]]; then
       continue
     fi
@@ -242,12 +250,12 @@ _zsh_tool_update_components_parallel() {
   done
 
   # Wait for all parallel updates to complete
-  for pid in ${component_pids[@]}; do
+  for pid in "${component_pids[@]}"; do
     wait $pid
   done
 
   # Collect results
-  for component in ${component_names[@]}; do
+  for component in "${component_names[@]}"; do
     if [[ -f "${temp_dir}/${component}.status" ]]; then
       local component_status=$(cat "${temp_dir}/${component}.status")
       if [[ "$component_status" == "success" ]]; then
@@ -260,8 +268,12 @@ _zsh_tool_update_components_parallel() {
 
   # Cleanup (also handled by trap, but explicit cleanup is good practice)
   rm -rf "$temp_dir" 2>/dev/null
-  # Reset trap to avoid affecting caller
-  trap - EXIT INT TERM HUP
+
+  # Restore caller's traps instead of resetting them
+  [[ -n "$old_exit_trap" ]] && eval "$old_exit_trap" || trap - EXIT
+  [[ -n "$old_int_trap" ]] && eval "$old_int_trap" || trap - INT
+  [[ -n "$old_term_trap" ]] && eval "$old_term_trap" || trap - TERM
+  [[ -n "$old_hup_trap" ]] && eval "$old_hup_trap" || trap - HUP
 
   _zsh_tool_log INFO "✓ ${(C)component_type}s: $updated_count updated, $skipped_count skipped, $failed_count failed (parallel execution)"
 

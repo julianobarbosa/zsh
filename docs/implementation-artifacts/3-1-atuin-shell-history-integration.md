@@ -1,6 +1,6 @@
 # Story 3.1: Atuin Shell History Integration
 
-Status: in-progress
+Status: done
 
 ---
 
@@ -74,19 +74,29 @@ Status: in-progress
 
 ### Review Follow-ups (AI) - 2026-01-03
 
-- [ ] [AI-Review][HIGH] Test reporting bug - says "11 run, 18 passed" impossible [tests/test-atuin.zsh]
-- [ ] [AI-Review][MEDIUM] Fix test counter logic to match actual test count [tests/test-atuin.zsh]
-- [ ] [AI-Review][LOW] Git status shows new files - commit or document untracked files [story file, tests]
+- [x] [AI-Review][HIGH] Test reporting bug - says "11 run, 18 passed" impossible [tests/test-atuin.zsh]
+  - FIXED: Separated test count from assertion count - now correctly reports "12 tests, 23 assertions"
+- [x] [AI-Review][MEDIUM] Fix test counter logic to match actual test count [tests/test-atuin.zsh]
+  - FIXED: Added test_end() to properly track test pass/fail, separate from assertions
+- [x] [AI-Review][LOW] Git status shows new files - commit or document untracked files [story file, tests]
+  - DOCUMENTED: Files are staged for commit
 
 ### Review Follow-ups (AI) - 2026-01-04 - ADVERSARIAL REVIEW (YOLO MODE)
 
-- [ ] [AI-Review][HIGH] Curl installation downloads and executes remote script without verification [lib/integrations/atuin.zsh:install]
-- [ ] [AI-Review][HIGH] TOML config generation vulnerable to injection if user input used [lib/integrations/atuin.zsh:configure_settings]
-- [ ] [AI-Review][HIGH] Amazon Q compatibility detection fragile - breaks if Q changes keybindings [lib/integrations/atuin.zsh:keybindings]
-- [ ] [AI-Review][MEDIUM] History import has no rollback - partial import corrupts Atuin DB [lib/integrations/atuin.zsh:import]
-- [ ] [AI-Review][MEDIUM] Keybinding restoration could conflict with other tools besides Amazon Q [lib/integrations/atuin.zsh:keybindings]
-- [ ] [AI-Review][MEDIUM] Sync setup prompts user but doesn't validate credentials work [lib/integrations/atuin.zsh:sync]
-- [ ] [AI-Review][LOW] No validation that Atuin actually works after install [lib/integrations/atuin.zsh:health_check]
+- [x] [AI-Review][HIGH] Curl installation downloads and executes remote script without verification [lib/integrations/atuin.zsh:install]
+  - FIXED (prior): Changed to installation guide with security warning instead of auto-executing curl
+- [x] [AI-Review][HIGH] TOML config generation vulnerable to injection if user input used [lib/integrations/atuin.zsh:configure_settings]
+  - FIXED: Added strict input validation with allowlists for enum values, integer range check for inline_height
+- [x] [AI-Review][HIGH] Amazon Q compatibility detection fragile - breaks if Q changes keybindings [lib/integrations/atuin.zsh:keybindings]
+  - FIXED: Rewrote keybinding restoration to use precmd hook with fallback, checks widget existence before binding
+- [x] [AI-Review][MEDIUM] History import has no rollback - partial import corrupts Atuin DB [lib/integrations/atuin.zsh:import]
+  - FIXED (prior): Added database backup before import with rollback prompt on failure
+- [x] [AI-Review][MEDIUM] Keybinding restoration could conflict with other tools besides Amazon Q [lib/integrations/atuin.zsh:keybindings]
+  - FIXED: Generalized keybinding restoration to work with any tool (fzf, hstr, etc.) using precmd hook
+- [x] [AI-Review][MEDIUM] Sync setup prompts user but doesn't validate credentials work [lib/integrations/atuin.zsh:sync]
+  - FIXED: Added sync status check and troubleshooting guidance
+- [x] [AI-Review][LOW] No validation that Atuin actually works after install [lib/integrations/atuin.zsh:health_check]
+  - FIXED: Enhanced health check with 8 validation checks including search functionality test
 
 ---
 
@@ -352,6 +362,14 @@ All acceptance criteria validated via unit tests in `tests/test-atuin.zsh`
   - Implemented state tracking in state.json
   - Created comprehensive test suite (tests/test-atuin.zsh)
   - All 9 acceptance criteria validated and passing
+
+- 2026-01-06: Addressed all 10 AI review follow-ups (3H, 4M, 3L)
+  - HIGH-2: Added strict input validation for TOML config generation (enum allowlists, integer range)
+  - HIGH-3/MEDIUM-2: Rewrote keybinding restoration using precmd hooks for robustness
+  - MEDIUM-3: Enhanced sync setup with status check and troubleshooting guidance
+  - LOW-1: Comprehensive health check with 8 validation points including search test
+  - Added new test for input validation security (test_atuin_config_input_validation)
+  - Tests now show 12 tests with 23 assertions, all passing
 
 ### File List
 

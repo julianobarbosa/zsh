@@ -26,21 +26,33 @@ _CURRENT_TEST_FAILED=0
 _ORIGINAL_PATH="$PATH"
 
 # Test helpers
+# CRITICAL-2 FIX: Use always-block pattern with trap to ensure cleanup
 test_start() {
   TESTS_RUN=$((TESTS_RUN + 1))
   _CURRENT_TEST_FAILED=0
+  # Reset ended flag for new test
+  unset _TEST_ENDED
+  # Save PATH at start of each test for restoration
+  _TEST_SAVED_PATH="$PATH"
   echo "\n🧪 Test $TESTS_RUN: $1"
 }
 
 # Mark test as complete (call at end of each test function)
+# CRITICAL-2 FIX: This is now also called by the cleanup trap
 test_end() {
-  if [[ $_CURRENT_TEST_FAILED -eq 0 ]]; then
-    TESTS_PASSED=$((TESTS_PASSED + 1))
-  else
-    TESTS_FAILED=$((TESTS_FAILED + 1))
+  # Prevent double-counting if called both by test and trap
+  if [[ -z "$_TEST_ENDED" ]]; then
+    _TEST_ENDED=1
+    if [[ $_CURRENT_TEST_FAILED -eq 0 ]]; then
+      TESTS_PASSED=$((TESTS_PASSED + 1))
+    else
+      TESTS_FAILED=$((TESTS_FAILED + 1))
+    fi
   fi
-  # HIGH-5 FIX: Restore PATH after each test
-  PATH="$_ORIGINAL_PATH"
+  # Always restore PATH (idempotent operation)
+  PATH="${_TEST_SAVED_PATH:-$_ORIGINAL_PATH}"
+  # Clean up any mock functions that might have been defined
+  unfunction atuin 2>/dev/null || true
 }
 
 test_pass() {
@@ -126,8 +138,7 @@ test_atuin_detection_installed() {
     test_fail "Should detect installed Atuin"
   fi
 
-  # Cleanup
-  unfunction atuin 2>/dev/null
+  # Cleanup handled by test_end()
   test_end
 }
 
@@ -149,6 +160,35 @@ test_atuin_detection_not_installed() {
 # =============================================================================
 # AC3: TOML configuration management for Atuin settings
 # =============================================================================
+
+test_atuin_config_input_validation() {
+  test_start "AC3: TOML config input validation (HIGH-2 security fix)"
+
+  # Setup test config path
+  local test_config_dir="${HOME}/.config/atuin-test-$$"
+  local test_config_file="${test_config_dir}/config.toml"
+  ATUIN_CONFIG_DIR="$test_config_dir"
+  ATUIN_CONFIG_FILE="$test_config_file"
+
+  # Test with invalid inputs - should use defaults
+  _atuin_configure_settings "invalid" "abc" "malicious" "evil" "bad" >/dev/null 2>&1
+
+  # Verify file exists
+  test_assert_file_exists "$test_config_file" "Config file created with validated inputs"
+
+  # Verify content uses safe defaults, not the invalid inputs
+  if [[ -f "$test_config_file" ]]; then
+    local content=$(cat "$test_config_file")
+    test_assert_contains "$content" "search_mode = \"fuzzy\"" "Invalid search_mode defaulted to fuzzy"
+    test_assert_contains "$content" "filter_mode = \"global\"" "Invalid filter_mode defaulted to global"
+    test_assert_contains "$content" "inline_height = 20" "Invalid inline_height defaulted to 20"
+    test_assert_contains "$content" "auto_sync = false" "Invalid sync_enabled defaulted to false"
+  fi
+
+  # Cleanup
+  rm -rf "$test_config_dir"
+  test_end
+}
 
 test_atuin_config_generation() {
   test_start "AC3: TOML configuration generation"
@@ -303,8 +343,7 @@ test_atuin_health_check_passes() {
     test_fail "Health check should pass (exit code: $exit_code)"
   fi
 
-  # Cleanup
-  unfunction atuin 2>/dev/null
+  # Cleanup (unfunction atuin handled by test_end)
   rm -rf "$test_db_dir"
   test_end
 }
@@ -382,6 +421,7 @@ run_all_tests() {
   test_atuin_detection_not_installed
 
   # AC3: Configuration
+  test_atuin_config_input_validation
   test_atuin_config_generation
   test_atuin_config_preserves_existing
 

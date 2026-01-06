@@ -68,6 +68,8 @@ Development teams often struggle with inconsistent shell configurations, leading
 
 **FR014:** Users can integrate Amazon Q Developer CLI for AI-powered command line assistance with lazy loading for performance
 
+**FR015:** Users can integrate direnv with 1Password for secure, per-project environment variable management, enabling automatic loading of AI API keys and workflow credentials when entering project directories
+
 ### Non-Functional Requirements
 
 **NFR001: Performance** - Initial installation and configuration must complete in under 5 minutes on standard macOS hardware
@@ -171,7 +173,20 @@ Development teams often struggle with inconsistent shell configurations, leading
 - **Story 13:** Atuin Shell History Integration (5 points) - Fuzzy search, cross-machine sync, keybinding configuration
 - **Story 14:** Amazon Q CLI Integration (8 points) - AI-powered assistance, lazy loading, Atuin compatibility
 
-**Total Stories:** 14
+### Epic 4: Environment Management Integration
+**Goal:** Provide secure, per-project environment variable management through direnv integration with 1Password for credential storage
+
+**Priority:** P1 - Should Have
+
+**Dependencies:** Epic 1 (Core Installation), 1Password CLI (`op`)
+
+**Estimated Stories:** 2
+
+**Stories:**
+- **Story 15:** direnv + 1Password Integration (8 points) - Secure credential fetching, per-project environment loading, AI API key management
+- **Story 16:** Workflow Environment Templates (3 points) - Reusable environment templates for common AI/DevOps workflows
+
+**Total Stories:** 16
 
 _See epic-stories.md for detailed story breakdown with acceptance criteria and story points._
 
@@ -205,7 +220,7 @@ These items are preserved for potential future development but are not required 
 
 ## Implementation Status
 
-> **Status: COMPLETE** - All 3 epics implemented and in production use.
+> **Status: IN PROGRESS** - Epics 1-3 complete and in production. Epic 4 (direnv integration) in development.
 
 ### Completed Phases
 
@@ -240,6 +255,7 @@ These items are preserved for potential future development but are not required 
 | Epic 1 | `tech-spec-epic-1.md` | Complete |
 | Epic 2 | `tech-spec-epic-2.md` | Complete |
 | Epic 3 | `tech-spec-epic-3.md` | Complete |
+| Epic 4 | `tech-spec-epic-5.md` | In Progress |
 
 ### Future Considerations
 
@@ -248,12 +264,13 @@ See `backlog.md` for potential future enhancements beyond current scope.
 ## Document Status
 
 - [x] Goals and context validated with stakeholders
-- [x] All functional requirements reviewed (FR001-FR014)
+- [x] All functional requirements reviewed (FR001-FR015)
 - [x] User journeys cover primary persona (new developer onboarding)
-- [x] Epic structure approved and implemented (3 epics, 14 stories)
+- [x] Epic structure approved (4 epics, 16 stories)
 - [x] Architecture phase complete
-- [x] Implementation complete
-- [x] Documentation complete
+- [x] Epics 1-3 implementation complete
+- [ ] Epic 4 (direnv + 1Password) in progress
+- [x] Documentation in progress
 
 _Note: See `solution-architecture.md` for technical decisions and architecture details._
 

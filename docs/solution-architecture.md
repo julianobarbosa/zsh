@@ -39,6 +39,8 @@ This document defines the technical architecture for a zsh configuration and mai
 | **Testing Framework** | bats-core | 1.10.0 | Bash/zsh test automation, CI-friendly |
 | **Linting** | shellcheck | 0.9+ | Static analysis for shell scripts |
 | **CI/CD** | GitHub Actions | N/A | Automated testing, release management |
+| **Env Management** | direnv | 2.32+ | Per-project environment variables |
+| **Secrets** | 1Password CLI | 2.0+ | Secure credential fetching via `op inject` |
 
 **Rationale Summary:**
 - Pure zsh implementation minimizes runtime dependencies
@@ -96,6 +98,11 @@ This document defines the technical architecture for a zsh configuration and mai
 **Epic 3 Modules (Integrations):**
 - `integrations/atuin.zsh` - Atuin shell history integration with lazy loading, Ctrl+R conflict resolution, and configuration management
 - `integrations/amazon-q.zsh` - Amazon Q CLI integration with lazy loading, secure .zshrc injection, and comprehensive test coverage
+
+**Epic 4 Modules (Environment Management):**
+- `integrations/direnv.zsh` - direnv + 1Password integration for secure per-project environment variables
+- `~/.direnv/lib/ai-keys.sh` - Helper function for AI API key loading
+- `~/.direnv/templates/ai-keys.env.tpl` - Template for 1Password secret references
 
 ---
 
@@ -212,6 +219,14 @@ paths:
   prepend:
     - "$HOME/.local/bin"
     - "$HOME/bin"
+
+direnv:
+  enabled: true
+  onepassword_integration: true
+  vault_name: "AI Keys"
+  session_cache_seconds: 300
+  templates:
+    ai_keys: "~/.direnv/templates/ai-keys.env.tpl"
 ```
 
 **State Files:**
@@ -688,6 +703,46 @@ tests/
 
 ---
 
+### ADR-009: direnv + 1Password for Environment Management
+
+**Context:** Need secure, per-project environment variable management for AI API keys and workflow credentials.
+
+**Decision:** Use direnv with 1Password CLI (`op inject`) for on-demand credential fetching.
+
+**Rationale:**
+- **Security-first**: No credentials stored on disk; fetched on-demand from 1Password vault
+- **Biometric auth**: Leverages Touch ID via 1Password desktop app integration
+- **Per-project control**: Each project's `.envrc` sources a reusable helper function
+- **Template-based**: Single source of truth (`ai-keys.env.tpl`) is version-controllable
+- **Session caching**: 5-minute cache (`OP_CACHE_EXPIRES_IN=300`) reduces Touch ID prompts
+
+**Implementation Pattern:**
+```bash
+# ~/.direnv/lib/ai-keys.sh
+load_ai_keys() {
+  export OP_CACHE_EXPIRES_IN=300
+  eval "$(op inject -i ~/.direnv/templates/ai-keys.env.tpl 2>/dev/null)" \
+    && echo "✅ AI keys loaded ($(date +%H:%M))" \
+    || echo "⚠️  AI keys not loaded - check 1Password"
+}
+
+# ~/.direnv/templates/ai-keys.env.tpl
+OPENAI_API_KEY={{ op://AI Keys/OpenAI/credential }}
+ANTHROPIC_API_KEY={{ op://AI Keys/Anthropic/credential }}
+
+# project/.envrc
+source ~/.direnv/lib/ai-keys.sh
+load_ai_keys
+```
+
+**Alternatives Considered:**
+- `.env` files with secrets: Insecure, credentials on disk
+- AWS Secrets Manager: Overkill for personal/small team use
+- Manual export: Error-prone, no audit trail
+- Vault (HashiCorp): Complex infrastructure for this use case
+
+---
+
 ## 10. Implementation Guidance
 
 ### 10.1 Development Workflow
@@ -835,9 +890,16 @@ zsh-tool/
 │   ├── git/
 │   │   └── integration.zsh     # Dotfile git operations
 │   │
-│   └── integrations/            # Epic 3: External tool integrations
+│   └── integrations/            # Epic 3-4: External tool integrations
 │       ├── atuin.zsh           # Atuin shell history (lazy load, Ctrl+R fix)
-│       └── amazon-q.zsh        # Amazon Q CLI (lazy load, secure injection)
+│       ├── amazon-q.zsh        # Amazon Q CLI (lazy load, secure injection)
+│       └── direnv.zsh          # direnv + 1Password integration
+│
+├── direnv/                      # Epic 4: direnv templates and helpers
+│   ├── lib/
+│   │   └── ai-keys.sh          # Helper function for AI key loading
+│   └── templates/
+│       └── ai-keys.env.tpl     # 1Password template for AI credentials
 │
 ├── templates/                   # Configuration templates
 │   ├── config.yaml              # Default tool configuration
@@ -874,6 +936,11 @@ zsh-tool/
   │   └── zsh-tool.log
   └── backups/
       └── 2025-10-01-120000/
+~/.direnv/                       # direnv configuration (Epic 4)
+  ├── lib/
+  │   └── ai-keys.sh             # AI key loading helper
+  └── templates/
+      └── ai-keys.env.tpl        # 1Password template
 ~/.zshrc                         # Modified to source zsh-tool.zsh
 ```
 
@@ -1090,6 +1157,6 @@ From PRD Out of Scope section, potential future work:
 
 ---
 
-**Document Version:** 1.2
-**Last Updated:** 2025-12-17
-**Status:** Current (Epic 3 Integrations added)
+**Document Version:** 1.3
+**Last Updated:** 2026-01-05
+**Status:** Current (Epic 4 direnv + 1Password integration added)

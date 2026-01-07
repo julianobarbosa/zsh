@@ -78,3 +78,13 @@ kiro_cli:
     - atuin  # Prevent Kiro CLI from intercepting Atuin keybindings
   # Performance note: Kiro CLI has improved performance over Amazon Q
   # Lazy loading helps with shell startup time
+
+# direnv + 1Password Integration
+direnv:
+  enabled: false  # Set to true to enable direnv + 1Password integration
+  onepassword_integration: true  # Use 1Password CLI for secure credential fetching
+  vault_name: "AI Keys"  # Default vault name for AI API keys
+  session_cache_seconds: 300  # Session cache duration (reduces Touch ID prompts)
+  # Security model: Credentials fetched on-demand via biometric auth
+  # Never stored on disk - exist only in memory while in project directory
+  # Requires: direnv, 1Password CLI, 1Password desktop app with CLI integration

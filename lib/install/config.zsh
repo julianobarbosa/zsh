@@ -346,6 +346,32 @@ _zsh_tool_parse_atuin_style() {
   echo "$section" | grep '^\s*style:' | head -1 | awk '{print $2}' | tr -d ' "'
 }
 
+# Parse direnv configuration
+_zsh_tool_parse_direnv_enabled() {
+  local config=$(_zsh_tool_load_config)
+  local section=$(_zsh_tool_extract_yaml_section "direnv" "$config")
+  echo "$section" | grep '^\s*enabled:' | head -1 | awk '{print $2}' | tr -d ' '
+}
+
+_zsh_tool_parse_direnv_onepassword_integration() {
+  local config=$(_zsh_tool_load_config)
+  local section=$(_zsh_tool_extract_yaml_section "direnv" "$config")
+  echo "$section" | grep '^\s*onepassword_integration:' | head -1 | awk '{print $2}' | tr -d ' '
+}
+
+_zsh_tool_parse_direnv_vault_name() {
+  local config=$(_zsh_tool_load_config)
+  local section=$(_zsh_tool_extract_yaml_section "direnv" "$config")
+  # Handle quoted strings with spaces (e.g., "AI Keys")
+  echo "$section" | grep '^\s*vault_name:' | head -1 | sed 's/.*vault_name:[[:space:]]*//' | tr -d '"'
+}
+
+_zsh_tool_parse_direnv_session_cache() {
+  local config=$(_zsh_tool_load_config)
+  local section=$(_zsh_tool_extract_yaml_section "direnv" "$config")
+  echo "$section" | grep '^\s*session_cache_seconds:' | head -1 | awk '{print $2}' | tr -d ' '
+}
+
 # HIGH-4: Remove duplicate source lines from content
 # Ensures only one instance of each source line exists
 # Usage: _zsh_tool_dedupe_source_lines <content>

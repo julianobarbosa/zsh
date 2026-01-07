@@ -97,6 +97,7 @@ source "${ZSH_TOOL_LIB_DIR}/git/integration.zsh"
 if [[ -d "${ZSH_TOOL_LIB_DIR}/integrations" ]]; then
   source "${ZSH_TOOL_LIB_DIR}/integrations/atuin.zsh"
   source "${ZSH_TOOL_LIB_DIR}/integrations/kiro-cli.zsh"
+  source "${ZSH_TOOL_LIB_DIR}/integrations/direnv.zsh"
 fi
 
 # Setup integrations based on config
@@ -136,6 +137,15 @@ _zsh_tool_setup_integrations() {
     kiro_install_integration "$lazy_loading" "$atuin_compat"
   else
     _zsh_tool_log DEBUG "Kiro CLI not enabled, skipping"
+  fi
+
+  # Check if direnv is enabled in config
+  local direnv_enabled=$(_zsh_tool_parse_direnv_enabled)
+  if [[ "$direnv_enabled" == "true" ]]; then
+    _zsh_tool_log INFO "direnv enabled in configuration"
+    direnv_install_integration
+  else
+    _zsh_tool_log DEBUG "direnv not enabled, skipping"
   fi
 
   return 0
@@ -585,6 +595,10 @@ Epic 3 - Integrations:
     status                      Check installation status
     health                      Run health check (kiro-cli doctor)
     config-atuin                Configure Atuin compatibility
+
+  zsh-tool-direnv [command]     direnv + 1Password integration
+    install                     Install direnv + 1Password integration
+    status                      Check integration health
 
 Other:
   zsh-tool-help                 Show this help message

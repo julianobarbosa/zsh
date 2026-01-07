@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
-# Master test runner for all Kiro CLI integration tests
-# Runs both standard and edge case test suites
+# Master test runner for all integration tests
+# Runs test suites for Kiro CLI, direnv, and other integrations
 
 set -e
 
@@ -17,7 +17,7 @@ PROJECT_ROOT="${SCRIPT_DIR:h}"
 
 echo ""
 echo "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo "${BLUE}  Kiro CLI Integration - Full Test Suite${NC}"
+echo "${BLUE}  zsh-tool Integration - Full Test Suite${NC}"
 echo "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo ""
 
@@ -26,38 +26,57 @@ TOTAL_SUITES=0
 PASSED_SUITES=0
 FAILED_SUITES=0
 
-# Run standard tests
-echo "${YELLOW}[1/2] Running Standard Test Suite...${NC}"
+# Run Kiro CLI standard tests
+echo "${YELLOW}[1/3] Running Kiro CLI Standard Test Suite...${NC}"
 echo ""
 ((TOTAL_SUITES++))
 
 if zsh "${SCRIPT_DIR}/test-kiro-cli.zsh"; then
   ((PASSED_SUITES++))
   echo ""
-  echo "${GREEN}✓ Standard test suite PASSED${NC}"
+  echo "${GREEN}✓ Kiro CLI standard test suite PASSED${NC}"
 else
   ((FAILED_SUITES++))
   echo ""
-  echo "${RED}✗ Standard test suite FAILED${NC}"
+  echo "${RED}✗ Kiro CLI standard test suite FAILED${NC}"
 fi
 
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
 
-# Run edge case tests
-echo "${YELLOW}[2/2] Running Edge Case Test Suite...${NC}"
+# Run Kiro CLI edge case tests
+echo "${YELLOW}[2/3] Running Kiro CLI Edge Case Test Suite...${NC}"
 echo ""
 ((TOTAL_SUITES++))
 
 if zsh "${SCRIPT_DIR}/test-kiro-cli-edge-cases.zsh"; then
   ((PASSED_SUITES++))
   echo ""
-  echo "${GREEN}✓ Edge case test suite PASSED${NC}"
+  echo "${GREEN}✓ Kiro CLI edge case test suite PASSED${NC}"
 else
   ((FAILED_SUITES++))
   echo ""
-  echo "${RED}✗ Edge case test suite FAILED${NC}"
+  echo "${RED}✗ Kiro CLI edge case test suite FAILED${NC}"
+fi
+
+echo ""
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo ""
+
+# Run direnv + 1Password tests
+echo "${YELLOW}[3/3] Running direnv + 1Password Test Suite...${NC}"
+echo ""
+((TOTAL_SUITES++))
+
+if zsh "${SCRIPT_DIR}/test-direnv.zsh"; then
+  ((PASSED_SUITES++))
+  echo ""
+  echo "${GREEN}✓ direnv + 1Password test suite PASSED${NC}"
+else
+  ((FAILED_SUITES++))
+  echo ""
+  echo "${RED}✗ direnv + 1Password test suite FAILED${NC}"
 fi
 
 # Final summary

@@ -69,6 +69,28 @@ atuin:
   # Press Ctrl+R to open interactive search interface
   # With tab_completion enabled, typing "export ELE<TAB>" suggests from history
 
+# Vi-Mode Integration
+# Enhanced vi-mode for zsh with cursor shapes, mode indicators, and fast ESC
+vimode:
+  enabled: true  # Set to true to enable vi-mode
+  cursor:
+    insert: "beam"   # Cursor shape in insert mode: beam, block, underline
+    normal: "block"  # Cursor shape in normal/command mode: beam, block, underline
+    visual: "block"  # Cursor shape in visual mode: beam, block, underline
+  escape_timeout: 10  # ESC key timeout in ms (lower = faster, 1-100)
+  indicators:
+    insert: "INS"   # Mode indicator text for insert mode
+    normal: "NOR"   # Mode indicator text for normal mode
+    visual: "VIS"   # Mode indicator text for visual mode
+    replace: "REP"  # Mode indicator text for replace mode
+  atuin_compatibility: true  # Ensure Ctrl+R works with Atuin in vi-mode
+  # Vi-mode provides vim-like editing in the command line:
+  #   - ESC to enter normal mode, i/a/I/A to insert
+  #   - hjkl navigation, w/b word movement, 0/$ line start/end
+  #   - d/c/y delete/change/yank with motions
+  #   - / and ? for history search
+  #   - v to edit current command in $EDITOR
+
 # Kiro CLI Integration (formerly Amazon Q Developer CLI)
 kiro_cli:
   enabled: false  # Set to true to enable Kiro CLI integration

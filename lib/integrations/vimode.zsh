@@ -150,6 +150,8 @@ _vimode_line_init() {
   _vimode_cursor_insert
   _vimode_update_indicator
   zle reset-prompt 2>/dev/null || true
+  # Chain to original widget if it existed
+  [[ "$_VIMODE_HAS_ORIG_LINE_INIT" == "true" ]] && _vimode_orig_line_init "$@"
 }
 
 # ZLE hook: Called when keymap changes
@@ -175,12 +177,16 @@ _vimode_keymap_select() {
 
   _vimode_update_indicator
   zle reset-prompt 2>/dev/null || true
+  # Chain to original widget if it existed
+  [[ "$_VIMODE_HAS_ORIG_KEYMAP_SELECT" == "true" ]] && _vimode_orig_keymap_select "$@"
 }
 
 # ZLE hook: Called when line is finished (Enter pressed)
 _vimode_line_finish() {
   # Reset to insert mode cursor for command output
   _vimode_cursor_insert
+  # Chain to original widget if it existed
+  [[ "$_VIMODE_HAS_ORIG_LINE_FINISH" == "true" ]] && _vimode_orig_line_finish "$@"
 }
 
 # ==============================================================================
@@ -298,7 +304,35 @@ _vimode_setup_escape_timeout() {
 # ==============================================================================
 
 # Register ZLE widgets for mode change detection
+# Chains to existing widgets to avoid conflicts with other plugins
 _vimode_register_widgets() {
+  # Save existing zle-line-init if present
+  if zle -la | grep -q '^zle-line-init$'; then
+    local existing_init=$(zle -lL zle-line-init 2>/dev/null | awk '{print $NF}')
+    if [[ -n "$existing_init" && "$existing_init" != "_vimode_line_init" ]]; then
+      eval "_vimode_orig_line_init() { $existing_init \"\$@\"; }"
+      typeset -g _VIMODE_HAS_ORIG_LINE_INIT=true
+    fi
+  fi
+
+  # Save existing zle-keymap-select if present
+  if zle -la | grep -q '^zle-keymap-select$'; then
+    local existing_keymap=$(zle -lL zle-keymap-select 2>/dev/null | awk '{print $NF}')
+    if [[ -n "$existing_keymap" && "$existing_keymap" != "_vimode_keymap_select" ]]; then
+      eval "_vimode_orig_keymap_select() { $existing_keymap \"\$@\"; }"
+      typeset -g _VIMODE_HAS_ORIG_KEYMAP_SELECT=true
+    fi
+  fi
+
+  # Save existing zle-line-finish if present
+  if zle -la | grep -q '^zle-line-finish$'; then
+    local existing_finish=$(zle -lL zle-line-finish 2>/dev/null | awk '{print $NF}')
+    if [[ -n "$existing_finish" && "$existing_finish" != "_vimode_line_finish" ]]; then
+      eval "_vimode_orig_line_finish() { $existing_finish \"\$@\"; }"
+      typeset -g _VIMODE_HAS_ORIG_LINE_FINISH=true
+    fi
+  fi
+
   # Create ZLE widgets
   zle -N zle-line-init _vimode_line_init
   zle -N zle-keymap-select _vimode_keymap_select
@@ -480,6 +514,12 @@ _vimode_apply_config() {
 # Usage: vimode_init [options...]
 # Options are parsed from config or can be passed directly
 vimode_init() {
+  # Guard against double-initialization
+  if _vimode_is_enabled; then
+    _zsh_tool_log DEBUG "Vi-mode already enabled, skipping initialization"
+    return 0
+  fi
+
   _zsh_tool_log INFO "Initializing vi-mode integration..."
 
   # Enable vi mode
@@ -501,8 +541,13 @@ vimode_init() {
   VIMODE_CURRENT_MODE="insert"
   _vimode_update_indicator
 
-  # Set up cursor reset on shell exit
-  trap '_vimode_cursor_reset' EXIT
+  # Set up cursor reset on shell exit (chain to existing trap)
+  typeset -g _vimode_orig_exit_trap="$(trap -p EXIT 2>/dev/null | sed "s/trap -- '\\(.*\\)' EXIT/\\1/" | sed "s/trap -- \"\\(.*\\)\" EXIT/\\1/")"
+  if [[ -n "$_vimode_orig_exit_trap" ]]; then
+    trap '_vimode_cursor_reset; eval "$_vimode_orig_exit_trap"' EXIT
+  else
+    trap '_vimode_cursor_reset' EXIT
+  fi
 
   # Mark as enabled
   export VIMODE_ENABLED="true"

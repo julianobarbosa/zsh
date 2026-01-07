@@ -52,6 +52,21 @@ load_ai_keys() {
   # with actual values fetched from 1Password vault
   local injected
   if injected=$(op inject -i "$template" 2>/dev/null); then
+    # Security: Validate output contains only safe export statements
+    # Pattern: lines must be empty, comments, or VAR=value / export VAR=value
+    local line
+    while IFS= read -r line; do
+      # Skip empty lines and comments
+      [[ -z "$line" || "$line" =~ ^[[:space:]]*# ]] && continue
+      # Validate: must match VAR=value or export VAR=value pattern
+      # Allows: MYVAR=value, export MYVAR="value", export MYVAR='value'
+      if ! [[ "$line" =~ ^[[:space:]]*(export[[:space:]]+)?[A-Za-z_][A-Za-z0-9_]*= ]]; then
+        echo "Security: Invalid line in op inject output, aborting"
+        echo "Line: $line"
+        return 1
+      fi
+    done <<< "$injected"
+
     eval "$injected"
     echo "AI keys loaded ($(date +%H:%M))"
     return 0

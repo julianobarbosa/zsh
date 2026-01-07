@@ -213,7 +213,15 @@ _direnv_install_ai_keys_helper() {
   # Ensure directory exists
   mkdir -p "$(dirname "$DIRENV_AI_KEYS_HELPER")" 2>/dev/null
 
-  cat > "$DIRENV_AI_KEYS_HELPER" << 'HELPER_EOF'
+  # Copy the standalone helper file instead of embedding
+  # This ensures both files stay in sync
+  local source_helper="${0:A:h}/../../direnv/lib/ai-keys.sh"
+
+  if [[ -f "$source_helper" ]]; then
+    cp "$source_helper" "$DIRENV_AI_KEYS_HELPER"
+  else
+    # Fallback: create inline if source not found (e.g., production install)
+    cat > "$DIRENV_AI_KEYS_HELPER" << 'HELPER_EOF'
 #!/usr/bin/env bash
 # AI API Keys loader - fetches credentials from 1Password
 # Usage: source ~/.direnv/lib/ai-keys.sh && load_ai_keys
@@ -225,6 +233,7 @@ load_ai_keys() {
   # Check if op is available
   if ! command -v op &>/dev/null; then
     echo "1Password CLI (op) not found - AI keys not loaded"
+    echo "Install with: brew install --cask 1password-cli"
     return 1
   fi
 
@@ -235,7 +244,15 @@ load_ai_keys() {
   local template="${DIRENV_AI_KEYS_TEMPLATE:-$HOME/.direnv/templates/ai-keys.env.tpl}"
   if [[ ! -f "$template" ]]; then
     echo "Template not found: $template"
-    echo "Create it with your 1Password secret references"
+    echo "Create it with your 1Password secret references:"
+    echo "  OPENAI_API_KEY={{ op://AI Keys/OpenAI/credential }}"
+    return 1
+  fi
+
+  # Check if template has any active (non-commented) secrets
+  if ! grep -q "^[^#]*op://" "$template" 2>/dev/null; then
+    echo "No active secrets in template: $template"
+    echo "Uncomment and configure the secret references"
     return 1
   fi
 
@@ -244,24 +261,67 @@ load_ai_keys() {
   # with actual values fetched from 1Password vault
   local injected
   if injected=$(op inject -i "$template" 2>/dev/null); then
+    # Security: Validate output contains only safe export statements
+    # Pattern: lines must be empty, comments, or VAR=value / export VAR=value
+    local line
+    while IFS= read -r line; do
+      # Skip empty lines and comments
+      [[ -z "$line" || "$line" =~ ^[[:space:]]*# ]] && continue
+      # Validate: must match VAR=value or export VAR=value pattern
+      # Allows: MYVAR=value, export MYVAR="value", export MYVAR='value'
+      if ! [[ "$line" =~ ^[[:space:]]*(export[[:space:]]+)?[A-Za-z_][A-Za-z0-9_]*= ]]; then
+        echo "Security: Invalid line in op inject output, aborting"
+        echo "Line: $line"
+        return 1
+      fi
+    done <<< "$injected"
+
     eval "$injected"
     echo "AI keys loaded ($(date +%H:%M))"
     return 0
   else
     echo "AI keys not loaded - check 1Password authentication"
+    echo "Ensure 1Password CLI integration is enabled in 1Password > Settings > Developer"
     return 1
   fi
 }
 
-# Optional: Unload AI keys (called automatically by direnv on exit)
+# Unload AI keys (called automatically by direnv on exit)
 unload_ai_keys() {
   unset OPENAI_API_KEY
   unset ANTHROPIC_API_KEY
   unset GOOGLE_AI_API_KEY
   unset GITHUB_TOKEN
+  unset ELEVENLABS_API_KEY
+  unset REPLICATE_API_TOKEN
+  unset HUGGINGFACE_TOKEN
   # Add more as needed
 }
+
+# Check if AI keys are currently loaded
+check_ai_keys() {
+  local loaded=0
+  local missing=0
+
+  echo "AI Keys Status:"
+  echo "==============="
+
+  # Check common AI API keys
+  for key in OPENAI_API_KEY ANTHROPIC_API_KEY GOOGLE_AI_API_KEY GITHUB_TOKEN; do
+    if [[ -n "${!key}" ]]; then
+      echo "  $key: loaded"
+      ((loaded++))
+    else
+      echo "  $key: not set"
+      ((missing++))
+    fi
+  done
+
+  echo ""
+  echo "Loaded: $loaded | Not set: $missing"
+}
 HELPER_EOF
+  fi
 
   chmod +x "$DIRENV_AI_KEYS_HELPER"
   _zsh_tool_log INFO "AI keys helper installed: $DIRENV_AI_KEYS_HELPER"

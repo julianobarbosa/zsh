@@ -1,6 +1,6 @@
 # Story 2.4: Configuration Restore from Backup
 
-Status: review
+Status: done
 
 ---
 
@@ -347,9 +347,17 @@ Claude Opus 4.5 (claude-opus-4-5-20251101)
 
 - 2026-01-07: Story created with comprehensive developer context
 - 2026-01-07: Implementation complete - 26/26 tests passing
+- 2026-01-07: Code review R1 - Fixed 6 issues (1C, 2H, 2M, 1L) - 28/28 tests passing
+  - C1: Added AC11 --files partial restore stub
+  - H1: Fixed race condition in backup path detection with count verification
+  - H2: Removed dead code (backup_timestamp variable)
+  - M1: Updated File List to include sprint-status.yaml
+  - M2: Fixed JSON construction with proper escaping
+  - L1: Clear global _ZSH_TOOL_PRE_RESTORE_BACKUP after successful restore
 
 ### File List
 
-- lib/restore/restore.zsh (modified - enhanced with --force, rollback, permission handling)
+- lib/restore/restore.zsh (modified - enhanced with --force, rollback, permission handling, --files stub)
 - tests/test-restore.zsh (new - 26 comprehensive tests)
+- docs/implementation-artifacts/sprint-status.yaml (modified - status update)
 

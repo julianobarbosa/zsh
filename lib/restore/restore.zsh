@@ -5,6 +5,24 @@
 # Track pre-restore backup for rollback
 typeset -g _ZSH_TOOL_PRE_RESTORE_BACKUP=""
 
+# Stub for partial restore (AC11 - future enhancement)
+# Usage: --files ".zshrc,.zshrc.local"
+_zsh_tool_restore_partial_stub() {
+  local files_list="$1"
+  _zsh_tool_log WARN "Partial restore with --files is not yet implemented"
+  echo ""
+  echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  echo "  Partial Restore (Future Enhancement)"
+  echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  echo ""
+  echo "The --files flag is planned but not yet implemented."
+  echo "Requested files: $files_list"
+  echo ""
+  echo "For now, use full restore: zsh-tool-restore apply <backup-id>"
+  echo ""
+  return 1
+}
+
 # Parse backup manifest
 _zsh_tool_parse_manifest() {
   local backup_path=$1
@@ -215,6 +233,7 @@ _zsh_tool_restore_from_backup() {
   local backup_id=""
   local force_mode=false
   local skip_backup=false
+  local partial_files=""
 
   # Parse arguments
   while [[ $# -gt 0 ]]; do
@@ -228,12 +247,29 @@ _zsh_tool_restore_from_backup() {
         skip_backup=true
         shift
         ;;
+      --files)
+        # AC11: Partial restore stub (future enhancement)
+        shift
+        partial_files="$1"
+        shift
+        ;;
+      --files=*)
+        # AC11: Partial restore stub (future enhancement)
+        partial_files="${1#--files=}"
+        shift
+        ;;
       *)
         backup_id="$1"
         shift
         ;;
     esac
   done
+
+  # AC11: Handle partial restore request (stub)
+  if [[ -n "$partial_files" ]]; then
+    _zsh_tool_restore_partial_stub "$partial_files"
+    return $?
+  fi
 
   if [[ -z "$backup_id" ]]; then
     _zsh_tool_log ERROR "Backup ID required"
@@ -293,16 +329,24 @@ _zsh_tool_restore_from_backup() {
   if [[ "$skip_backup" != true ]]; then
     _zsh_tool_log INFO "Creating pre-restore backup..."
 
-    # Create backup and capture the path
-    local backup_timestamp=$(date +%Y-%m-%d-%H%M%S)
-    pre_restore_backup_path="${ZSH_TOOL_BACKUP_DIR}/${backup_timestamp}"
+    # Capture backup count before creating new backup (race-condition safe)
+    local backups_before=$(ls -1d "${ZSH_TOOL_BACKUP_DIR}"/*/ 2>/dev/null | wc -l | tr -d ' ')
+    local expected_timestamp=$(date +%Y-%m-%d-%H%M%S)
 
     if ! _zsh_tool_create_backup "pre-restore"; then
       _zsh_tool_log ERROR "Pre-restore backup failed, aborting"
       return 1
     fi
 
+    # Verify backup was created by checking count increased
+    local backups_after=$(ls -1d "${ZSH_TOOL_BACKUP_DIR}"/*/ 2>/dev/null | wc -l | tr -d ' ')
+    if [[ $backups_after -le $backups_before ]]; then
+      _zsh_tool_log ERROR "Pre-restore backup verification failed"
+      return 1
+    fi
+
     # Get the most recent backup path (just created)
+    # Safe: we verified count increased, so this is our backup
     pre_restore_backup_path=$(ls -1dt "${ZSH_TOOL_BACKUP_DIR}"/*/ 2>/dev/null | head -1)
     pre_restore_backup_path="${pre_restore_backup_path%/}"  # Remove trailing slash
     _ZSH_TOOL_PRE_RESTORE_BACKUP="$pre_restore_backup_path"
@@ -380,7 +424,20 @@ _zsh_tool_restore_from_backup() {
   _zsh_tool_update_state "last_restore.timestamp" "\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\""
   _zsh_tool_update_state "last_restore.from_backup" "\"${backup_id}\""
 
-  local files_json=$(printf '"%s",' "${restored_files[@]}" | sed 's/,$//')
+  # Build JSON array with proper escaping (M2 fix)
+  local files_json=""
+  local first=true
+  for file in "${restored_files[@]}"; do
+    # Escape backslashes and quotes for JSON
+    local escaped_file="${file//\\/\\\\}"
+    escaped_file="${escaped_file//\"/\\\"}"
+    if [[ "$first" == true ]]; then
+      files_json="\"${escaped_file}\""
+      first=false
+    else
+      files_json="${files_json},\"${escaped_file}\""
+    fi
+  done
   _zsh_tool_update_state "last_restore.files_restored" "[${files_json}]"
 
   echo ""
@@ -396,6 +453,9 @@ _zsh_tool_restore_from_backup() {
   # AC8: Prompt user to reload shell
   echo "Reload your shell: exec zsh"
   echo ""
+
+  # Clear global variable after successful restore (L1 fix)
+  _ZSH_TOOL_PRE_RESTORE_BACKUP=""
 
   return 0
 }

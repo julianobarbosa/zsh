@@ -515,6 +515,30 @@ test_verify_restore_warns() {
 }
 
 # ============================================
+# TEST CASES - PARTIAL RESTORE STUB (AC11)
+# ============================================
+
+# Test: --files flag shows stub message
+test_files_flag_shows_stub() {
+  local output
+  output=$(_zsh_tool_restore_from_backup "test-backup" --files ".zshrc" 2>&1)
+  local result=$?
+
+  [[ $result -eq 1 ]] && \
+  echo "$output" | grep -qi "not yet implemented"
+}
+
+# Test: --files= syntax shows stub message
+test_files_equals_syntax() {
+  local output
+  output=$(_zsh_tool_restore_from_backup "test-backup" --files=".zshrc,.zshrc.local" 2>&1)
+  local result=$?
+
+  [[ $result -eq 1 ]] && \
+  echo "$output" | grep -qi "not yet implemented"
+}
+
+# ============================================
 # TEST CASES - USAGE AND HELP
 # ============================================
 
@@ -631,8 +655,16 @@ cleanup_test_env; setup_test_env
 run_test "Permission error handling" test_permission_error_message
 echo ""
 
+# Partial restore stub tests (AC11)
+echo "${YELLOW}[12/13] Testing Partial Restore Stub (AC11)...${NC}"
+cleanup_test_env; setup_test_env
+run_test "--files flag shows stub message" test_files_flag_shows_stub
+cleanup_test_env; setup_test_env
+run_test "--files= syntax shows stub message" test_files_equals_syntax
+echo ""
+
 # Verification and usage tests
-echo "${YELLOW}[12/12] Testing Verification and Usage...${NC}"
+echo "${YELLOW}[13/13] Testing Verification and Usage...${NC}"
 cleanup_test_env; setup_test_env
 run_test "Verify restore passes when files exist" test_verify_restore_passes
 cleanup_test_env; setup_test_env

@@ -37,6 +37,9 @@ setup_test_env() {
   export ZSH_TOOL_CONFIG_DIR="/tmp/zsh-tool-test-$$"
   export ZSH_TOOL_LOG_FILE="${ZSH_TOOL_CONFIG_DIR}/logs/test.log"
 
+  # Ensure cleanup on exit/interrupt for test isolation
+  trap teardown_test_env EXIT INT TERM
+
   mkdir -p "${ZSH_TOOL_CONFIG_DIR}/logs"
 
   # Create test config

@@ -30,6 +30,14 @@ VIMODE_CURSOR_CODES=(
 typeset -g VIMODE_CURRENT_MODE="insert"
 typeset -g VIMODE_INDICATOR=""
 
+# Cached terminal detection result (unset = not checked, 0 = supported, 1 = unsupported)
+typeset -g _VIMODE_TERMINAL_CHECKED=""
+typeset -g _VIMODE_TERMINAL_SUPPORTED=""
+
+# Function guards for external dependencies
+(( ${+functions[_zsh_tool_log]} )) || _zsh_tool_log() { : }
+(( ${+functions[_zsh_tool_update_state]} )) || _zsh_tool_update_state() { : }
+
 # ==============================================================================
 # Detection and Prerequisites
 # ==============================================================================
@@ -39,28 +47,38 @@ _vimode_is_enabled() {
   [[ "$VIMODE_ENABLED" == "true" ]] || [[ -o vi ]]
 }
 
-# Detect terminal capabilities for cursor shapes
+# Detect terminal capabilities for cursor shapes (cached for performance)
 _vimode_detect_terminal() {
+  # Return cached result if available
+  if [[ -n "$_VIMODE_TERMINAL_CHECKED" ]]; then
+    return "$_VIMODE_TERMINAL_SUPPORTED"
+  fi
+
+  _VIMODE_TERMINAL_CHECKED=1
   local term="${TERM:-}"
   local term_program="${TERM_PROGRAM:-}"
 
   # Most modern terminals support DECSCUSR cursor styling
   case "$term_program" in
     iTerm.app|Apple_Terminal|vscode|Hyper|WezTerm|Alacritty)
+      _VIMODE_TERMINAL_SUPPORTED=0
       return 0
       ;;
   esac
 
   case "$term" in
     xterm*|rxvt*|screen*|tmux*|alacritty|wezterm|foot)
+      _VIMODE_TERMINAL_SUPPORTED=0
       return 0
       ;;
     linux|dumb)
+      _VIMODE_TERMINAL_SUPPORTED=1
       return 1
       ;;
   esac
 
   # Default: assume cursor styling is supported
+  _VIMODE_TERMINAL_SUPPORTED=0
   return 0
 }
 
@@ -306,30 +324,39 @@ _vimode_setup_escape_timeout() {
 # Register ZLE widgets for mode change detection
 # Chains to existing widgets to avoid conflicts with other plugins
 _vimode_register_widgets() {
-  # Save existing zle-line-init if present
-  if zle -la | grep -q '^zle-line-init$'; then
+  # Save existing zle-line-init if present (using widget check instead of grep for performance)
+  if (( ${+widgets[zle-line-init]} )); then
     local existing_init=$(zle -lL zle-line-init 2>/dev/null | awk '{print $NF}')
     if [[ -n "$existing_init" && "$existing_init" != "_vimode_line_init" ]]; then
-      eval "_vimode_orig_line_init() { $existing_init \"\$@\"; }"
-      typeset -g _VIMODE_HAS_ORIG_LINE_INIT=true
+      # Use functions -c instead of eval for security
+      if (( ${+functions[$existing_init]} )); then
+        functions -c "$existing_init" _vimode_orig_line_init
+        typeset -g _VIMODE_HAS_ORIG_LINE_INIT=true
+      fi
     fi
   fi
 
   # Save existing zle-keymap-select if present
-  if zle -la | grep -q '^zle-keymap-select$'; then
+  if (( ${+widgets[zle-keymap-select]} )); then
     local existing_keymap=$(zle -lL zle-keymap-select 2>/dev/null | awk '{print $NF}')
     if [[ -n "$existing_keymap" && "$existing_keymap" != "_vimode_keymap_select" ]]; then
-      eval "_vimode_orig_keymap_select() { $existing_keymap \"\$@\"; }"
-      typeset -g _VIMODE_HAS_ORIG_KEYMAP_SELECT=true
+      # Use functions -c instead of eval for security
+      if (( ${+functions[$existing_keymap]} )); then
+        functions -c "$existing_keymap" _vimode_orig_keymap_select
+        typeset -g _VIMODE_HAS_ORIG_KEYMAP_SELECT=true
+      fi
     fi
   fi
 
   # Save existing zle-line-finish if present
-  if zle -la | grep -q '^zle-line-finish$'; then
+  if (( ${+widgets[zle-line-finish]} )); then
     local existing_finish=$(zle -lL zle-line-finish 2>/dev/null | awk '{print $NF}')
     if [[ -n "$existing_finish" && "$existing_finish" != "_vimode_line_finish" ]]; then
-      eval "_vimode_orig_line_finish() { $existing_finish \"\$@\"; }"
-      typeset -g _VIMODE_HAS_ORIG_LINE_FINISH=true
+      # Use functions -c instead of eval for security
+      if (( ${+functions[$existing_finish]} )); then
+        functions -c "$existing_finish" _vimode_orig_line_finish
+        typeset -g _VIMODE_HAS_ORIG_LINE_FINISH=true
+      fi
     fi
   fi
 
@@ -392,8 +419,8 @@ _vimode_setup_atuin_compatibility() {
     return 0
   fi
 
-  # Check if atuin-search widget exists
-  if ! zle -la | grep -q '^atuin-search$'; then
+  # Check if atuin-search widget exists (using widget check for performance)
+  if ! (( ${+widgets[atuin-search]} )); then
     _zsh_tool_log DEBUG "Atuin widgets not loaded, skipping compatibility setup"
     return 0
   fi
@@ -401,11 +428,13 @@ _vimode_setup_atuin_compatibility() {
   _zsh_tool_log DEBUG "Configuring Atuin compatibility for vi-mode..."
 
   # Bind Ctrl+R in both vi insert and command modes
+  # Note: These bindings take precedence over the redo binding set in _vimode_setup_keybindings
+  # If atuin-search-viins/vicmd don't exist, falls back to atuin-search
   bindkey -M viins '^R' atuin-search-viins 2>/dev/null || bindkey -M viins '^R' atuin-search 2>/dev/null
   bindkey -M vicmd '^R' atuin-search-vicmd 2>/dev/null || bindkey -M vicmd '^R' atuin-search 2>/dev/null
 
   # Also bind Up arrow to atuin if available
-  if zle -la | grep -q '^atuin-up-search$'; then
+  if (( ${+widgets[atuin-up-search]} )); then
     bindkey -M viins '^[[A' atuin-up-search
     bindkey -M vicmd '^[[A' atuin-up-search
   fi
@@ -542,9 +571,13 @@ vimode_init() {
   _vimode_update_indicator
 
   # Set up cursor reset on shell exit (chain to existing trap)
-  typeset -g _vimode_orig_exit_trap="$(trap -p EXIT 2>/dev/null | sed "s/trap -- '\\(.*\\)' EXIT/\\1/" | sed "s/trap -- \"\\(.*\\)\" EXIT/\\1/")"
-  if [[ -n "$_vimode_orig_exit_trap" ]]; then
-    trap '_vimode_cursor_reset; eval "$_vimode_orig_exit_trap"' EXIT
+  # Copy existing TRAPEXIT function if present, avoiding eval for security
+  if (( ${+functions[TRAPEXIT]} )); then
+    functions -c TRAPEXIT _vimode_orig_trapexit
+    TRAPEXIT() {
+      _vimode_cursor_reset
+      _vimode_orig_trapexit "$@"
+    }
   else
     trap '_vimode_cursor_reset' EXIT
   fi

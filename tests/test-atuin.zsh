@@ -261,37 +261,37 @@ test_atuin_keybinding_configuration() {
 }
 
 # =============================================================================
-# AC6: Amazon Q compatibility ensures keybinding restoration
+# AC6: Kiro CLI compatibility ensures keybinding restoration
 # =============================================================================
 
-test_atuin_amazonq_compatibility() {
-  test_start "AC6: Amazon Q compatibility configuration"
+test_atuin_kiro_compatibility() {
+  test_start "AC6: Kiro CLI compatibility configuration"
 
-  _atuin_configure_amazonq_compatibility >/dev/null 2>&1
+  _atuin_configure_kiro_compatibility >/dev/null 2>&1
   local result=$?
 
-  test_assert_equals "$result" "0" "Amazon Q compatibility setup succeeds"
+  test_assert_equals "$result" "0" "Kiro CLI compatibility setup succeeds"
   test_end
 }
 
-test_atuin_zshrc_amazonq_fix() {
-  test_start "AC6: Amazon Q compatibility fix in .zshrc.local"
+test_atuin_zshrc_kiro_fix() {
+  test_start "AC6: Kiro CLI compatibility fix in .zshrc.local"
 
   # Setup test zshrc
   local test_zshrc="${HOME}/.zshrc.local-test-$$"
 
   # Override the function to use test file
   _atuin_add_to_zshrc_custom() {
-    local restore_amazonq="${1:-false}"
+    local restore_kiro="${1:-false}"
     local zshrc_custom="$test_zshrc"
 
     if [[ ! -f "$zshrc_custom" ]]; then
       touch "$zshrc_custom"
     fi
 
-    if [[ "$restore_amazonq" == "true" ]]; then
+    if [[ "$restore_kiro" == "true" ]]; then
       cat >> "$zshrc_custom" <<'EOF'
-# Restore Atuin keybindings after Amazon Q
+# Restore Atuin keybindings after Kiro CLI
 if command -v atuin &>/dev/null; then
     bindkey -M emacs '^r' atuin-search
 fi
@@ -301,10 +301,10 @@ EOF
 
   _atuin_add_to_zshrc_custom "true"
 
-  # Verify Amazon Q fix added
+  # Verify Kiro CLI fix added
   if [[ -f "$test_zshrc" ]]; then
     local content=$(cat "$test_zshrc")
-    test_assert_contains "$content" "Restore Atuin keybindings" "Contains Amazon Q fix comment"
+    test_assert_contains "$content" "Restore Atuin keybindings" "Contains Kiro CLI fix comment"
     test_assert_contains "$content" "bindkey -M emacs '^r' atuin-search" "Contains keybinding restore"
   fi
 
@@ -428,9 +428,9 @@ run_all_tests() {
   # AC5: Keybindings
   test_atuin_keybinding_configuration
 
-  # AC6: Amazon Q compatibility
-  test_atuin_amazonq_compatibility
-  test_atuin_zshrc_amazonq_fix
+  # AC6: Kiro CLI compatibility
+  test_atuin_kiro_compatibility
+  test_atuin_zshrc_kiro_fix
 
   # AC9: Health check
   test_atuin_health_check_passes

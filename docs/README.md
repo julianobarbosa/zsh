@@ -338,64 +338,64 @@ atuin import auto
 - [Atuin GitHub](https://github.com/atuinsh/atuin)
 - [Compatibility with Amazon Q](/docs/ATUIN-CTRL-R-FIX.md)
 
-### Amazon Q Developer CLI Integration
+### Kiro CLI Integration
 
-[Amazon Q Developer CLI](https://aws.amazon.com/q/developer/) provides AI-powered command completions, inline suggestions, and chat capabilities for the command line. zsh-tool includes built-in integration with performance optimization and Atuin compatibility.
+[Kiro CLI](https://kiro.dev/) (formerly Amazon Q Developer CLI) provides AI-powered command completions, inline suggestions, and chat capabilities for the command line. zsh-tool includes built-in integration with performance optimization and Atuin compatibility.
 
 #### Quick Setup
 
-Enable Amazon Q in configuration:
+Enable Kiro CLI in configuration:
 ```bash
 zsh-tool-config edit
-# Set amazon_q.enabled: true
+# Set kiro_cli.enabled: true
 ```
 
-Install and configure Amazon Q:
+Install and configure Kiro CLI:
 ```bash
-zsh-tool-amazonq install
+zsh-tool-kiro install
 ```
 
-Check Amazon Q status:
+Check Kiro CLI status:
 ```bash
-zsh-tool-amazonq status
+zsh-tool-kiro status
 ```
 
-Run Amazon Q health check:
+Run Kiro CLI health check:
 ```bash
-zsh-tool-amazonq health
+zsh-tool-kiro health
 ```
 
 Configure Atuin compatibility (prevents keybinding conflicts):
 ```bash
-zsh-tool-amazonq config-atuin
+zsh-tool-kiro config-atuin
 ```
 
 #### Performance Considerations
 
-Amazon Q adds ~11ms overhead per command and ~1.8s startup delay. zsh-tool includes:
+Kiro CLI adds ~11ms overhead per command and ~1.8s startup delay. zsh-tool includes:
 - **Lazy loading** (enabled by default): Defers initialization until first use
 - **Conditional loading**: Only loads when enabled in config
-- **Per-CLI exclusions**: Disable Amazon Q for specific commands
+- **Per-CLI exclusions**: Disable Kiro CLI for specific commands
 
-#### Troubleshooting Amazon Q
+#### Troubleshooting Kiro CLI
 
 **Arrow keys not working with Atuin:**
 ```bash
-zsh-tool-amazonq config-atuin
+zsh-tool-kiro config-atuin
 ```
 
 **Slow shell startup:**
 Ensure `lazy_loading: true` in config.yaml (default)
 
-**Amazon Q not responding:**
+**Kiro CLI not responding:**
 ```bash
-zsh-tool-amazonq health
-q doctor  # Run Amazon Q diagnostics
+zsh-tool-kiro health
+kiro-cli doctor  # Run Kiro CLI diagnostics
 ```
 
 **Learn more:**
-- [Amazon Q Developer Documentation](https://docs.aws.amazon.com/amazonq/)
-- [Amazon Q CLI on GitHub](https://github.com/aws/amazon-q-developer-cli)
+- [Kiro CLI Documentation](https://kiro.dev/docs/cli/)
+- [Kiro CLI Migration Guide](https://kiro.dev/docs/cli/migrating-from-q/)
 
 ### Help
 
@@ -431,7 +431,7 @@ zsh-tool/
 │   │   └── integration.zsh
 │   └── integrations/      # Epic 3: Advanced integrations
 │       ├── atuin.zsh      # Atuin shell history
-│       └── amazon-q.zsh   # Amazon Q Developer CLI
+│       └── kiro-cli.zsh   # Kiro CLI (formerly Amazon Q)
 ├── templates/             # Configuration templates
 │   ├── config.yaml        # Team configuration template
 │   ├── zshrc.template     # .zshrc template
@@ -473,7 +473,7 @@ atuin:
   inline_height: 20
   style: "auto"
 
-amazon_q:
+kiro_cli:
   enabled: false
   lazy_loading: true
   atuin_compatibility: true

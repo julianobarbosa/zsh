@@ -39,7 +39,7 @@ zsh-tool/
 │   │
 │   └── integrations/             # [Epic 3] Optional integrations
 │       ├── atuin.zsh            # Atuin shell history
-│       └── amazon-q.zsh         # Amazon Q Developer CLI
+│       └── kiro-cli.zsh         # Kiro CLI (formerly Amazon Q)
 │
 ├── templates/                    # Configuration templates
 │   ├── config.yaml              # Team configuration template
@@ -47,8 +47,8 @@ zsh-tool/
 │
 ├── tests/                        # Test suite
 │   ├── run-all-tests.sh         # Test runner
-│   ├── test-amazon-q.zsh        # Amazon Q integration tests
-│   └── test-amazon-q-edge-cases.zsh  # Edge case tests
+│   ├── test-kiro-cli.zsh        # Kiro CLI integration tests
+│   └── test-kiro-cli-edge-cases.zsh  # Edge case tests
 │
 ├── docs/                         # Documentation (33 files)
 │   ├── README.md                # User guide

@@ -33,7 +33,7 @@ The project's architecture is centered around a few key components:
     *   **Exports**: Sets environment variables (e.g., `EDITOR`, `VISUAL`).
     *   **Paths**: Manages `PATH` modifications (prepends or appends directories).
     *   **Atuin Integration**: Configuration for Atuin shell history (enabled, import, sync, search modes).
-    *   **Amazon Q Developer CLI Integration**: Configuration for Amazon Q CLI (enabled, lazy loading, compatibility, disabled CLIs).
+    *   **Kiro CLI Integration**: Configuration for Kiro CLI (enabled, lazy loading, compatibility, disabled CLIs). Formerly known as Amazon Q Developer CLI.
 
 ### `templates/zshrc.template`
 

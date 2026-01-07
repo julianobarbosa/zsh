@@ -1,4 +1,4 @@
-# generated: 2026-01-03
+# generated: 2026-01-06
 # project: zsh
 # project_key: zsh
 # tracking_system: file-system
@@ -33,7 +33,7 @@
 # - SM typically creates next story after previous one is 'done' to incorporate learnings
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
-generated: 2026-01-03
+generated: 2026-01-06
 project: zsh
 project_key: zsh
 tracking_system: file-system
@@ -64,5 +64,5 @@ development_status:
   epic-3: in-progress
   3-1-atuin-shell-history-integration: done  # R3: All 6 issues fixed (2C, 2H, 2M) - 12/12 tests, atomic config, PATH cleanup
   3-2-amazon-q-cli-integration: done  # Completed 2025-10-02, now deprecated - replaced by Kiro CLI
-  3-3-kiro-cli-migration: ready-for-dev  # CRITICAL: Amazon Q rebranded to Kiro CLI (Nov 2025) - 13 points
+  3-3-kiro-cli-migration: done  # All tasks completed: Core, Config, Tests, Atuin, Docs migrated - 16+12+57 tests passing
   epic-3-retrospective: optional

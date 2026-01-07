@@ -129,7 +129,7 @@ test_all_config_functions_defined() {
 # Test: Advanced config functions are defined
 test_advanced_config_functions_defined() {
   typeset -f _zsh_tool_extract_yaml_section >/dev/null 2>&1 && \
-  typeset -f _zsh_tool_parse_amazon_q_enabled >/dev/null 2>&1 && \
+  typeset -f _zsh_tool_parse_kiro_enabled >/dev/null 2>&1 && \
   typeset -f _zsh_tool_parse_atuin_enabled >/dev/null 2>&1
 }
 
@@ -221,18 +221,26 @@ test_parse_atuin_config() {
   [[ "$enabled" == "true" ]] && [[ "$search_mode" == "fuzzy" ]]
 }
 
-# Test: Amazon Q configuration parsing
-test_parse_amazon_q_config() {
-  local enabled=$(_zsh_tool_parse_amazon_q_enabled 2>/dev/null)
-  local lazy=$(_zsh_tool_parse_amazon_q_lazy_loading 2>/dev/null)
+# Test: Kiro CLI configuration parsing
+test_parse_kiro_cli_config() {
+  local enabled=$(_zsh_tool_parse_kiro_enabled 2>/dev/null)
+  local lazy=$(_zsh_tool_parse_kiro_lazy_loading 2>/dev/null)
   [[ "$enabled" == "false" ]] && [[ "$lazy" == "true" ]]
 }
 
-# Test: Amazon Q disabled_clis parsing
-test_parse_amazon_q_disabled_clis() {
-  local disabled=$(_zsh_tool_parse_amazon_q_disabled_clis 2>/dev/null)
+# Test: Kiro CLI disabled_clis parsing
+test_parse_kiro_cli_disabled_clis() {
+  local disabled=$(_zsh_tool_parse_kiro_disabled_clis 2>/dev/null)
   # Should contain 'atuin' from default config
   echo "$disabled" | grep -q "atuin"
+}
+
+# Test: Legacy Amazon Q functions (backward compatibility)
+test_parse_amazon_q_backward_compat() {
+  # These deprecated functions should still work by calling Kiro equivalents
+  local enabled=$(_zsh_tool_parse_amazon_q_enabled 2>/dev/null)
+  local lazy=$(_zsh_tool_parse_amazon_q_lazy_loading 2>/dev/null)
+  [[ "$enabled" == "false" ]] && [[ "$lazy" == "true" ]]
 }
 
 # Test: Config cache mtime validation
@@ -501,8 +509,9 @@ echo ""
 echo "${BLUE}YAML Section Extraction Tests${NC}"
 run_test "Extract YAML section helper" test_extract_yaml_section
 run_test "Atuin configuration parsing" test_parse_atuin_config
-run_test "Amazon Q configuration parsing" test_parse_amazon_q_config
-run_test "Amazon Q disabled_clis parsing" test_parse_amazon_q_disabled_clis
+run_test "Kiro CLI configuration parsing" test_parse_kiro_cli_config
+run_test "Kiro CLI disabled_clis parsing" test_parse_kiro_cli_disabled_clis
+run_test "Legacy Amazon Q backward compatibility" test_parse_amazon_q_backward_compat
 cleanup_test_env
 setup_test_env
 run_test "Config cache mtime validation" test_config_cache_mtime_validation

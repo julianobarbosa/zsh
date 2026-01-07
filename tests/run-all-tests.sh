@@ -1,5 +1,5 @@
 #!/usr/bin/env zsh
-# Master test runner for all Amazon Q integration tests
+# Master test runner for all Kiro CLI integration tests
 # Runs both standard and edge case test suites
 
 set -e
@@ -17,7 +17,7 @@ PROJECT_ROOT="${SCRIPT_DIR:h}"
 
 echo ""
 echo "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo "${BLUE}  Amazon Q Integration - Full Test Suite${NC}"
+echo "${BLUE}  Kiro CLI Integration - Full Test Suite${NC}"
 echo "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo ""
 
@@ -31,7 +31,7 @@ echo "${YELLOW}[1/2] Running Standard Test Suite...${NC}"
 echo ""
 ((TOTAL_SUITES++))
 
-if zsh "${SCRIPT_DIR}/test-amazon-q.zsh"; then
+if zsh "${SCRIPT_DIR}/test-kiro-cli.zsh"; then
   ((PASSED_SUITES++))
   echo ""
   echo "${GREEN}✓ Standard test suite PASSED${NC}"
@@ -50,7 +50,7 @@ echo "${YELLOW}[2/2] Running Edge Case Test Suite...${NC}"
 echo ""
 ((TOTAL_SUITES++))
 
-if zsh "${SCRIPT_DIR}/test-amazon-q-edge-cases.zsh"; then
+if zsh "${SCRIPT_DIR}/test-kiro-cli-edge-cases.zsh"; then
   ((PASSED_SUITES++))
   echo ""
   echo "${GREEN}✓ Edge case test suite PASSED${NC}"

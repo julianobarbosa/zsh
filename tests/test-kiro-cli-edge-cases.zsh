@@ -604,7 +604,8 @@ test_concurrent_high_volume_access() {
 
 # Test 25: Unicode character handling
 test_security_unicode_characters() {
-  local unicode_names=("test:rocket:cli" "cafe" "test")
+  # Test names with non-ASCII characters that should be rejected
+  local unicode_names=("café" "tëst" "naïve")
   local all_rejected=true
 
   for name in "${unicode_names[@]}"; do

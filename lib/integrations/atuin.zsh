@@ -736,11 +736,10 @@ _atuin_setup_sync() {
 _atuin_detect_keybinding_conflicts() {
   local -a conflicts=()
 
-  # Kiro CLI / Amazon Q - checks multiple possible config locations
-  if [[ -f "${HOME}/.config/amazonq/shell/zshrc" ]] || \
-     [[ -f "${HOME}/.local/share/amazonq/shell/zshrc" ]] || \
-     command -v q &>/dev/null || \
-     command -v amazon-q &>/dev/null; then
+  # Kiro CLI - checks config locations and commands
+  if [[ -f "${HOME}/.kiro/shell/zshrc" ]] || \
+     command -v kiro-cli &>/dev/null || \
+     command -v q &>/dev/null; then
     conflicts+=("kiro-cli")
   fi
 

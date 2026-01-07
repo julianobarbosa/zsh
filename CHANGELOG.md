@@ -7,16 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- **BREAKING**: Migrated Amazon Q Developer CLI to Kiro CLI (AWS rebranded Nov 2025)
+  - All `amazon-q.zsh` functionality migrated to `kiro-cli.zsh`
+  - All `_amazonq_*` functions renamed to `_kiro_*`
+  - Config section changed from `amazon_q:` to `kiro_cli:`
+  - All paths updated from `~/.aws/amazonq/` to `~/.kiro/`
+  - Commands renamed: `zsh-tool-amazonq` → `zsh-tool-kiro`
+  - Tests migrated: `test-amazon-q*.zsh` → `test-kiro-cli*.zsh`
+  - Backward compatibility wrappers provided for deprecated functions
+
 ### Added
 - Project documentation: README.md, CONTRIBUTING.md, LICENSE
 - Documentation index: docs/INDEX.md
 - Disk cleanup utility with interactive and automated modes
 - Comprehensive Atuin shell history integration
-- Amazon Q Developer CLI integration with lazy loading
+- Kiro CLI integration with lazy loading (formerly Amazon Q Developer CLI)
 
 ### Fixed
-- Infinite recursion in Amazon Q lazy loading
-- Atuin/Amazon Q Ctrl+R keybinding conflicts
+- Infinite recursion in Kiro CLI lazy loading
+- Atuin/Kiro CLI Ctrl+R keybinding conflicts
 - iTerm2 XPC connection stability issues
 - Lazy completion performance optimization
 
@@ -189,19 +199,19 @@ lib/
 - `zsh-tool-atuin stats` - Display command statistics
 - `zsh-tool-atuin import` - Import existing zsh history
 - `zsh-tool-atuin sync-setup` - Configure history sync
-- `zsh-tool-amazonq install` - Install Amazon Q Developer CLI
-- `zsh-tool-amazonq status` - Check Amazon Q status
-- `zsh-tool-amazonq health` - Run health diagnostics
-- `zsh-tool-amazonq config-atuin` - Configure Atuin compatibility
+- `zsh-tool-kiro install` - Install Kiro CLI (formerly Amazon Q)
+- `zsh-tool-kiro status` - Check Kiro CLI status
+- `zsh-tool-kiro health` - Run health diagnostics
+- `zsh-tool-kiro config-atuin` - Configure Atuin compatibility
 
 #### Fixed
 - Security and reliability issues (FIXES-2025-10-02.md)
-- Atuin Ctrl+R keybinding conflicts with Amazon Q
+- Atuin Ctrl+R keybinding conflicts with Kiro CLI
 - Lazy completion performance issues
 - iTerm2 XPC connection stability
 
 #### Documentation Added
-- ATUIN-CTRL-R-FIX.md - Atuin/Amazon Q compatibility guide
+- ATUIN-CTRL-R-FIX.md - Atuin/Kiro CLI compatibility guide
 - LAZY-COMPLETION-FIX.md - Performance optimization guide
 - ITERM2-XPC-CONNECTION-FIX.md - Terminal stability fixes
 - FIXES-2025-10-02.md - Security and reliability fixes
@@ -258,9 +268,9 @@ zsh-tool-update self
 zsh-tool-config edit  # Set atuin.enabled: true
 zsh-tool-atuin install
 
-# Optional: Install Amazon Q
-zsh-tool-config edit  # Set amazon_q.enabled: true
-zsh-tool-amazonq install
+# Optional: Install Kiro CLI (formerly Amazon Q)
+zsh-tool-config edit  # Set kiro_cli.enabled: true
+zsh-tool-kiro install
 ```
 
 ### From 1.1.x to 1.2.0

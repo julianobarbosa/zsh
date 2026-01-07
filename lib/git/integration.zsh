@@ -2,11 +2,15 @@
 # Story 2.5: Git Integration for Dotfiles
 # Integrate dotfiles with version control using bare repository
 
-DOTFILES_REPO="${HOME}/.dotfiles"
-DOTFILES_GITIGNORE="${ZSH_TOOL_CONFIG_DIR}/dotfiles.gitignore"
+# Allow user overrides via environment variables
+: ${DOTFILES_REPO:="${HOME}/.dotfiles"}
+: ${DOTFILES_GITIGNORE:="${ZSH_TOOL_CONFIG_DIR}/dotfiles.gitignore"}
 
 # Create dotfiles .gitignore template
 _zsh_tool_create_dotfiles_gitignore() {
+  # Ensure config directory exists
+  [[ -d "${DOTFILES_GITIGNORE:h}" ]] || mkdir -p "${DOTFILES_GITIGNORE:h}"
+
   cat > "$DOTFILES_GITIGNORE" <<'GITIGNORE'
 # Exclude sensitive data
 .ssh/
@@ -73,10 +77,13 @@ _zsh_tool_git_init_repo() {
 
   _zsh_tool_log INFO "Initializing dotfiles repository (bare)..."
 
-  # Create bare repository
-  git init --bare "$DOTFILES_REPO" 2>&1 | tee -a "$ZSH_TOOL_LOG_FILE" >/dev/null
+  # Create bare repository (capture git's exit code, not tee's)
+  local git_output
+  git_output=$(git init --bare "$DOTFILES_REPO" 2>&1)
+  local git_result=$?
+  echo "$git_output" >> "$ZSH_TOOL_LOG_FILE"
 
-  if [[ $? -ne 0 ]]; then
+  if [[ $git_result -ne 0 ]]; then
     _zsh_tool_log ERROR "Failed to initialize dotfiles repository"
     return 1
   fi
@@ -137,7 +144,7 @@ _zsh_tool_git_setup_remote() {
 
   if [[ -z "$remote_url" ]]; then
     echo -n "Enter remote URL: "
-    read remote_url
+    read -r remote_url
   fi
 
   if [[ -z "$remote_url" ]]; then
@@ -147,12 +154,16 @@ _zsh_tool_git_setup_remote() {
 
   _zsh_tool_log INFO "Adding remote: $remote_url"
 
-  # Add remote
-  git --git-dir="$DOTFILES_REPO" --work-tree="$HOME" remote add origin "$remote_url" 2>&1 | tee -a "$ZSH_TOOL_LOG_FILE" >/dev/null
+  # Add remote (capture git's exit code properly)
+  local git_output
+  git_output=$(git --git-dir="$DOTFILES_REPO" --work-tree="$HOME" remote add origin "$remote_url" 2>&1)
+  local git_result=$?
+  [[ -n "$git_output" ]] && echo "$git_output" >> "$ZSH_TOOL_LOG_FILE"
 
-  if [[ $? -ne 0 ]]; then
+  if [[ $git_result -ne 0 ]]; then
     # Maybe remote already exists, try to set URL instead
-    git --git-dir="$DOTFILES_REPO" --work-tree="$HOME" remote set-url origin "$remote_url" 2>&1 | tee -a "$ZSH_TOOL_LOG_FILE" >/dev/null
+    git_output=$(git --git-dir="$DOTFILES_REPO" --work-tree="$HOME" remote set-url origin "$remote_url" 2>&1)
+    [[ -n "$git_output" ]] && echo "$git_output" >> "$ZSH_TOOL_LOG_FILE"
   fi
 
   # Update state
@@ -194,7 +205,7 @@ _zsh_tool_git_commit() {
 
   if [[ -z "$message" ]]; then
     echo -n "Commit message: "
-    read message
+    read -r message
   fi
 
   if [[ -z "$message" ]]; then
@@ -235,6 +246,10 @@ _zsh_tool_git_pull() {
   _zsh_tool_create_backup "pre-git-pull"
 
   git --git-dir="$DOTFILES_REPO" --work-tree="$HOME" pull "$@"
+
+  if [[ $? -eq 0 ]]; then
+    _zsh_tool_update_state "git_integration.last_pull" "\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\""
+  fi
 }
 
 # Main git integration command

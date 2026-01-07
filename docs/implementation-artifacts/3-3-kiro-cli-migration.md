@@ -4,7 +4,7 @@
 **Epic**: Epic 3 - Advanced Integrations
 **Priority**: Critical
 **Estimate**: 13 points
-**Status**: review
+**Status**: done
 **Created**: 2026-01-05
 **Updated**: 2026-01-07
 
@@ -188,7 +188,7 @@ Amazon Q Developer CLI was rebranded to Kiro CLI in November 2025. The transitio
 - [x] All acceptance criteria met
 - [x] All 115 tests passing with new names
 - [x] No active "amazon" or "amazonq" references remain (except deprecated aliases and historical docs)
-- [ ] Code reviewed and approved
+- [x] Code reviewed and approved
 - [x] Documentation complete and reviewed
 - [x] No regression in existing functionality
 - [x] Story status updated to "review"

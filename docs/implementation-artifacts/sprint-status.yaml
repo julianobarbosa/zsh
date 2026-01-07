@@ -56,7 +56,7 @@ development_status:
   2-1-self-update-mechanism: done  # R3: All 10 issues fixed, 25/25 tests passing, nested key state tracking fixed
   2-2-bulk-plugin-and-theme-updates: done  # R4: All issues resolved, 22/22 tests passing, parallel updates with component-manager.zsh
   2-3-configuration-backup-management: done  # R1: All 7 issues fixed (2C, 4H, 1M) - 30/30 tests, prune command added
-  2-4-configuration-restore-from-backup: ready-for-dev  # Story created 2026-01-07, comprehensive dev context
+  2-4-configuration-restore-from-backup: review  # 26/26 tests passing, --force flag, rollback, permission handling
   2-5-git-integration-for-dotfiles: backlog
   epic-2-retrospective: optional
 

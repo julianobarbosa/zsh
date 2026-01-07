@@ -1,10 +1,12 @@
 # ZSH Configuration Tool - Comprehensive Codebase Analysis
 
+> **Note (2026-01-07):** This document has been updated to reflect the migration from Amazon Q CLI to Kiro CLI. Amazon Q Developer CLI was rebranded to Kiro CLI in November 2025. All references have been updated accordingly. For migration details, see `docs/implementation-artifacts/3-3-kiro-cli-migration.md`.
+
 ## Executive Summary
 
 This is a professional, well-structured **zsh configuration management tool** for macOS development teams. The codebase is organized around a modular, function-based architecture built on top of Oh My Zsh (OMZ). It's designed to automate shell setup, standardize team configurations, and provide lifecycle management (updates, backups, restores).
 
-**Current Status:** Epic 1 & 2 complete; Epic 3 (Integrations) partially implemented with Amazon Q integration working and Atuin already acknowledged with documented compatibility fixes.
+**Current Status:** Epic 1 & 2 complete; Epic 3 (Integrations) fully implemented with Kiro CLI integration working and Atuin integration complete with documented compatibility fixes.
 
 ---
 
@@ -36,14 +38,17 @@ zsh-tool/
 │   ├── git/                     # Epic 2: Version control
 │   │   └── integration.zsh      # Git dotfile operations (282 lines)
 │   └── integrations/            # Epic 3: Advanced integrations
-│       └── amazon-q.zsh         # Amazon Q CLI support (431 lines)
+│       ├── kiro-cli.zsh         # Kiro CLI support (510 lines)
+│       └── atuin.zsh            # Atuin shell history integration
 ├── templates/
 │   ├── config.yaml              # Team configuration template
 │   ├── zshrc.template          # .zshrc generator template
 │   └── custom.zsh.template     # Personal customization template
 ├── tests/                       # Test suite
-│   ├── test-amazon-q.zsh
-│   ├── test-amazon-q-edge-cases.zsh
+│   ├── test-kiro-cli.zsh        # Kiro CLI integration tests
+│   ├── test-kiro-cli-edge-cases.zsh  # Kiro CLI edge case tests
+│   ├── test-atuin.zsh           # Atuin integration tests
+│   ├── test-config.zsh          # Configuration parsing tests
 │   └── run-all-tests.sh
 └── docs/                        # Comprehensive documentation
     ├── PRD.md                   # Product requirements
@@ -56,9 +61,9 @@ zsh-tool/
 ```
 
 ### Code Statistics
-- **Total Lines:** ~2,700 lines of zsh code
+- **Total Lines:** ~3,200 lines of zsh code
 - **Module Distribution:**
-  - Integrations: 431 lines (amazon-q.zsh)
+  - Integrations: ~900 lines (kiro-cli.zsh + atuin.zsh)
   - Git: 282 lines (integration.zsh)
   - Installation: 859 lines (all install modules)
   - Updates: 432 lines (all update modules)
@@ -67,45 +72,42 @@ zsh-tool/
 
 ---
 
-## 2. Existing Atuin References & Integration Status
+## 2. Atuin Integration Status
 
-### Current State: Documented but Not Fully Integrated
+### Current State: Fully Integrated
 
-Atuin is **already acknowledged and documented** but not yet fully integrated as a managed plugin.
+Atuin is **fully integrated** as a managed integration alongside Kiro CLI.
 
-#### Evidence of Atuin Awareness
+#### Atuin Integration Features
 
 1. **ATUIN-CTRL-R-FIX.md** (220 lines)
-   - Documents Ctrl+R conflict between Amazon Q and Atuin
-   - Provides solution: restore Atuin keybindings after Amazon Q loads
+   - Documents Ctrl+R conflict between Kiro CLI and Atuin
+   - Provides solution: restore Atuin keybindings after Kiro CLI loads
    - Includes verification steps and troubleshooting
 
 2. **Configuration Template** (config.yaml)
    ```yaml
-   amazon_q:
+   kiro_cli:
      enabled: false
      atuin_compatibility: true
      disabled_clis:
-       - atuin  # Prevent Amazon Q from intercepting Atuin
+       - atuin  # Prevent Kiro CLI from intercepting Atuin
    ```
 
-3. **Amazon Q Integration** (amazon-q.zsh)
-   - Function: `_amazonq_configure_atuin_compatibility()`
-   - Adds atuin to Amazon Q's disabled CLIs list
-   - Called via: `zsh-tool-amazonq config-atuin`
+3. **Kiro CLI Integration** (kiro-cli.zsh)
+   - Function: `_kiro_configure_atuin_compatibility()`
+   - Adds atuin to Kiro CLI's disabled CLIs list
+   - Called via: `zsh-tool-kiro config-atuin`
 
-4. **Story Documentation**
-   - story-amazon-q-integration.md line 96: Notes Atuin conflict
-   - Test files: References "atuin" in edge case testing
+4. **Atuin Integration** (atuin.zsh)
+   - Full installation/management support
+   - Health checks and verification
+   - Keybinding configuration
+   - Kiro CLI compatibility handling
 
-#### What's Missing: Full Atuin Integration
-
-1. **No installation/management** - Atuin isn't installed or managed by the tool
-2. **No configuration template** - No dedicated atuin configuration section
-3. **No health checks** - No verification that Atuin works correctly
-4. **No lazy loading** - No optimization for Atuin startup
-5. **No disabled CLI parsing** - Atuin disabled CLI list not parsed from config
-6. **No update mechanism** - Atuin not included in update cycle
+5. **Story Documentation**
+   - story-amazon-q-integration.md: Historical reference (Amazon Q rebranded to Kiro CLI)
+   - Test files: Full coverage in test-atuin.zsh and test-kiro-cli.zsh
 
 ---
 
@@ -182,10 +184,10 @@ Atuin provides:
 
 Atuin is **not a typical OMZ plugin** - it's a standalone binary + shell integration:
 - Option 1: Install as system binary (via Homebrew) + shell initialization
-- Option 2: Treat as external integration (like Amazon Q)
+- Option 2: Treat as external integration (like Kiro CLI)
 - Option 3: Add as managed tool with custom initialization
 
-**Current pattern suggests Option 2** (like Amazon Q) makes more sense
+**Implementation:** Option 2 was chosen (following the Kiro CLI integration pattern)
 
 ---
 
@@ -202,12 +204,18 @@ aliases: [name: gs, command: git status, ...]
 exports: [EDITOR: vim, ...]
 paths: [prepend: ~/.local/bin, ...]
 
-# Amazon Q section (existing pattern)
-amazon_q:
+# Kiro CLI section
+kiro_cli:
   enabled: false
   lazy_loading: true
   atuin_compatibility: true
   disabled_clis: [atuin]
+
+# Atuin section
+atuin:
+  enabled: false
+  install: true
+  keybinding: "ctrl-r"
 ```
 
 ### Generation Process (lib/install/config.zsh)
@@ -259,31 +267,48 @@ Two approaches:
 
 ## 6. Integration Pattern Analysis
 
-### Amazon Q Integration (Existing Model)
+### Kiro CLI Integration (Primary Model)
 
-Located in: `lib/integrations/amazon-q.zsh` (431 lines)
+Located in: `lib/integrations/kiro-cli.zsh` (510 lines)
 
 **Pattern Overview:**
-1. **Detection** - `_amazonq_detect()` - Check if CLI installed
-2. **Installation** - `_amazonq_install()` - Guide user through install
-3. **Shell Integration** - `_amazonq_configure_shell_integration()` - Add to .zshrc
-4. **Settings** - `_amazonq_configure_settings()` - Modify settings.json (via jq)
-5. **Lazy Loading** - `_amazonq_setup_lazy_loading()` - Defer init for performance
-6. **Health Check** - `_amazonq_health_check()` - Run `q doctor`
-7. **Atuin Compat** - `_amazonq_configure_atuin_compatibility()` - Add to disabled CLIs
+1. **Detection** - `_kiro_detect()` - Check if CLI installed
+2. **Installation** - `_kiro_install()` - Guide user through install
+3. **Shell Integration** - `_kiro_configure_shell_integration()` - Add to .zshrc
+4. **Settings** - `_kiro_configure_settings()` - Modify settings.json (via jq)
+5. **Lazy Loading** - `_kiro_setup_lazy_loading()` - Defer init for performance
+6. **Health Check** - `_kiro_health_check()` - Run `kiro-cli doctor`
+7. **Atuin Compat** - `_kiro_configure_atuin_compatibility()` - Add to disabled CLIs
 
 **Integration Points:**
 - Sourced in `install.sh` main loader
 - Called from `_zsh_tool_setup_integrations()` if enabled in config
-- Command: `zsh-tool-amazonq [install|status|health|config-atuin]`
+- Command: `zsh-tool-kiro [install|status|health|config-atuin]`
 
-### Why This Pattern Works for Atuin
+### Atuin Integration (Same Pattern)
+
+Located in: `lib/integrations/atuin.zsh`
+
+**Pattern Overview:**
+1. **Detection** - `_atuin_detect()` - Check if Atuin installed
+2. **Installation** - `_atuin_install()` - Guide user through Homebrew install
+3. **Shell Integration** - `_atuin_configure_shell_integration()` - Add to .zshrc
+4. **Keybindings** - `_atuin_configure_keybindings()` - Set Ctrl+R or custom binding
+5. **Health Check** - `_atuin_health_check()` - Verify database and keybindings
+6. **Kiro Compat** - `_atuin_configure_kiro_compatibility()` - Handle conflicts
+
+**Integration Points:**
+- Sourced in `install.sh` main loader
+- Called from `_zsh_tool_setup_integrations()` if enabled in config
+- Command: `zsh-tool-atuin [install|status|health|migrate-history]`
+
+### Why This Pattern Works
 
 1. **Similar lifecycle** - Detect → Install → Configure
 2. **External tool** - Doesn't need OMZ plugin system
 3. **Shell integration** - Adds keybindings/functions to .zshrc
-4. **Health monitoring** - Can verify history sync
-5. **Compatibility** - Already documented conflicts (Amazon Q)
+4. **Health monitoring** - Can verify functionality
+5. **Compatibility** - Documented conflicts between Kiro CLI and Atuin
 
 ---
 
@@ -295,19 +320,21 @@ Located in: `lib/integrations/amazon-q.zsh` (431 lines)
 | `lib/core/utils.zsh` | Logging, prompts, state mgmt | 195 | All |
 | `lib/install/config.zsh` | .zshrc generation from template | 226 | Install |
 | `lib/install/plugins.zsh` | Plugin installation/updates | 116 | Install |
-| `lib/integrations/amazon-q.zsh` | Amazon Q lifecycle mgmt | 431 | Epic 3 |
-| `templates/config.yaml` | Team config source | ~60 | Config |
+| `lib/integrations/kiro-cli.zsh` | Kiro CLI lifecycle mgmt | 510 | Epic 3 |
+| `lib/integrations/atuin.zsh` | Atuin shell history mgmt | ~400 | Epic 3 |
+| `templates/config.yaml` | Team config source | ~80 | Config |
 | `templates/zshrc.template` | .zshrc template | ~35 | Generate |
 | `lib/restore/backup-mgmt.zsh` | Backup creation/listing | 183 | Epic 2 |
 | `lib/git/integration.zsh` | Git-based dotfile mgmt | 282 | Epic 2 |
 
 ---
 
-## 8. Proposed Atuin Integration Architecture
+## 8. Current Integration Architecture
 
-### Where Atuin Fits in Current System
+### Integration Locations
 
-**Recommended Location:** `lib/integrations/atuin.zsh` (modeled after amazon-q.zsh)
+- **Kiro CLI:** `lib/integrations/kiro-cli.zsh` (510 lines)
+- **Atuin:** `lib/integrations/atuin.zsh` (~400 lines)
 
 ### Integration Flow
 
@@ -322,16 +349,22 @@ zsh-tool-install (main command)
   ├── _zsh_tool_install_plugins
   ├── _zsh_tool_apply_theme
   ├── _zsh_tool_setup_custom_layer
-  └── _zsh_tool_setup_integrations ← ADD ATUIN HERE
+  └── _zsh_tool_setup_integrations
       ├── Check if enabled in config.yaml
-      ├── Call _atuin_install_integration()
-      └── _amazonq_install_integration() (existing)
+      ├── Call _kiro_install_integration()
+      └── Call _atuin_install_integration()
 ```
 
-### Configuration Template Addition
+### Configuration Template
 
 ```yaml
 # In config.yaml
+kiro_cli:
+  enabled: false
+  lazy_loading: true
+  atuin_compatibility: true
+  disabled_clis: [atuin]
+
 atuin:
   enabled: false
   install: true                    # Install via Homebrew
@@ -340,12 +373,34 @@ atuin:
   search_limit: 100               # Max results
   fuzzy_search: true
   statistics: true
-  # Sync settings (optional)
-  # sync_enabled: false
-  # sync_directory: "~/.local/share/atuin"
 ```
 
-### Functions Needed
+### Kiro CLI Functions
+
+```zsh
+# Detection
+_kiro_is_installed()             # Check if 'kiro-cli' or 'q' binary exists
+
+# Installation
+_kiro_detect()                   # Detect installation + version
+_kiro_install()                  # Guide user through install
+
+# Configuration
+_kiro_configure_shell_integration()    # Add to .zshrc
+_kiro_configure_settings()             # Modify cli.json
+_kiro_setup_lazy_loading()             # Defer init for performance
+
+# Verification
+_kiro_health_check()             # Run 'kiro-cli doctor'
+
+# Compatibility
+_kiro_configure_atuin_compatibility()  # Add atuin to disabled CLIs
+
+# Integration
+kiro_install_integration()       # Main entry point
+```
+
+### Atuin Functions
 
 ```zsh
 # Detection
@@ -353,7 +408,7 @@ _atuin_is_installed()            # Check if 'atuin' binary exists
 
 # Installation
 _atuin_detect()                  # Detect installation + version
-_atuin_install()                 # Prompt user to install via Homebrew
+_atuin_install()                 # Guide user through Homebrew install
 
 # Configuration
 _atuin_configure_shell_integration()    # Add to .zshrc
@@ -365,16 +420,22 @@ _atuin_health_check()            # Test database + keybindings work
 _atuin_verify_database()         # Validate history database
 
 # Compatibility
-_atuin_configure_amazon_q_compat()  # Ensure no conflicts
+_atuin_configure_kiro_compatibility()  # Ensure no conflicts with Kiro CLI
 
 # Integration
-_atuin_install_integration()     # Main entry point (like amazon-q)
+_atuin_install_integration()     # Main entry point
 ```
 
-### Command Interface
+### Command Interfaces
 
 ```zsh
-# zsh-tool-atuin [command]
+# Kiro CLI commands
+zsh-tool-kiro install              # Install Kiro CLI + configure
+zsh-tool-kiro status               # Check installation
+zsh-tool-kiro health               # Run health check
+zsh-tool-kiro config-atuin         # Configure Atuin compatibility
+
+# Atuin commands
 zsh-tool-atuin install              # Install Atuin + configure
 zsh-tool-atuin status               # Check installation
 zsh-tool-atuin health               # Run health check
@@ -388,61 +449,73 @@ zsh-tool-atuin config-keybinding    # Change keybinding
 
 | Aspect | Status | Details |
 |--------|--------|---------|
-| **Project Structure** | ✅ Mature | Modular, well-organized, ~2700 lines |
+| **Project Structure** | ✅ Mature | Modular, well-organized, ~3200 lines |
 | **Core Functionality** | ✅ Complete | Epic 1 & 2 done; install/update/restore working |
 | **Plugin System** | ✅ Mature | OMZ-based, extensible, 6 default plugins |
-| **History Config** | ⚠️ Basic | Only .zsh_history backup/restore; no optimization |
-| **Amazon Q Integration** | ✅ Full | Detection, install, config, health checks |
-| **Atuin References** | ⚠️ Partial | Documented (ATUIN-CTRL-R-FIX.md) but not integrated |
-| **Integration Pattern** | ✅ Ready | Amazon Q model can be reused for Atuin |
-| **Test Coverage** | ⚠️ Amazon Q only | Amazon Q tests exist; general tests missing |
+| **History Config** | ✅ Complete | Atuin integration for enhanced history |
+| **Kiro CLI Integration** | ✅ Full | Detection, install, config, health checks |
+| **Atuin Integration** | ✅ Full | Detection, install, keybindings, Kiro CLI compatibility |
+| **Integration Pattern** | ✅ Established | Common pattern used for both Kiro CLI and Atuin |
+| **Test Coverage** | ✅ Comprehensive | 115 tests across Kiro CLI, Atuin, and config |
 | **Documentation** | ✅ Excellent | PRD, architecture, stories, fix docs |
 
 ---
 
-## 10. Recommended Next Steps for Atuin Integration
+## 10. Integration Status and Future Improvements
 
-### Phase 1: Foundation
-1. Create `lib/integrations/atuin.zsh` based on amazon-q.zsh structure
-2. Add `atuin` section to `templates/config.yaml`
-3. Add functions to `install.sh` loader
+### Completed Integrations
 
-### Phase 2: Core Functions
-1. Implement detection and installation
-2. Add shell integration (keybindings, initialization)
-3. Add health checks
+**Kiro CLI Integration (ZSHTOOL-010)**
+- Full detection, installation, and configuration
+- Lazy loading for performance optimization
+- Atuin compatibility settings
+- Health checks via `kiro-cli doctor`
+- Complete test coverage (44 tests)
 
-### Phase 3: Configuration
-1. Parse atuin config from YAML
-2. Support keybinding customization
-3. Handle compatibility with Amazon Q
+**Atuin Integration**
+- Full detection, installation, and configuration
+- Keybinding customization (Ctrl+R)
+- History migration from .zsh_history
+- Kiro CLI compatibility handling
+- Complete test coverage (13 tests)
 
-### Phase 4: Testing & Documentation
-1. Add test cases (parallel to amazon-q tests)
-2. Document integration in README
-3. Create story: ZSHTOOL-XXX (Atuin Integration)
+### Potential Future Improvements
 
----
-
-## Key Files to Reference When Building Atuin Integration
-
-1. `/home/user/zsh/lib/integrations/amazon-q.zsh` - Primary template
-2. `/home/user/zsh/lib/install/config.zsh` - Config parsing pattern
-3. `/home/user/zsh/lib/core/utils.zsh` - Utility functions available
-4. `/home/user/zsh/templates/config.yaml` - Configuration template
-5. `/home/user/zsh/docs/ATUIN-CTRL-R-FIX.md` - Known issues & solutions
+1. **Cross-machine sync** - Add Atuin sync configuration
+2. **Additional integrations** - Starship prompt, direnv, etc.
+3. **Update automation** - Include integrations in update cycle
+4. **Backup expansion** - Include integration configs in backups
 
 ---
 
-## File Paths (Absolute)
+## Key Files Reference
 
-- Repository root: `/home/user/zsh`
-- Main script: `/home/user/zsh/install.sh`
-- Config template: `/home/user/zsh/templates/config.yaml`
-- Zshrc template: `/home/user/zsh/templates/zshrc.template`
-- Amazon Q integration: `/home/user/zsh/lib/integrations/amazon-q.zsh`
-- Core utils: `/home/user/zsh/lib/core/utils.zsh`
-- Installation config: `/home/user/zsh/lib/install/config.zsh`
-- Plugin system: `/home/user/zsh/lib/install/plugins.zsh`
-- Atuin docs: `/home/user/zsh/docs/ATUIN-CTRL-R-FIX.md`
+### Integration Modules
+1. `lib/integrations/kiro-cli.zsh` - Kiro CLI integration
+2. `lib/integrations/atuin.zsh` - Atuin shell history integration
+3. `lib/install/config.zsh` - Config parsing pattern
+4. `lib/core/utils.zsh` - Utility functions available
+5. `templates/config.yaml` - Configuration template
+6. `docs/ATUIN-CTRL-R-FIX.md` - Keybinding conflict resolution
+
+### Test Suites
+1. `tests/test-kiro-cli.zsh` - Kiro CLI tests (16 tests)
+2. `tests/test-kiro-cli-edge-cases.zsh` - Kiro CLI edge cases (28 tests)
+3. `tests/test-atuin.zsh` - Atuin tests (13 tests)
+4. `tests/test-config.zsh` - Configuration tests (58 tests)
+
+---
+
+## File Paths (Relative to Repository Root)
+
+- Main script: `install.sh`
+- Config template: `templates/config.yaml`
+- Zshrc template: `templates/zshrc.template`
+- Kiro CLI integration: `lib/integrations/kiro-cli.zsh`
+- Atuin integration: `lib/integrations/atuin.zsh`
+- Core utils: `lib/core/utils.zsh`
+- Installation config: `lib/install/config.zsh`
+- Plugin system: `lib/install/plugins.zsh`
+- Atuin keybinding fix: `docs/ATUIN-CTRL-R-FIX.md`
+- Migration story: `docs/implementation-artifacts/3-3-kiro-cli-migration.md`
 

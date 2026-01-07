@@ -61,7 +61,7 @@ _zsh_tool_log() {
         echo "[${timestamp}] [${level}] ${message}" | tee -a "$ZSH_TOOL_LOG_FILE" >&2
         ;;
       WARN)
-        echo "[${timestamp}] [${level}] ${message}" | tee -a "$ZSH_TOOL_LOG_FILE"
+        echo "[${timestamp}] [${level}] ${message}" | tee -a "$ZSH_TOOL_LOG_FILE" >&2
         ;;
       *)
         echo "[${timestamp}] [${level}] ${message}" >> "$ZSH_TOOL_LOG_FILE"

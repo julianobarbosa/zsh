@@ -12,11 +12,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Documentation index: docs/INDEX.md
 - Disk cleanup utility with interactive and automated modes
 - Comprehensive Atuin shell history integration
-- Amazon Q Developer CLI integration with lazy loading
+- Kiro CLI integration with lazy loading (renamed from Amazon Q Developer CLI)
+
+### Changed
+- **BREAKING**: Renamed Amazon Q integration to Kiro CLI
+  - Commands renamed: `zsh-tool-amazonq` -> `zsh-tool-kiro`
+  - Configuration key renamed: `amazon_q` -> `kiro`
+  - Test files renamed: `test-amazon-q*.zsh` -> `test-kiro-cli*.zsh`
 
 ### Fixed
-- Infinite recursion in Amazon Q lazy loading
-- Atuin/Amazon Q Ctrl+R keybinding conflicts
+- Infinite recursion in Kiro CLI lazy loading
+- Atuin/Kiro CLI Ctrl+R keybinding conflicts
 - iTerm2 XPC connection stability issues
 - Lazy completion performance optimization
 
@@ -258,9 +264,9 @@ zsh-tool-update self
 zsh-tool-config edit  # Set atuin.enabled: true
 zsh-tool-atuin install
 
-# Optional: Install Amazon Q
-zsh-tool-config edit  # Set amazon_q.enabled: true
-zsh-tool-amazonq install
+# Optional: Install Kiro CLI (formerly Amazon Q)
+zsh-tool-config edit  # Set kiro.enabled: true
+zsh-tool-kiro install
 ```
 
 ### From 1.1.x to 1.2.0

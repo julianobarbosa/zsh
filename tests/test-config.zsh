@@ -235,7 +235,11 @@ test_parse_kiro_cli_disabled_clis() {
   echo "$disabled" | grep -q "atuin"
 }
 
-# Test: Legacy Amazon Q functions (backward compatibility)
+# Test: Legacy Amazon Q backward compatibility shims
+# PURPOSE: Verifies that deprecated Amazon Q functions continue to work
+# by internally delegating to their Kiro CLI equivalents. This ensures
+# existing scripts/configs that reference the old function names don't break.
+# See story-kiro-cli-migration.md for migration details.
 test_parse_amazon_q_backward_compat() {
   # These deprecated functions should still work by calling Kiro equivalents
   local enabled=$(_zsh_tool_parse_amazon_q_enabled 2>/dev/null)

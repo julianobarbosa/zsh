@@ -153,7 +153,7 @@ feat(atuin): add sync status command
 fix(install): resolve plugin installation race condition
 docs(readme): update installation instructions
 refactor(backup): improve error handling
-test(amazonq): add edge case tests
+test(kiro): add edge case tests
 ```
 
 ### 4. Keep Your Branch Updated
@@ -299,7 +299,7 @@ Each module should:
 # - Homebrew
 # - git
 # - Xcode Command Line Tools
-# - jq (for Amazon Q)
+# - jq (for Kiro CLI)
 #
 
 # Public functions
@@ -376,10 +376,10 @@ cd tests
 zsh run-all-tests.sh
 
 # Run specific test
-zsh test-amazon-q.zsh
+zsh test-kiro-cli.zsh
 
 # Run edge case tests
-zsh test-amazon-q-edge-cases.zsh
+zsh test-kiro-cli-edge-cases.zsh
 ```
 
 ### Test Coverage

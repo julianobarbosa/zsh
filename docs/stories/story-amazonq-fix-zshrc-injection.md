@@ -1,5 +1,11 @@
 # Story: Add Safety Checks to .zshrc Modification
 
+> **DEPRECATED - Historical Reference**
+>
+> This story documents work done for Amazon Q Developer CLI, which was rebranded to **Kiro CLI** in November 2025.
+> This story is retained for historical reference only.
+> See [story-kiro-cli-migration.md](story-kiro-cli-migration.md) for the migration to Kiro CLI.
+
 **Story ID**: ZSHTOOL-BUG-006
 **Epic**: Epic 3 - Advanced Integrations
 **Priority**: Medium

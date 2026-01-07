@@ -242,20 +242,64 @@ _zsh_tool_parse_kiro_disabled_clis() {
   done <<< "$section"
 }
 
-# DEPRECATED: Amazon Q parsing functions (kept for backward compatibility during migration)
+# ==============================================================================
+# DEPRECATED Amazon Q parsing functions
+# ==============================================================================
+# These functions are kept for backward compatibility during migration from
+# Amazon Q to Kiro CLI. They will be removed in a future version.
+#
+# Migration Guide:
+#   - _zsh_tool_parse_amazon_q_enabled       -> _zsh_tool_parse_kiro_enabled
+#   - _zsh_tool_parse_amazon_q_lazy_loading  -> _zsh_tool_parse_kiro_lazy_loading
+#   - _zsh_tool_parse_amazon_q_atuin_compatibility -> _zsh_tool_parse_kiro_atuin_compatibility
+#   - _zsh_tool_parse_amazon_q_disabled_clis -> _zsh_tool_parse_kiro_disabled_clis
+#
+# Also update your config.yaml to use 'kiro_cli:' instead of 'amazon_q:'.
+# ==============================================================================
+
+# Track if deprecation warning has been shown (once per session)
+typeset -g _ZSH_TOOL_AMAZON_Q_DEPRECATION_WARNED=false
+
+# Internal helper to emit deprecation warning once per session
+_zsh_tool_amazon_q_deprecation_warn() {
+  local func_name="$1"
+  local replacement="$2"
+  if [[ "$_ZSH_TOOL_AMAZON_Q_DEPRECATION_WARNED" != "true" ]]; then
+    _zsh_tool_log WARN "DEPRECATED: Amazon Q functions are deprecated and will be removed in a future version."
+    _zsh_tool_log WARN "Please migrate to Kiro CLI functions (e.g., $func_name -> $replacement)"
+    _ZSH_TOOL_AMAZON_Q_DEPRECATION_WARNED=true
+  fi
+}
+
+# @deprecated Since v2.0.0 - Use _zsh_tool_parse_kiro_enabled instead.
+# @see _zsh_tool_parse_kiro_enabled
+# Amazon Q has been rebranded to Kiro CLI. Update your scripts to use the new function.
 _zsh_tool_parse_amazon_q_enabled() {
+  _zsh_tool_amazon_q_deprecation_warn "_zsh_tool_parse_amazon_q_enabled" "_zsh_tool_parse_kiro_enabled"
   _zsh_tool_parse_kiro_enabled
 }
 
+# @deprecated Since v2.0.0 - Use _zsh_tool_parse_kiro_lazy_loading instead.
+# @see _zsh_tool_parse_kiro_lazy_loading
+# Amazon Q has been rebranded to Kiro CLI. Update your scripts to use the new function.
 _zsh_tool_parse_amazon_q_lazy_loading() {
+  _zsh_tool_amazon_q_deprecation_warn "_zsh_tool_parse_amazon_q_lazy_loading" "_zsh_tool_parse_kiro_lazy_loading"
   _zsh_tool_parse_kiro_lazy_loading
 }
 
+# @deprecated Since v2.0.0 - Use _zsh_tool_parse_kiro_atuin_compatibility instead.
+# @see _zsh_tool_parse_kiro_atuin_compatibility
+# Amazon Q has been rebranded to Kiro CLI. Update your scripts to use the new function.
 _zsh_tool_parse_amazon_q_atuin_compatibility() {
+  _zsh_tool_amazon_q_deprecation_warn "_zsh_tool_parse_amazon_q_atuin_compatibility" "_zsh_tool_parse_kiro_atuin_compatibility"
   _zsh_tool_parse_kiro_atuin_compatibility
 }
 
+# @deprecated Since v2.0.0 - Use _zsh_tool_parse_kiro_disabled_clis instead.
+# @see _zsh_tool_parse_kiro_disabled_clis
+# Amazon Q has been rebranded to Kiro CLI. Update your scripts to use the new function.
 _zsh_tool_parse_amazon_q_disabled_clis() {
+  _zsh_tool_amazon_q_deprecation_warn "_zsh_tool_parse_amazon_q_disabled_clis" "_zsh_tool_parse_kiro_disabled_clis"
   _zsh_tool_parse_kiro_disabled_clis
 }
 

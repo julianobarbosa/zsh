@@ -62,7 +62,7 @@ development_status:
 
   # Epic 3: Advanced Integrations (3 stories, 26 points)
   epic-3: in-progress
-  3-1-atuin-shell-history-integration: in-progress  # Review: 7 issues (3H, 3M, 1L)
+  3-1-atuin-shell-history-integration: done  # All 10 issues resolved (3H, 4M, 3L) - 12/12 tests passing
   3-2-amazon-q-cli-integration: done  # Completed 2025-10-02, now deprecated - replaced by Kiro CLI
   3-3-kiro-cli-migration: ready-for-dev  # CRITICAL: Amazon Q rebranded to Kiro CLI (Nov 2025) - 13 points
   epic-3-retrospective: optional

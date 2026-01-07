@@ -53,7 +53,7 @@ development_status:
 
   # Epic 2: Maintenance & Lifecycle Management (5 stories, 17 points)
   epic-2: in-progress
-  2-1-self-update-mechanism: review  # Review R3: All 8 issues fixed (2C, 3H, 2M, 1L) - 27/27 tests passing
+  2-1-self-update-mechanism: done  # Review R4: All 10 issues fixed (3H, 4M, 3L) - 31/31 tests passing
   2-2-bulk-plugin-and-theme-updates: done  # Review R2: All 6 issues fixed (4M, 2L) - 26/26 tests passing
   2-3-configuration-backup-management: backlog
   2-4-configuration-restore-from-backup: backlog

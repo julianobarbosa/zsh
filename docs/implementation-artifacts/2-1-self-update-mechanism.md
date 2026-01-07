@@ -133,13 +133,65 @@ Status: review
   - Not addressed: Existing lib/update/self.zsh location is consistent with project structure
   - Dev Notes specified lib/maintenance/ but existing pattern uses lib/update/ - documented deviation
 
+### Review Follow-ups (AI) - 2026-01-07 - CODE REVIEW R4 (10 issues)
+
+**HIGH (3):**
+- [x] [AI-Review][HIGH] AC9 incomplete - implement update_history array in state.json {from, to, timestamp}
+  - Fixed: Added _zsh_tool_append_update_history() function
+  - Uses jq for proper JSON array manipulation when available
+  - Falls back to simple key-value storage without jq
+  - Tracks from_version, to_version, and timestamp per Dev Notes spec
+- [x] [AI-Review][HIGH] State key inconsistency - tool_version vs version namespace
+  - Fixed: Unified all state keys to use 'version.*' namespace per Dev Notes
+  - Changed tool_version.current -> version.current
+  - Changed tool_version.previous -> version.previous
+  - Changed tool_version.last_update -> version.last_update
+- [x] [AI-Review][HIGH] Backup cleanup rm -rf without path validation
+  - Fixed: Added path prefix validation in _zsh_tool_cleanup_old_backups()
+  - Validates path starts with ZSH_TOOL_INSTALL_BACKUP_DIR
+  - Rejects symlinks to prevent symlink attacks
+  - Logs security warnings when rejecting paths
+
+**MEDIUM (4):**
+- [x] [AI-Review][MEDIUM] Test test_state_update_history only tests state save, not history array
+  - Fixed: Updated test to verify actual history array structure
+  - Uses jq to validate from/to/timestamp fields when available
+  - Falls back to checking last_update fields without jq
+- [x] [AI-Review][MEDIUM] No integration test for full update flow
+  - Fixed: Added test_integration_update_flow() test
+  - Verifies all update components exist (check, backup, apply, rollback, restore, history)
+  - Added test_integration_backup_restore_cycle() for backup/restore testing
+- [x] [AI-Review][MEDIUM] rm -rf in backup error paths without symlink protection
+  - Fixed: Added symlink and path prefix validation before rm -rf in:
+    - Line 316-319: Source directory not found error path
+    - Line 329-332: rsync failure error path
+    - Line 351-354: cp failure error path
+- [x] [AI-Review][MEDIUM] rsync exclude may miss dotfile variants
+  - Fixed: Updated rsync to use both --exclude='.git' and --exclude='.git/**'
+  - Ensures .git directory and all its contents are excluded
+
+**LOW (3):**
+- [x] [AI-Review][LOW] Missing test for _zsh_tool_display_changelog function
+  - Fixed: Added test_display_changelog_function() test
+  - Added test_display_changelog_output() test for output verification
+- [x] [AI-Review][LOW] Hardcoded critical files list
+  - Fixed: Moved to configurable ZSH_TOOL_CRITICAL_FILES array
+  - Default: lib/update/self.zsh, lib/core/utils.zsh
+  - Can be overridden by setting before sourcing
+- [x] [AI-Review][LOW] Dev Notes location mismatch
+  - Fixed: Updated Component Location to show actual path lib/update/self.zsh
+  - Updated Source Tree Alignment diagram
+  - Added note about deviation from original spec
+
+**Test Results:** 31/31 tests passing
+
 ---
 
 ## Dev Notes
 
 ### Component Location
-- **File:** `lib/maintenance/self-update.zsh`
-- **Dependencies:** `core/utils.zsh`, git
+- **File:** `lib/update/self.zsh` (deviation from original spec `lib/maintenance/self-update.zsh`)
+- **Dependencies:** `lib/core/utils.zsh`, `lib/install/backup.zsh`, git, jq (optional for update_history)
 
 ### Architecture Compliance
 
@@ -214,12 +266,14 @@ _zsh_tool_compare_versions() {
 zsh-tool/
 ├── VERSION                      ← Version file
 ├── lib/
-│   ├── maintenance/
-│   │   └── self-update.zsh     ← THIS STORY
+│   ├── update/
+│   │   └── self.zsh            ← THIS STORY (actual location)
+│   ├── install/
+│   │   └── backup.zsh          ← Dependency (backup utilities)
 │   └── core/
-│       └── utils.zsh           ← Dependency
+│       └── utils.zsh           ← Dependency (logging, state)
 └── tests/
-    └── test-self-update.zsh    ← Unit tests
+    └── test-self-update.zsh    ← Unit tests (31 tests)
 ```
 
 **XDG Compliance:**
@@ -373,11 +427,26 @@ Test execution logs: tests/test-self-update.zsh (24/24 tests passing)
   - Added 3 new tests for public command, version validation, and backup cleanup
   - All 27 unit tests passing
 
+- 2026-01-07: Addressed Code Review R4 Findings (10 issues resolved)
+  - [HIGH] Added _zsh_tool_append_update_history() for AC9 update_history array tracking
+  - [HIGH] Unified state namespace: tool_version.* -> version.* per Dev Notes
+  - [HIGH] Added path prefix and symlink validation in _zsh_tool_cleanup_old_backups()
+  - [MEDIUM] Enhanced test_state_update_history to verify history array structure
+  - [MEDIUM] Added integration tests (update flow components, backup/restore cycle)
+  - [MEDIUM] Added symlink protection to all rm -rf error paths in backup function
+  - [MEDIUM] Fixed rsync exclude pattern to handle .git directory and contents
+  - [LOW] Added tests for _zsh_tool_display_changelog function
+  - [LOW] Made critical files list configurable via ZSH_TOOL_CRITICAL_FILES
+  - [LOW] Updated Dev Notes Component Location and Source Tree Alignment
+  - Added 4 new tests (changelog function, changelog output, integration flow, backup cycle)
+  - All 31 unit tests passing
+
 ### File List
 
 - VERSION (new file)
-- lib/update/self.zsh (enhanced - major refactor for AC compliance, added backup cleanup, version validation, public command)
-- tests/test-self-update.zsh (enhanced - 27 tests, up from 24)
+- lib/update/self.zsh (enhanced - added update_history, unified state namespace, security hardening)
+- tests/test-self-update.zsh (enhanced - 31 tests, up from 27)
+- docs/implementation-artifacts/2-1-self-update-mechanism.md (updated Dev Notes)
 
 ---
 

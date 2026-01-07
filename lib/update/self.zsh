@@ -11,6 +11,15 @@ ZSH_TOOL_INSTALL_BACKUP_DIR="${ZSH_TOOL_CONFIG_DIR}/backups/tool-install"
 # Maximum number of tool installation backups to keep (cleanup mechanism)
 ZSH_TOOL_MAX_INSTALL_BACKUPS=${ZSH_TOOL_MAX_INSTALL_BACKUPS:-5}
 
+# Critical files list for post-update validation (configurable)
+# Override by setting ZSH_TOOL_CRITICAL_FILES before sourcing
+ZSH_TOOL_CRITICAL_FILES=(
+  ${ZSH_TOOL_CRITICAL_FILES:-
+    "lib/update/self.zsh"
+    "lib/core/utils.zsh"
+  }
+)
+
 # Source backup utilities for pre-update backups
 # Use script directory to locate backup.zsh relative to this file
 _ZSH_TOOL_SELF_DIR="${0:A:h}"
@@ -21,6 +30,51 @@ source "${_ZSH_TOOL_SELF_DIR}/../install/backup.zsh" 2>/dev/null || {
 # Check if tool is in a git repository
 _zsh_tool_is_git_repo() {
   [[ -d "${ZSH_TOOL_INSTALL_DIR}/.git" ]]
+}
+
+# HIGH #1: Append to update_history array in state.json (AC9)
+# Usage: _zsh_tool_append_update_history <from_version> <to_version>
+# Creates/appends {from, to, timestamp} entry to version.update_history array
+_zsh_tool_append_update_history() {
+  local from_version="$1"
+  local to_version="$2"
+  local timestamp=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+
+  local state_file="$ZSH_TOOL_STATE_FILE"
+
+  # If jq is available, use it for proper JSON array manipulation
+  if command -v jq >/dev/null 2>&1 && [[ -f "$state_file" ]]; then
+    local new_entry="{\"from\":\"${from_version}\",\"to\":\"${to_version}\",\"timestamp\":\"${timestamp}\"}"
+    local updated_state
+
+    # Check if version is already an object with update_history
+    if jq -e '.version | type == "object"' "$state_file" >/dev/null 2>&1; then
+      if jq -e '.version.update_history | type == "array"' "$state_file" >/dev/null 2>&1; then
+        # Append to existing array
+        updated_state=$(jq --argjson entry "$new_entry" '.version.update_history += [$entry]' "$state_file" 2>/dev/null)
+      else
+        # version exists as object but no update_history array yet
+        updated_state=$(jq --argjson entry "$new_entry" '.version.update_history = [$entry]' "$state_file" 2>/dev/null)
+      fi
+    else
+      # version doesn't exist or is not an object - create full structure
+      updated_state=$(jq --argjson entry "$new_entry" '. + {version: {update_history: [$entry]}}' "$state_file" 2>/dev/null)
+    fi
+
+    if [[ -n "$updated_state" ]] && [[ "$updated_state" != "null" ]]; then
+      _zsh_tool_save_state "$updated_state"
+      _zsh_tool_log INFO "Added update history: ${from_version} -> ${to_version}"
+      return 0
+    fi
+  fi
+
+  # Fallback without jq: create simple JSON structure
+  # Note: This fallback doesn't append to array, but creates a new history entry
+  _zsh_tool_log DEBUG "jq not available or jq failed, using simple state update for history"
+  _zsh_tool_update_state "version.last_update_from" "\"$from_version\""
+  _zsh_tool_update_state "version.last_update_to" "\"$to_version\""
+  _zsh_tool_update_state "version.last_update_timestamp" "\"$timestamp\""
+  return 0
 }
 
 # Validate VERSION file content is valid semver
@@ -85,6 +139,16 @@ _zsh_tool_cleanup_old_backups() {
 
   for ((i=0; i<to_remove; i++)); do
     local old_backup="${sorted_backups[$((i+1))]}"  # zsh arrays are 1-indexed
+    # HIGH: Validate path prefix before rm -rf to prevent directory traversal attacks
+    if [[ "$old_backup" != "${ZSH_TOOL_INSTALL_BACKUP_DIR}/"* ]]; then
+      _zsh_tool_log ERROR "Security: Refusing to delete path outside backup directory: $old_backup"
+      continue
+    fi
+    # HIGH: Validate not a symlink to prevent symlink attacks
+    if [[ -L "$old_backup" ]]; then
+      _zsh_tool_log WARN "Security: Skipping symlink during backup cleanup: $old_backup"
+      continue
+    fi
     if [[ -d "$old_backup" ]]; then
       _zsh_tool_log DEBUG "Removing old backup: $old_backup"
       rm -rf "$old_backup" 2>/dev/null
@@ -294,16 +358,23 @@ _zsh_tool_backup_before_update() {
   # Verify source directory exists
   if [[ ! -d "$ZSH_TOOL_INSTALL_DIR" ]]; then
     _zsh_tool_log ERROR "Tool installation directory not found: ${ZSH_TOOL_INSTALL_DIR}"
-    rm -rf "$backup_dir"
+    # MEDIUM: Validate backup_dir is safe before rm -rf (not symlink, correct prefix)
+    if [[ -d "$backup_dir" ]] && [[ ! -L "$backup_dir" ]] && [[ "$backup_dir" == "${ZSH_TOOL_INSTALL_BACKUP_DIR}/"* ]]; then
+      rm -rf "$backup_dir"
+    fi
     return 1
   fi
 
   # Copy entire tool installation (excluding .git to save space, we have git for rollback)
   # Use rsync if available for better reliability, otherwise fall back to cp
   if command -v rsync >/dev/null 2>&1; then
-    if ! rsync -a --exclude='.git' "${ZSH_TOOL_INSTALL_DIR}/" "${backup_dir}/"; then
+    # MEDIUM: Use --exclude pattern that handles dotfile variants properly
+    if ! rsync -a --exclude='.git' --exclude='.git/**' "${ZSH_TOOL_INSTALL_DIR}/" "${backup_dir}/"; then
       _zsh_tool_log ERROR "Tool backup failed (rsync)"
-      rm -rf "$backup_dir"
+      # MEDIUM: Validate backup_dir is safe before rm -rf
+      if [[ -d "$backup_dir" ]] && [[ ! -L "$backup_dir" ]] && [[ "$backup_dir" == "${ZSH_TOOL_INSTALL_BACKUP_DIR}/"* ]]; then
+        rm -rf "$backup_dir"
+      fi
       return 1
     fi
   else
@@ -322,7 +393,10 @@ _zsh_tool_backup_before_update() {
       done
     ); then
       _zsh_tool_log ERROR "Tool backup failed (cp)"
-      rm -rf "$backup_dir"
+      # MEDIUM: Validate backup_dir is safe before rm -rf
+      if [[ -d "$backup_dir" ]] && [[ ! -L "$backup_dir" ]] && [[ "$backup_dir" == "${ZSH_TOOL_INSTALL_BACKUP_DIR}/"* ]]; then
+        rm -rf "$backup_dir"
+      fi
       return 1
     fi
   fi
@@ -449,6 +523,9 @@ _zsh_tool_apply_update() {
 
   _zsh_tool_log INFO "Applying update..."
 
+  # HIGH #1: Capture version BEFORE update for history tracking
+  local pre_update_version=$(_zsh_tool_get_local_version)
+
   # AC4: Create backup of tool installation before update
   local backup_dir
   backup_dir=$(_zsh_tool_backup_before_update "pre-update")
@@ -542,12 +619,8 @@ _zsh_tool_apply_update() {
     validation_failed=true
   fi
 
-  # Check 3: Verify critical library files exist
-  local critical_files=(
-    "lib/update/self.zsh"
-    "lib/core/utils.zsh"
-  )
-  for file in "${critical_files[@]}"; do
+  # Check 3: Verify critical library files exist (using configurable list)
+  for file in "${ZSH_TOOL_CRITICAL_FILES[@]}"; do
     if [[ ! -f "${ZSH_TOOL_INSTALL_DIR}/${file}" ]]; then
       _zsh_tool_log ERROR "Post-update validation failed: critical file missing: ${file}"
       validation_failed=true
@@ -580,11 +653,14 @@ _zsh_tool_apply_update() {
     return 1
   fi
 
-  # Update state
+  # Update state (HIGH #2: Use consistent 'version.*' namespace per Dev Notes)
   local new_version=$(_zsh_tool_get_current_version)
-  _zsh_tool_update_state "tool_version.current" "\"$new_version\""
-  _zsh_tool_update_state "tool_version.previous" "\"$current_sha\""
-  _zsh_tool_update_state "tool_version.last_update" "\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\""
+  _zsh_tool_update_state "version.current" "\"$new_version\""
+  _zsh_tool_update_state "version.previous" "\"$pre_update_version\""
+  _zsh_tool_update_state "version.last_update" "\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\""
+
+  # HIGH #1: Append to update_history array (AC9 compliance)
+  _zsh_tool_append_update_history "$pre_update_version" "$new_version"
 
   _zsh_tool_log INFO "Post-update validation passed"
   _zsh_tool_log INFO "Update complete: $new_version"
@@ -636,7 +712,8 @@ _zsh_tool_rollback_update() {
   if [[ "$rollback_result" == "SUCCESS" ]]; then
     local version=$(_zsh_tool_get_current_version)
     _zsh_tool_log INFO "Rolled back to: $version"
-    _zsh_tool_update_state "tool_version.current" "\"$version\""
+    # HIGH #2: Use consistent 'version.*' namespace
+    _zsh_tool_update_state "version.current" "\"$version\""
     return 0
   else
     local error_msg="${rollback_result#FAILED:}"

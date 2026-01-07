@@ -370,9 +370,10 @@ zsh-tool-update() {
   esac
 }
 
-# Backup command
+# Backup command (Story 2.3: Configuration Backup Management)
 zsh-tool-backup() {
   local subcommand="${1:-create}"
+  shift 2>/dev/null || true
 
   case "$subcommand" in
     create)
@@ -384,8 +385,17 @@ zsh-tool-backup() {
     remote)
       _zsh_tool_backup_to_remote
       ;;
+    fetch)
+      _zsh_tool_fetch_remote_backups
+      ;;
+    config)
+      _zsh_tool_configure_remote_backup "$@"
+      ;;
+    stats)
+      _zsh_tool_backup_stats
+      ;;
     *)
-      echo "Usage: zsh-tool-backup [create|list|remote]"
+      echo "Usage: zsh-tool-backup [create|list|remote|fetch|config <url>|stats]"
       return 1
       ;;
   esac
@@ -544,6 +554,9 @@ Epic 2 - Maintenance & Lifecycle:
     create                      Create manual backup (default)
     list                        List all backups
     remote                      Push backup to remote
+    fetch                       Pull backups from remote
+    config <url>                Configure remote backup URL
+    stats                       Show backup statistics
 
   zsh-tool-restore [action]     Restore from backup
     list                        List available backups

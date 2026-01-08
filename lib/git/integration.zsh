@@ -92,7 +92,7 @@ _zsh_tool_git_init_repo() {
   _zsh_tool_create_dotfiles_gitignore
 
   # Create alias helper
-  local alias_cmd="alias dotfiles='git --git-dir=$DOTFILES_REPO --work-tree=$HOME'"
+  local alias_cmd="alias dotfiles='git --git-dir=\"\$HOME/.dotfiles\" --work-tree=\"\$HOME\"'"
 
   # Add to .zshrc.local if not already present
   if [[ ! -f "${HOME}/.zshrc.local" ]] || ! grep -q "dotfiles=" "${HOME}/.zshrc.local" 2>/dev/null; then
@@ -214,10 +214,13 @@ _zsh_tool_git_commit() {
   fi
 
   git --git-dir="$DOTFILES_REPO" --work-tree="$HOME" commit -m "$message"
+  local commit_result=$?
 
-  if [[ $? -eq 0 ]]; then
+  if [[ $commit_result -eq 0 ]]; then
     _zsh_tool_update_state "git_integration.last_commit" "\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\""
   fi
+
+  return $commit_result
 }
 
 # Git push wrapper
@@ -228,10 +231,13 @@ _zsh_tool_git_push() {
   fi
 
   git --git-dir="$DOTFILES_REPO" --work-tree="$HOME" push "$@"
+  local push_result=$?
 
-  if [[ $? -eq 0 ]]; then
+  if [[ $push_result -eq 0 ]]; then
     _zsh_tool_update_state "git_integration.last_push" "\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\""
   fi
+
+  return $push_result
 }
 
 # Git pull wrapper
@@ -246,10 +252,13 @@ _zsh_tool_git_pull() {
   _zsh_tool_create_backup "pre-git-pull"
 
   git --git-dir="$DOTFILES_REPO" --work-tree="$HOME" pull "$@"
+  local pull_result=$?
 
-  if [[ $? -eq 0 ]]; then
+  if [[ $pull_result -eq 0 ]]; then
     _zsh_tool_update_state "git_integration.last_pull" "\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\""
   fi
+
+  return $pull_result
 }
 
 # Main git integration command

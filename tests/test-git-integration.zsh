@@ -286,8 +286,8 @@ test_status_shows_dotfiles_status() {
   output=$(_zsh_tool_git_status 2>&1)
   local result=$?
 
-  # Status should succeed (even if no commits yet)
-  [[ $result -eq 0 ]] || echo "$output" | grep -qi "branch\|commit\|nothing"
+  # Status should succeed (even if no commits yet) AND contain expected output
+  [[ $result -eq 0 ]] && echo "$output" | grep -qi "branch\|commit\|nothing"
 }
 
 # Test: Status requires repo (AC12)

@@ -568,10 +568,12 @@ cleanup_level_3() {
     execute_cleanup "Android SDK Cache" "${HOME}/.android/cache" "rm -rf '${HOME}/.android/cache/'*"
 
     # Node modules (list only - too dangerous to auto-delete)
-    if [[ "${QUIET_MODE}" == "false" ]]; then
-        log_info "Finding node_modules directories..."
+    # Skip in auto mode as find can take very long
+    if [[ "${QUIET_MODE}" == "false" && "${AUTO_MODE}" == "false" ]]; then
+        log_info "Finding node_modules directories (this may take a moment)..."
         local node_modules_count
-        node_modules_count=$(find "${HOME}" -name "node_modules" -type d -prune 2>/dev/null | wc -l | tr -d ' ')
+        # Use timeout to prevent hanging on large filesystems
+        node_modules_count=$(timeout 30 find "${HOME}" -name "node_modules" -type d -prune 2>/dev/null | wc -l | tr -d ' ' || echo "0")
         if [[ "${node_modules_count}" -gt 0 ]]; then
             log_warning "Found ${node_modules_count} node_modules directories"
             log_info "To remove them manually, run:"

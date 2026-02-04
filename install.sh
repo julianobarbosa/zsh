@@ -143,6 +143,50 @@ _zsh_tool_setup_integrations() {
 
 # Main install command
 zsh-tool-install() {
+  # Parse arguments
+  while [[ $# -gt 0 ]]; do
+    case $1 in
+      --help|-h)
+        cat <<'INSTALL_HELP'
+Usage: zsh-tool-install [OPTIONS]
+
+Install and configure zsh-tool with team configuration.
+
+Options:
+  --help, -h    Show this help message and exit
+
+What this command does:
+  1. Check prerequisites (Homebrew, git, jq, Xcode CLI tools)
+  2. Create backup of existing configuration
+  3. Install/verify Oh My Zsh
+  4. Install team configuration (.zshrc, aliases, etc.)
+  5. Install configured plugins
+  6. Apply configured theme
+  7. Setup personal customization layer
+  8. Setup integrations (Atuin, Kiro CLI if enabled)
+  9. Verify installation and display summary
+
+Examples:
+  zsh-tool-install          Run full installation
+  zsh-tool-install --help   Show this help
+
+Related commands:
+  zsh-tool-update           Update components
+  zsh-tool-backup           Manage backups
+  zsh-tool-restore          Restore from backup
+  zsh-tool-config           Manage configuration
+  zsh-tool-help             Show all commands
+INSTALL_HELP
+        return 0
+        ;;
+      *)
+        echo "Unknown option: $1"
+        echo "Usage: zsh-tool-install [--help]"
+        return 1
+        ;;
+    esac
+  done
+
   # Record installation start time
   local start_time=$(date +%s)
   local start_iso=$(date -Iseconds 2>/dev/null || date -u +%Y-%m-%dT%H:%M:%S%z)
@@ -547,13 +591,14 @@ KIRO_HELP
 # Config management command
 zsh-tool-config() {
   local subcommand="${1:-list}"
+  local config_dir="${ZSH_TOOL_CONFIG_DIR:-${HOME}/.config/zsh-tool}"
 
   case "$subcommand" in
     list)
-      cat "${CONFIG_DIR}/config.yaml"
+      cat "${config_dir}/config.yaml"
       ;;
     edit)
-      "${EDITOR:-vim}" "${CONFIG_DIR}/config.yaml"
+      "${EDITOR:-vim}" "${config_dir}/config.yaml"
       ;;
     *)
       echo "Usage: zsh-tool-config [list|edit]"

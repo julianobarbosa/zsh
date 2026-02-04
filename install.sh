@@ -277,6 +277,31 @@ zsh-tool-update() {
   # Parse arguments
   while [[ $# -gt 0 ]]; do
     case $1 in
+      --help|-h)
+        cat <<'UPDATE_HELP'
+Usage: zsh-tool-update [OPTIONS] [TARGET]
+
+Update zsh-tool components.
+
+Options:
+  --help, -h    Show this help message and exit
+  --check       Check for updates without applying them
+
+Targets:
+  self          Update zsh-tool itself
+  omz           Update Oh My Zsh
+  plugins       Update all plugins
+  themes        Update all themes
+  all           Update everything (default)
+
+Examples:
+  zsh-tool-update                 Update all components
+  zsh-tool-update --check         Check for updates only
+  zsh-tool-update plugins         Update plugins only
+  zsh-tool-update --check omz     Check Oh My Zsh for updates
+UPDATE_HELP
+        return 0
+        ;;
       --check)
         check_only=true
         shift
@@ -287,7 +312,7 @@ zsh-tool-update() {
         ;;
       *)
         echo "Unknown option: $1"
-        echo "Usage: zsh-tool-update [--check] [self|omz|plugins|themes|all]"
+        echo "Usage: zsh-tool-update [--help] [--check] [self|omz|plugins|themes|all]"
         return 1
         ;;
     esac
@@ -420,6 +445,31 @@ zsh-tool-backup() {
   shift 2>/dev/null || true
 
   case "$subcommand" in
+    --help|-h)
+      cat <<'BACKUP_HELP'
+Usage: zsh-tool-backup [COMMAND]
+
+Manage zsh configuration backups.
+
+Commands:
+  create          Create a manual backup (default)
+  list            List all available backups
+  status          Show backup status summary
+  prune           Prune old backups beyond retention limit
+  remote          Push backups to configured remote
+  remote-config   Configure remote backup URL
+  remote-disable  Disable remote backup sync
+  fetch           Fetch backups from remote
+
+Examples:
+  zsh-tool-backup                           Create backup
+  zsh-tool-backup list                      List all backups
+  zsh-tool-backup prune                     Prune old backups
+  zsh-tool-backup remote-config git@...     Configure remote
+  zsh-tool-backup remote                    Push to remote
+BACKUP_HELP
+      return 0
+      ;;
     create)
       _zsh_tool_create_manual_backup
       ;;
@@ -478,9 +528,25 @@ BACKUP_HELP
 # Restore command
 zsh-tool-restore() {
   local subcommand="$1"
-  shift
+  shift 2>/dev/null || true
 
   case "$subcommand" in
+    --help|-h)
+      cat <<'RESTORE_HELP'
+Usage: zsh-tool-restore [COMMAND] [ARGS]
+
+Restore zsh configuration from backup.
+
+Commands:
+  list              List available backups
+  apply <backup-id> Restore from specific backup
+
+Examples:
+  zsh-tool-restore list              List all backups
+  zsh-tool-restore apply 2026-02-04  Restore from backup
+RESTORE_HELP
+      return 0
+      ;;
     list)
       _zsh_tool_list_backups
       ;;
@@ -488,7 +554,7 @@ zsh-tool-restore() {
       _zsh_tool_restore_from_backup "$@"
       ;;
     *)
-      echo "Usage: zsh-tool-restore [list|apply <backup-id>]"
+      echo "Usage: zsh-tool-restore [--help] [list|apply <backup-id>]"
       return 1
       ;;
   esac
@@ -504,6 +570,30 @@ zsh-tool-atuin() {
   local subcommand="${1:-status}"
 
   case "$subcommand" in
+    --help|-h)
+      cat <<'ATUIN_HELP'
+Usage: zsh-tool-atuin [COMMAND]
+
+Manage Atuin shell history integration.
+
+Commands:
+  install         Install and configure Atuin shell history
+  status          Check Atuin installation status (default)
+  health          Run Atuin health check
+  import          Import existing zsh history
+  stats           Show history statistics
+  sync-setup      Setup history sync across machines
+
+Examples:
+  zsh-tool-atuin              Check status
+  zsh-tool-atuin install      Install Atuin
+  zsh-tool-atuin import       Import zsh history
+  zsh-tool-atuin sync-setup   Setup cross-machine sync
+
+For more info: https://docs.atuin.sh
+ATUIN_HELP
+      return 0
+      ;;
     install)
       _zsh_tool_log INFO "Installing Atuin shell history integration..."
       local import_history=$(_zsh_tool_parse_atuin_import_history)
@@ -557,6 +647,27 @@ zsh-tool-kiro() {
   local subcommand="${1:-status}"
 
   case "$subcommand" in
+    --help|-h)
+      cat <<'KIRO_HELP'
+Usage: zsh-tool-kiro [COMMAND]
+
+Manage Kiro CLI integration.
+
+Commands:
+  install         Install and configure Kiro CLI
+  status          Check Kiro CLI installation status (default)
+  health          Run Kiro CLI health check (kiro-cli doctor)
+  config-atuin    Configure Atuin compatibility
+
+Examples:
+  zsh-tool-kiro              Check status
+  zsh-tool-kiro install      Install Kiro CLI
+  zsh-tool-kiro health       Run health check
+
+For more info: https://kiro.dev/docs/cli/
+KIRO_HELP
+      return 0
+      ;;
     install)
       _zsh_tool_log INFO "Installing Kiro CLI integration..."
       local lazy_loading=$(_zsh_tool_parse_kiro_lazy_loading)
@@ -594,6 +705,25 @@ zsh-tool-config() {
   local config_dir="${ZSH_TOOL_CONFIG_DIR:-${HOME}/.config/zsh-tool}"
 
   case "$subcommand" in
+    --help|-h)
+      cat <<'CONFIG_HELP'
+Usage: zsh-tool-config [COMMAND]
+
+Manage zsh-tool configuration.
+
+Commands:
+  list    Display current configuration (default)
+  edit    Open configuration in editor
+
+Config location: ~/.config/zsh-tool/config.yaml
+
+Examples:
+  zsh-tool-config           Show config
+  zsh-tool-config list      Show config
+  zsh-tool-config edit      Edit config in $EDITOR
+CONFIG_HELP
+      return 0
+      ;;
     list)
       cat "${config_dir}/config.yaml"
       ;;
@@ -601,7 +731,7 @@ zsh-tool-config() {
       "${EDITOR:-vim}" "${config_dir}/config.yaml"
       ;;
     *)
-      echo "Usage: zsh-tool-config [list|edit]"
+      echo "Usage: zsh-tool-config [--help] [list|edit]"
       return 1
       ;;
   esac

@@ -264,9 +264,34 @@ _zsh_tool_git_pull() {
 # Main git integration command
 _zsh_tool_git_integration() {
   local subcommand=$1
-  shift
+  shift 2>/dev/null || true
 
   case "$subcommand" in
+    --help|-h)
+      cat <<'GIT_HELP'
+Usage: zsh-tool-git [COMMAND] [ARGS]
+
+Git integration for dotfiles version control.
+
+Commands:
+  init              Initialize dotfiles repository
+  remote <url>      Configure remote URL
+  status            Show dotfiles status
+  add <files>       Add files to version control
+  commit <message>  Commit changes
+  push              Push to remote
+  pull              Pull from remote
+
+Examples:
+  zsh-tool-git init                          Initialize repo
+  zsh-tool-git remote git@github.com:u/dots  Set remote
+  zsh-tool-git status                        Check status
+  zsh-tool-git add ~/.zshrc                  Track file
+  zsh-tool-git commit "Update aliases"       Commit changes
+  zsh-tool-git push                          Push to remote
+GIT_HELP
+      return 0
+      ;;
     init)
       _zsh_tool_git_init_repo "$@"
       ;;
@@ -289,17 +314,8 @@ _zsh_tool_git_integration() {
       _zsh_tool_git_pull "$@"
       ;;
     *)
-      echo "Usage: zsh-tool-git <command> [args]"
-      echo ""
-      echo "Commands:"
-      echo "  init              Initialize dotfiles repository"
-      echo "  remote <url>      Configure remote URL"
-      echo "  status            Show dotfiles status"
-      echo "  add <files>       Add files to version control"
-      echo "  commit <message>  Commit changes"
-      echo "  push              Push to remote"
-      echo "  pull              Pull from remote"
-      echo ""
+      echo "Usage: zsh-tool-git [--help] <command> [args]"
+      echo "Run 'zsh-tool-git --help' for details"
       return 1
       ;;
   esac

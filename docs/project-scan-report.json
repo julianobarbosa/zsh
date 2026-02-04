@@ -2,10 +2,10 @@
   "workflow_version": "1.2.0",
   "timestamps": {
     "started": "2025-12-23T10:41:00Z",
-    "last_updated": "2025-12-23T10:50:00Z",
-    "completed": "2025-12-23T10:50:00Z"
+    "last_updated": "2026-02-04T12:21:00Z",
+    "completed": "2026-02-04T12:21:00Z"
   },
-  "mode": "initial_scan",
+  "mode": "deep_dive_comprehensive",
   "scan_level": "exhaustive",
   "yolo_mode": true,
   "status": "COMPLETED",
@@ -23,7 +23,8 @@
     {"step": "step_9", "status": "completed", "timestamp": "2025-12-23T10:48:00Z", "summary": "All supporting docs exist and current"},
     {"step": "step_10", "status": "completed", "timestamp": "2025-12-23T10:49:00Z", "summary": "INDEX.md verified - excellent navigation"},
     {"step": "step_11", "status": "completed", "timestamp": "2025-12-23T10:49:00Z", "summary": "Validation passed - 100% health score"},
-    {"step": "step_12", "status": "completed", "timestamp": "2025-12-23T10:50:00Z", "summary": "Workflow completed successfully"}
+    {"step": "step_12", "status": "completed", "timestamp": "2025-12-23T10:50:00Z", "summary": "Workflow completed successfully"},
+    {"step": "deep_dive_2026", "status": "completed", "timestamp": "2026-02-04T12:21:00Z", "summary": "Deep dive scan of 42 files - regenerated architecture, module reference, test coverage, quickref docs"}
   ],
   "current_step": "completed",
   "project_types": [{"part_id": "main", "project_type_id": "cli", "display_name": "CLI Tool"}],
@@ -32,6 +33,7 @@
     "repository_type": "monolith",
     "total_modules": 16,
     "total_lines_of_code": 4893,
+    "total_tests": 200,
     "primary_language": "ZSH",
     "entry_point": "install.sh",
     "module_categories": ["core", "install", "update", "restore", "git", "integrations"],
@@ -40,23 +42,90 @@
       "configuration": "YAML",
       "state_management": "JSON",
       "shell_framework": "Oh My Zsh",
-      "optional_integrations": ["Atuin", "Amazon Q CLI"]
+      "optional_integrations": ["Atuin", "Kiro CLI"]
     },
     "architecture_pattern": "Modular Monolith with Epic-based organization",
+    "architecture_highlights": [
+      "Function namespacing (_zsh_tool_ prefix)",
+      "JSON-based state management with dot notation",
+      "Atomic file operations (temp file + mv)",
+      "Automatic rollback on failure",
+      "Bare git repository for dotfiles",
+      "Security validation for AI completions"
+    ],
     "documentation_health": {
       "score": "100%",
       "rating": "EXCELLENT",
-      "total_docs": 37,
+      "total_docs": 41,
       "index_exists": true,
-      "last_major_update": "2025-12-17"
+      "last_major_update": "2026-02-04"
     },
     "ci_cd_status": "Not configured"
   },
-  "outputs_generated": ["project-scan-report.json"],
+  "deep_dive_2026_02_04": {
+    "scan_type": "comprehensive_all_modules",
+    "files_scanned": 42,
+    "documentation_generated": [
+      "docs/ARCHITECTURE.md",
+      "docs/MODULE-REFERENCE.md",
+      "docs/TEST-COVERAGE.md",
+      "docs/QUICKREF.md"
+    ],
+    "modules_analyzed": {
+      "core": {
+        "files": ["logging.zsh", "state.zsh", "backup.zsh", "backup-mgmt.zsh", "verify.zsh", "prompts.zsh"],
+        "functions": 25,
+        "patterns": ["namespaced functions", "JSON state", "atomic operations"]
+      },
+      "install": {
+        "files": ["prerequisites.zsh", "installers.zsh", "omz.zsh", "plugins.zsh"],
+        "functions": 15,
+        "patterns": ["package manager detection", "prerequisite checking"]
+      },
+      "update": {
+        "files": ["component-manager.zsh", "self-update.zsh", "plugins.zsh", "themes.zsh"],
+        "functions": 12,
+        "patterns": ["parallel execution", "version comparison"]
+      },
+      "restore": {
+        "files": ["restore.zsh"],
+        "functions": 8,
+        "patterns": ["atomic restore", "automatic rollback", "pre-restore backup"]
+      },
+      "git": {
+        "files": ["integration.zsh"],
+        "functions": 10,
+        "patterns": ["bare repository", "work tree separation", "gitignore template"]
+      },
+      "integrations": {
+        "files": ["atuin.zsh", "kiro-cli.zsh"],
+        "functions": 14,
+        "patterns": ["input validation", "security checks", "health monitoring"]
+      }
+    },
+    "test_analysis": {
+      "test_files": 14,
+      "total_tests": 200,
+      "coverage_areas": [
+        "prerequisites", "plugins", "themes", "backup_creation", "backup_management",
+        "restore_operations", "configuration", "git_integration", "atuin_integration",
+        "kiro_cli", "security_edge_cases", "verification", "bulk_updates", "self_update"
+      ],
+      "security_tests": 28,
+      "edge_case_tests": 28
+    }
+  },
+  "outputs_generated": [
+    "project-scan-report.json",
+    "ARCHITECTURE.md",
+    "MODULE-REFERENCE.md",
+    "TEST-COVERAGE.md",
+    "QUICKREF.md"
+  ],
   "recommendations": [
     {"priority": "low", "status": "optional", "recommendation": "Add GitHub Actions CI/CD workflow for automated testing"},
     {"priority": "low", "status": "optional", "recommendation": "Consider adding shellcheck linting to CI pipeline"},
     {"priority": "info", "status": "informational", "recommendation": "Documentation is comprehensive and ready for brownfield PRD"}
   ],
-  "resume_instructions": "Workflow completed - no resume needed"
+  "resume_instructions": "Deep dive scan completed - documentation regenerated 2026-02-04"
 }

@@ -371,33 +371,51 @@ _zsh_tool_is_tty() {
   [[ -t 1 ]] && [[ -t 2 ]]
 }
 
-# Safe echo with optional color support
-# Usage: _zsh_tool_echo_status <status_type> <message>
-# status_type: "success" (✓), "failure" (✗), "warning" (⚠), "info" (•)
+# Safe echo with emoji support
+# Usage: _zsh_tool_echo_status <status_type> <message> [is_tty]
+# status_type: "success", "failure", "warning", "info", "tip", "cmd"
+# is_tty: "true" or "false" (optional, auto-detects if not provided)
 _zsh_tool_echo_status() {
   local status_type="$1"
   local message="$2"
+  local is_tty="${3:-}"
+
+  # Auto-detect TTY if not provided (check directly, not in subshell)
+  if [[ -z "$is_tty" ]]; then
+    if [[ -t 1 ]]; then
+      is_tty="true"
+    else
+      is_tty="false"
+    fi
+  fi
 
   local prefix=""
-  case "$status_type" in
-    success) prefix="✓" ;;
-    failure) prefix="✗" ;;
-    warning) prefix="⚠" ;;
-    info)    prefix="•" ;;
-    *)       prefix="" ;;
-  esac
 
-  # In non-TTY environments, use ASCII fallbacks
-  if ! _zsh_tool_is_tty; then
+  # Use beautiful emojis for TTY
+  if [[ "$is_tty" == "true" ]]; then
+    case "$status_type" in
+      success) prefix="✅" ;;
+      failure) prefix="❌" ;;
+      warning) prefix="⚠️ " ;;
+      info)    prefix="📌" ;;
+      tip)     prefix="💡" ;;
+      cmd)     prefix="👉" ;;
+      *)       prefix="  " ;;
+    esac
+  else
+    # ASCII fallbacks for non-TTY environments (CI/pipes)
     case "$status_type" in
       success) prefix="[OK]" ;;
       failure) prefix="[FAIL]" ;;
       warning) prefix="[WARN]" ;;
-      info)    prefix="[-]" ;;
+      info)    prefix="[i]" ;;
+      tip)     prefix="[*]" ;;
+      cmd)     prefix="[>]" ;;
+      *)       prefix="   " ;;
     esac
   fi
 
-  echo "  ${prefix} ${message}"
+  echo "   ${prefix} ${message}"
 }
 
 # Display installation summary
@@ -405,140 +423,133 @@ _zsh_tool_echo_status() {
 _zsh_tool_display_summary() {
   _zsh_tool_log DEBUG "Displaying installation summary"
 
+  # Check TTY directly (don't use subshell - breaks -t test)
+  local is_tty=false
+  if [[ -t 1 ]]; then
+    is_tty=true
+  fi
+
+  local line=""
+
+  # Build separator line
+  if [[ "$is_tty" == "true" ]]; then
+    line="━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  else
+    line="=============================================="
+  fi
+
   echo ""
-  # Use ASCII box drawing for non-TTY environments
-  if _zsh_tool_is_tty; then
-    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  echo "$line"
+  if [[ "$is_tty" == "true" ]]; then
+    echo "   ✅ ZSH-TOOL VERIFIED"
   else
-    echo "========================================"
+    echo "   [OK] ZSH-TOOL VERIFIED"
   fi
-  echo "  ZSH-TOOL INSTALLATION SUMMARY"
-  if _zsh_tool_is_tty; then
-    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-  else
-    echo "========================================"
-  fi
+  echo "$line"
   echo ""
 
-  # Prerequisites Section
-  echo "Prerequisites:"
+  # ─────────────────────────────────────────────────
+  # 📦 Prerequisites Section
+  # ─────────────────────────────────────────────────
+  if [[ "$is_tty" == "true" ]]; then
+    echo "📦 Prerequisites"
+  else
+    echo "[Prerequisites]"
+  fi
+
+  # Collect prerequisite info with aligned columns
+  # Suppress any noise from external tools (direnv, etc.)
+  local brew_ver="" git_ver="" omz_ver="" zsh_ver=""
 
   if command -v brew >/dev/null 2>&1; then
-    local brew_version=$(brew --version 2>/dev/null | head -1)
-    _zsh_tool_echo_status "success" "Homebrew: $brew_version"
+    brew_ver=$(DIRENV_DIR= brew --version 2>/dev/null | head -1 | sed 's/Homebrew //')
   fi
 
   if command -v git >/dev/null 2>&1; then
-    local git_version=$(git --version 2>/dev/null)
-    _zsh_tool_echo_status "success" "Git: $git_version"
+    git_ver=$(DIRENV_DIR= git --version 2>/dev/null | sed 's/git version //')
   fi
 
-  # Set default OMZ path if not already set (during install, .zshrc hasn't been sourced)
   local zsh_dir="${ZSH:-$HOME/.oh-my-zsh}"
   if [[ -d "$zsh_dir/.git" ]]; then
-    local omz_hash=$(cd "$zsh_dir" && git rev-parse --short HEAD 2>/dev/null || echo "unknown")
-    _zsh_tool_echo_status "success" "Oh My Zsh: commit $omz_hash"
+    omz_ver=$(cd "$zsh_dir" && DIRENV_DIR= git rev-parse --short HEAD 2>/dev/null || echo "unknown")
   fi
 
-  local zsh_version=$(zsh --version 2>/dev/null)
-  _zsh_tool_echo_status "success" "Zsh: $zsh_version"
+  zsh_ver=$(zsh --version 2>/dev/null | sed 's/zsh //' | cut -d' ' -f1)
+
+  # Display in clean columns
+  [[ -n "$brew_ver" ]] && _zsh_tool_echo_status "success" "Homebrew      $brew_ver" "$is_tty"
+  [[ -n "$git_ver" ]]  && _zsh_tool_echo_status "success" "Git           $git_ver" "$is_tty"
+  [[ -n "$omz_ver" ]]  && _zsh_tool_echo_status "success" "Oh My Zsh     $omz_ver" "$is_tty"
+  [[ -n "$zsh_ver" ]]  && _zsh_tool_echo_status "success" "Zsh           $zsh_ver" "$is_tty"
 
   echo ""
 
-  # Configuration Section
-  echo "Configuration:"
-
-  # Read config
+  # ─────────────────────────────────────────────────
+  # 🔌 Plugins Section
+  # ─────────────────────────────────────────────────
   local config_file="${ZSH_TOOL_CONFIG_DIR}/config.yaml"
   if [[ -f "$config_file" ]]; then
-    # SECURITY FIX: Use safe YAML parser with validation for plugins
     local plugins=()
     while IFS= read -r plugin; do
       [[ -n "$plugin" ]] && plugins+=("$plugin")
     done < <(_zsh_tool_parse_yaml_list "$config_file" "plugins")
 
     if [[ ${#plugins[@]} -gt 0 ]]; then
-      echo "  Plugins:"
+      if [[ "$is_tty" == "true" ]]; then
+        echo "🔌 Plugins (${#plugins[@]} active)"
+      else
+        echo "[Plugins] (${#plugins[@]} active)"
+      fi
+
+      # Display plugins in a compact row format
+      local plugin_line="  "
       for plugin in "${plugins[@]}"; do
-        _zsh_tool_echo_status "success" "$plugin"
+        plugin_line+=" $plugin "
       done
-    fi
-
-    # SECURITY FIX: Use safe theme parser with validation
-    local theme
-    theme=$(_zsh_tool_verify_parse_theme "$config_file")
-    if [[ -n "$theme" ]]; then
-      _zsh_tool_echo_status "success" "Theme: $theme"
-    fi
-  fi
-
-  # Custom layer
-  if [[ -f "${HOME}/.zshrc.local" ]]; then
-    _zsh_tool_echo_status "success" "Custom layer: ~/.zshrc.local"
-  fi
-
-  # Team config
-  _zsh_tool_echo_status "success" "Team config: ${config_file}"
-
-  echo ""
-
-  # Backup Section
-  local state_file="${ZSH_TOOL_STATE_FILE:-${HOME}/.local/share/zsh-tool/state.json}"
-  if [[ -f "$state_file" ]]; then
-    local backup_location=$(grep '"backup_location"' "$state_file" 2>/dev/null | sed 's/.*: *"\(.*\)".*/\1/')
-    local backup_timestamp=$(grep '"backup_timestamp"' "$state_file" 2>/dev/null | sed 's/.*: *"\(.*\)".*/\1/')
-
-    if [[ -n "$backup_location" ]] && [[ -d "$backup_location" ]]; then
-      # SECURITY FIX (HIGH-6): Validate backup_location before using with find
-      if _zsh_tool_validate_backup_location "$backup_location"; then
-        echo "Backup:"
-        _zsh_tool_echo_status "success" "Location: $backup_location"
-        _zsh_tool_echo_status "success" "Timestamp: $backup_timestamp"
-        # Safe to use find now that backup_location is validated
-        local backup_count=$(find "$backup_location" -type f 2>/dev/null | wc -l | tr -d ' ')
-        _zsh_tool_echo_status "success" "Files backed up: $backup_count"
-        echo ""
-      else
-        _zsh_tool_log WARN "Skipping backup display: invalid backup location"
-      fi
-    fi
-
-    # Timing Section
-    local install_start=$(grep '"installation_start"' "$state_file" 2>/dev/null | sed 's/.*: *"\(.*\)".*/\1/')
-    local install_end=$(grep '"installation_end"' "$state_file" 2>/dev/null | sed 's/.*: *"\(.*\)".*/\1/')
-
-    if [[ -n "$install_start" ]] && [[ -n "$install_end" ]]; then
-      echo "Installation Timing:"
-      _zsh_tool_echo_status "success" "Started: $install_start"
-      _zsh_tool_echo_status "success" "Completed: $install_end"
-
-      # MEDIUM FIX: Validate duration with fallback for corrupted state
-      local duration_seconds=$(grep '"installation_duration_seconds"' "$state_file" 2>/dev/null | sed 's/.*: *\([0-9]*\).*/\1/')
-      if [[ -n "$duration_seconds" ]] && [[ "$duration_seconds" =~ ^[0-9]+$ ]]; then
-        # Validate duration is reasonable (less than 1 hour = 3600 seconds)
-        if [[ "$duration_seconds" -lt 3600 ]]; then
-          _zsh_tool_echo_status "success" "Duration: ${duration_seconds}s"
-        else
-          _zsh_tool_echo_status "warning" "Duration: ${duration_seconds}s (unusually long)"
-        fi
-      else
-        _zsh_tool_echo_status "warning" "Duration: unavailable (state may be corrupted)"
-      fi
+      _zsh_tool_echo_status "success" "${plugin_line}" "$is_tty"
       echo ""
     fi
   fi
 
-  # Next Steps Section
-  echo "Next Steps:"
-  _zsh_tool_echo_status "info" "Customize: Edit ~/.zshrc.local for personal settings"
-  _zsh_tool_echo_status "info" "Verify: Run 'zsh-tool-verify' to check installation"
-  _zsh_tool_echo_status "info" "Docs: See ${ZSH_TOOL_CONFIG_DIR}/README.md"
-  echo ""
-  if _zsh_tool_is_tty; then
-    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  # ─────────────────────────────────────────────────
+  # ⚙️  Config Layers Section
+  # ─────────────────────────────────────────────────
+  if [[ "$is_tty" == "true" ]]; then
+    echo "⚙️  Config Layers"
   else
-    echo "========================================"
+    echo "[Config Layers]"
   fi
+
+  # Team config
+  if [[ -f "$config_file" ]]; then
+    _zsh_tool_echo_status "success" "Team:       $config_file" "$is_tty"
+  fi
+
+  # Custom layer
+  if [[ -f "${HOME}/.zshrc.local" ]]; then
+    _zsh_tool_echo_status "success" "Personal:   ~/.zshrc.local" "$is_tty"
+  fi
+
+  echo ""
+
+  # ─────────────────────────────────────────────────
+  # 🎉 Success Footer
+  # ─────────────────────────────────────────────────
+  echo "$line"
+  if [[ "$is_tty" == "true" ]]; then
+    echo "   🎉 You're all set!"
+  else
+    echo "   You're all set!"
+  fi
+  echo "$line"
+  echo ""
+
+  # ─────────────────────────────────────────────────
+  # Available Commands (not homework!)
+  # ─────────────────────────────────────────────────
+  _zsh_tool_echo_status "tip" "zsh-tool help        Show all commands" "$is_tty"
+  _zsh_tool_echo_status "cmd" "zsh-tool customize   Edit personal settings" "$is_tty"
+  _zsh_tool_echo_status "cmd" "zsh-tool update      Check for updates" "$is_tty"
   echo ""
 
   return 0
@@ -547,63 +558,105 @@ _zsh_tool_display_summary() {
 # Verify installation
 # Returns: 0 if all checks pass, 1 if any fail
 _zsh_tool_verify_installation() {
-  _zsh_tool_log INFO "Verifying installation"
+  _zsh_tool_log DEBUG "Verifying installation"
+
+  # Check TTY directly (don't use subshell - breaks -t test)
+  local is_tty=false
+  if [[ -t 1 ]]; then
+    is_tty=true
+  fi
+
+  local line=""
+
+  if [[ "$is_tty" == "true" ]]; then
+    line="━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  else
+    line="=============================================="
+  fi
 
   local failed_checks=()
+  local failed_remediation=()
 
   # Check Oh My Zsh
   if ! _zsh_tool_check_omz_loaded; then
-    failed_checks+=("Oh My Zsh not loaded")
+    failed_checks+=("Oh My Zsh not installed")
+    failed_remediation+=('sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"')
   fi
 
   # Check plugins
   if ! _zsh_tool_check_plugins_loaded; then
-    failed_checks+=("Plugins not loaded")
+    failed_checks+=("Some plugins not found")
+    failed_remediation+=("Check plugin names in config.yaml or run: zsh-tool install")
   fi
 
   # Check theme
   if ! _zsh_tool_check_theme_applied; then
-    failed_checks+=("Theme not applied")
+    failed_checks+=("Theme not installed")
+    failed_remediation+=("Verify theme name in config.yaml exists in ~/.oh-my-zsh/themes/")
   fi
 
   # HIGH-3 FIX: Run subshell verification as specified in story requirements
-  # This verifies that ~/.zshrc can be sourced in a fresh shell
-  # Skip subshell verification if ZSH_TOOL_SKIP_SUBSHELL_VERIFY is set (for testing)
   if [[ -z "$ZSH_TOOL_SKIP_SUBSHELL_VERIFY" ]]; then
     if ! _zsh_tool_verify_in_subshell; then
-      failed_checks+=("Subshell verification failed")
+      failed_checks+=("Shell configuration error")
+      failed_remediation+=("Check ~/.zshrc for syntax errors: zsh -n ~/.zshrc")
     fi
   else
     _zsh_tool_log DEBUG "Skipping subshell verification (ZSH_TOOL_SKIP_SUBSHELL_VERIFY set)"
   fi
 
-  # Report results
+  # Report results - FAILURE STATE
   if [[ ${#failed_checks[@]} -gt 0 ]]; then
     _zsh_tool_log ERROR "Installation verification failed"
 
     echo ""
-    echo "⚠️  Installation verification failed!"
+    echo "$line"
+    if [[ "$is_tty" == "true" ]]; then
+      echo "   ❌ ZSH-TOOL VERIFICATION FAILED"
+    else
+      echo "   [FAIL] ZSH-TOOL VERIFICATION FAILED"
+    fi
+    echo "$line"
     echo ""
-    echo "Failed checks:"
-    for check in "${failed_checks[@]}"; do
-      echo "  ✗ $check"
+
+    if [[ "$is_tty" == "true" ]]; then
+      echo "🚨 ${#failed_checks[@]} issue(s) blocking your setup"
+    else
+      echo "[!] ${#failed_checks[@]} issue(s) blocking your setup"
+    fi
+    echo ""
+
+    # Show numbered issues with remediation
+    local i=1
+    for idx in {1..${#failed_checks[@]}}; do
+      local check="${failed_checks[$idx]}"
+      local fix="${failed_remediation[$idx]}"
+
+      if [[ "$is_tty" == "true" ]]; then
+        echo "   ${idx}️⃣  ${check}"
+      else
+        echo "   [$idx] ${check}"
+      fi
+      echo ""
+      echo "      ${fix}"
+      echo ""
     done
-    echo ""
-    echo "Remediation options:"
-    echo "  1. Re-run installation: ./install.sh"
-    echo "  2. Restore from backup: (check ${ZSH_TOOL_STATE_FILE} for backup location)"
-    echo "  3. Check logs: cat ${ZSH_TOOL_LOG_FILE}"
+
+    echo "$line"
+    if [[ "$is_tty" == "true" ]]; then
+      echo "   👉 Fix in order, then: zsh-tool-verify"
+    else
+      echo "   [>] Fix in order, then: zsh-tool-verify"
+    fi
+    echo "$line"
     echo ""
 
     return 1
   fi
 
-  _zsh_tool_log INFO "Installation verification passed"
+  _zsh_tool_log DEBUG "Installation verification passed"
 
-  echo ""
-  echo "✓ Installation verification passed!"
-  echo ""
-
+  # Success is shown in _zsh_tool_display_summary
   return 0
 }
 
@@ -614,15 +667,26 @@ _zsh_tool_verify_installation() {
 # Public command: zsh-tool-verify
 # Runs verification and displays summary
 zsh-tool-verify() {
-  _zsh_tool_log INFO "Running installation verification"
+  # Temporarily suppress direnv and other noisy tools
+  local _old_direnv_dir="${DIRENV_DIR:-}"
+  unset DIRENV_DIR 2>/dev/null
 
-  # Run verification
+  _zsh_tool_log DEBUG "Running installation verification"
+
+  local result=0
+
+  # Run verification first
   if ! _zsh_tool_verify_installation; then
-    return 1
+    result=1
   fi
 
-  # Display summary
-  _zsh_tool_display_summary
+  # Display summary (success or failure already shown by verify_installation)
+  if [[ $result -eq 0 ]]; then
+    _zsh_tool_display_summary | grep -v -E "^(direnv:|\\[0m)"
+  fi
 
-  return 0
+  # Restore direnv if it was set
+  [[ -n "$_old_direnv_dir" ]] && export DIRENV_DIR="$_old_direnv_dir"
+
+  return $result
 }

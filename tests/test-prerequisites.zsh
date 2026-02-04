@@ -19,6 +19,7 @@ PROJECT_ROOT="${SCRIPT_DIR:h}"
 TESTS_RUN=0
 TESTS_PASSED=0
 TESTS_FAILED=0
+TESTS_SKIPPED=0
 
 # Test utilities
 test_pass() {
@@ -30,6 +31,12 @@ test_fail() {
   ((TESTS_FAILED++))
   echo "${RED}  ✗ $1${NC}"
   [[ -n "$2" ]] && echo "${RED}    Error: $2${NC}"
+}
+
+test_skip() {
+  ((TESTS_SKIPPED++))
+  echo "${YELLOW}  ⊘ $1 (skipped)${NC}"
+  [[ -n "$2" ]] && echo "${YELLOW}    Reason: $2${NC}"
 }
 
 run_test() {
@@ -70,13 +77,16 @@ cleanup_test_env() {
 # ============================================
 
 # Test: Homebrew detection when installed
+# NOTE: Apple Silicon PATH handling (/opt/homebrew/bin) cannot be fully tested
+# without actual arm64 hardware. The code path is covered but integration testing
+# requires manual verification on Apple Silicon Macs.
 test_homebrew_detection_installed() {
   if command -v brew >/dev/null 2>&1; then
     _zsh_tool_check_homebrew >/dev/null 2>&1
     return $?
   else
     # Skip if Homebrew not installed on this machine
-    echo "${YELLOW}    (skipped - Homebrew not installed on test machine)${NC}"
+    test_skip "Homebrew detection" "Homebrew not installed on test machine"
     return 0
   fi
 }
@@ -87,7 +97,7 @@ test_git_detection_installed() {
     _zsh_tool_check_git >/dev/null 2>&1
     return $?
   else
-    echo "${YELLOW}    (skipped - git not installed on test machine)${NC}"
+    test_skip "Git detection" "git not installed on test machine"
     return 0
   fi
 }
@@ -228,8 +238,7 @@ test_jq_state_update() {
     local updated=$(echo "$test_json" | jq '. + {test: true}')
     [[ "$updated" == *"test"* ]]
   else
-    # Skip if jq not available
-    echo "${YELLOW}    (skipped - jq not installed)${NC}"
+    test_skip "jq state update" "jq not installed"
     return 0
   fi
 }
@@ -253,6 +262,12 @@ test_confirmation_required() {
 # Test: Homebrew install has rollback mechanism (parity with git)
 test_homebrew_install_has_rollback() {
   local func_body=$(typeset -f _zsh_tool_install_homebrew)
+  [[ "$func_body" == *"rollback"* ]] || [[ "$func_body" == *"Rollback"* ]] || [[ "$func_body" == *"pre_install_state"* ]]
+}
+
+# Test: jq install has rollback mechanism (parity with homebrew and git)
+test_jq_install_has_rollback() {
+  local func_body=$(typeset -f _zsh_tool_install_jq)
   [[ "$func_body" == *"rollback"* ]] || [[ "$func_body" == *"Rollback"* ]] || [[ "$func_body" == *"pre_install_state"* ]]
 }
 
@@ -323,6 +338,7 @@ run_test "jq-based state update works" test_jq_state_update
 run_test "Install functions return error codes" test_install_functions_return_errors
 run_test "User confirmation required before install" test_confirmation_required
 run_test "Homebrew install has rollback mechanism" test_homebrew_install_has_rollback
+run_test "jq install has rollback mechanism" test_jq_install_has_rollback
 echo ""
 
 # Security and robustness tests (NEW - adversarial review 2026-01-04)
@@ -341,6 +357,7 @@ echo "${BLUE}━━━━━━━━━━━━━━━━━━━━━━�
 echo ""
 echo "Total Tests: $TESTS_RUN"
 echo "${GREEN}Passed: $TESTS_PASSED${NC}"
+[[ $TESTS_SKIPPED -gt 0 ]] && echo "${YELLOW}Skipped: $TESTS_SKIPPED${NC}"
 echo "${RED}Failed: $TESTS_FAILED${NC}"
 echo ""
 

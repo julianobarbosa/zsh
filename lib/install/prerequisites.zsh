@@ -5,7 +5,8 @@
 # Check if Homebrew is installed
 _zsh_tool_check_homebrew() {
   if _zsh_tool_is_installed brew; then
-    local version=$(brew --version | head -1 | awk '{print $2}')
+    local version
+    version=$(brew --version | head -1 | awk '{print $2}')
     _zsh_tool_log info "Homebrew $version already installed"
     return 0
   else
@@ -19,7 +20,8 @@ _zsh_tool_install_homebrew() {
   _zsh_tool_log info "Installing Homebrew..."
 
   # Save pre-installation state for potential rollback
-  local pre_install_state=$(_zsh_tool_load_state)
+  local pre_install_state
+  pre_install_state=$(_zsh_tool_load_state)
 
   if ! _zsh_tool_prompt_confirm "Install Homebrew now?"; then
     _zsh_tool_log error "Homebrew is required. Installation aborted."
@@ -55,7 +57,8 @@ _zsh_tool_install_homebrew() {
 # Check if git is installed
 _zsh_tool_check_git() {
   if _zsh_tool_is_installed git; then
-    local version=$(git --version | awk '{print $3}')
+    local version
+    version=$(git --version | awk '{print $3}')
     _zsh_tool_log info "git $version already installed"
     return 0
   else
@@ -69,7 +72,8 @@ _zsh_tool_install_git() {
   _zsh_tool_log info "Installing git..."
 
   # Save pre-installation state for potential rollback
-  local pre_install_state=$(_zsh_tool_load_state)
+  local pre_install_state
+  pre_install_state=$(_zsh_tool_load_state)
 
   brew install git
   local exit_code=$?
@@ -93,8 +97,9 @@ _zsh_tool_install_git() {
 # Check if Xcode Command Line Tools are installed
 _zsh_tool_check_xcode_cli() {
   if xcode-select -p >/dev/null 2>&1; then
-    local path=$(xcode-select -p)
-    _zsh_tool_log info "Xcode Command Line Tools found at $path"
+    local xcode_path
+    xcode_path=$(xcode-select -p)
+    _zsh_tool_log info "Xcode Command Line Tools found at $xcode_path"
     return 0
   else
     _zsh_tool_log warn "Xcode Command Line Tools not found"
@@ -119,8 +124,9 @@ _zsh_tool_install_xcode_cli() {
 # Check if jq is installed
 _zsh_tool_check_jq() {
   if _zsh_tool_is_installed jq; then
-    local version=$(jq --version 2>/dev/null)
-    _zsh_tool_log info "$version already installed"
+    local version
+    version=$(jq --version 2>/dev/null)
+    _zsh_tool_log info "jq $version already installed"
     return 0
   else
     _zsh_tool_log warn "jq not found"
@@ -128,9 +134,13 @@ _zsh_tool_check_jq() {
   fi
 }
 
-# Install jq via Homebrew
+# Install jq via Homebrew with rollback support
 _zsh_tool_install_jq() {
   _zsh_tool_log info "jq is recommended for safe JSON state manipulation"
+
+  # Save pre-installation state for potential rollback
+  local pre_install_state
+  pre_install_state=$(_zsh_tool_load_state)
 
   if ! _zsh_tool_prompt_confirm "Install jq now?"; then
     _zsh_tool_log warn "jq installation skipped"
@@ -151,6 +161,12 @@ _zsh_tool_install_jq() {
     return 0
   else
     _zsh_tool_log error "jq installation failed"
+    _zsh_tool_log info "Rolling back state changes..."
+
+    # Rollback: restore pre-installation state
+    _zsh_tool_save_state "$pre_install_state"
+    _zsh_tool_log info "State rolled back to pre-installation"
+
     return 1
   fi
 }
@@ -159,20 +175,13 @@ _zsh_tool_install_jq() {
 _zsh_tool_check_prerequisites() {
   _zsh_tool_log info "Checking prerequisites..."
 
-  local homebrew_needed=false
-  local git_needed=false
-  local jq_needed=false
-
   # Check Homebrew
   if ! _zsh_tool_check_homebrew; then
-    homebrew_needed=true
     _zsh_tool_install_homebrew || return 1
   fi
 
   # Check git
   if ! _zsh_tool_check_git; then
-    git_needed=true
-
     if ! _zsh_tool_is_installed brew; then
       _zsh_tool_log error "Homebrew required to install git"
       return 1
@@ -183,7 +192,6 @@ _zsh_tool_check_prerequisites() {
 
   # Check jq (optional - enhances state management)
   if ! _zsh_tool_check_jq; then
-    jq_needed=true
     _zsh_tool_install_jq || {
       _zsh_tool_log warn "Continuing without jq - using fallback state management"
     }
@@ -195,20 +203,27 @@ _zsh_tool_check_prerequisites() {
   fi
 
   # Update state with prerequisites status
-  local jq_installed=$(command -v jq >/dev/null 2>&1 && echo "true" || echo "false")
-  local xcode_installed=$(xcode-select -p >/dev/null 2>&1 && echo "true" || echo "false")
+  local jq_installed xcode_installed
+  jq_installed=$(command -v jq >/dev/null 2>&1 && echo "true" || echo "false")
+  xcode_installed=$(xcode-select -p >/dev/null 2>&1 && echo "true" || echo "false")
 
   if command -v jq >/dev/null 2>&1; then
     # Safe JSON manipulation with jq
-    local state=$(_zsh_tool_load_state)
-    local updated_state=$(echo "$state" | jq --argjson hb true --argjson git true \
+    local state updated_state
+    state=$(_zsh_tool_load_state)
+    updated_state=$(echo "$state" | jq --argjson hb true --argjson git true \
       --argjson jq "$jq_installed" --argjson xcode "$xcode_installed" \
       '. + {prerequisites: {homebrew: $hb, git: $git, jq: $jq, xcode_cli: $xcode}}')
     _zsh_tool_save_state "$updated_state"
   else
     # Fallback: Use jq-like merge pattern with sed
+    # WARNING: This sed-based JSON manipulation is fragile and assumes well-formed
+    # JSON without nested objects in prerequisites. It handles simple key:value
+    # pairs but may break with complex JSON structures. When possible, install jq
+    # for robust JSON manipulation.
     _zsh_tool_log warn "jq not available - using sed-based state update"
-    local state=$(_zsh_tool_load_state)
+    local state
+    state=$(_zsh_tool_load_state)
 
     # If state is empty or malformed, create base structure
     if [[ -z "$state" ]] || ! echo "$state" | grep -q "prerequisites"; then

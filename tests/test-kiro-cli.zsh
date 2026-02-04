@@ -428,7 +428,7 @@ run_tests() {
   fi
 }
 
-# Run tests if executed directly
-if [[ "${BASH_SOURCE[0]}" == "${0}" ]] || [[ "${(%):-%x}" == "${0}" ]]; then
+# Run tests if executed directly (zsh-only check)
+if [[ "${(%):-%x}" == "${0}" ]] || [[ "${0}" == *test-kiro-cli.zsh ]]; then
   run_tests
 fi

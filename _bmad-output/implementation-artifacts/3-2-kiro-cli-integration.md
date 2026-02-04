@@ -75,6 +75,16 @@ Status: done
   - [x] 8.5 Test health check validation
   - [x] 8.6 Test edge cases (test-kiro-cli-edge-cases.zsh)
 
+### Review Follow-ups (AI - 2026-02-04)
+
+- [x] [AI-Review][Medium] Fix unicode validation - use POSIX locale or explicit char list [lib/integrations/kiro-cli.zsh:229-230]
+- [x] [AI-Review][Medium] Fix invalid local function syntax - use regular function [lib/integrations/kiro-cli.zsh:243-245]
+- [x] [AI-Review][Medium] Fix SC2155 - separate variable declaration from assignment [lib/integrations/kiro-cli.zsh:multiple]
+- [x] [AI-Review][Medium] Add EXIT trap for complete cleanup coverage [lib/integrations/kiro-cli.zsh:314]
+- [x] [AI-Review][Low] Remove bash-specific BASH_SOURCE from test files [tests/test-kiro-cli*.zsh]
+- [x] [AI-Review][Low] Use consistent variable naming (version vs version_output) [lib/integrations/kiro-cli.zsh]
+- [x] [AI-Review][Low] Update story date in Debug Log References [story file]
+
 ---
 
 ## Dev Notes
@@ -153,9 +163,9 @@ Claude (multiple sessions)
 
 ### Debug Log References
 
-- Tests run: 2026-01-05
-- test-kiro-cli.zsh - All tests passing
-- test-kiro-cli-edge-cases.zsh - Edge cases covered
+- Tests run: 2026-02-04 (code review round)
+- test-kiro-cli.zsh - All 16 tests passing
+- test-kiro-cli-edge-cases.zsh - All 28 edge cases passing (unicode validation fixed)
 
 ### Completion Notes List
 
@@ -166,12 +176,29 @@ Claude (multiple sessions)
 5. **Atuin compatibility:** Proper disabledClis configuration via jq
 6. **Security:** Input validation, atomic file ops, temp file cleanup
 7. **Tests:** Comprehensive test suite with edge cases
+8. **Code Review (2026-02-04):** 7 issues resolved (4 Medium, 3 Low)
+   - Unicode validation now uses C locale to prevent bypass
+   - SC2155 warnings fixed (separate declaration/assignment)
+   - Trap cleanup now includes EXIT signal
+   - Consistent variable naming throughout
+
+### Change Log
+
+- 2026-02-04: Code Review - Fixed 8 issues (4 Medium, 4 Low)
+  - Fixed unicode validation by adding explicit non-ASCII check
+  - Fixed unicode test data (was using ASCII strings, now uses actual unicode)
+  - Fixed SC2155 shellcheck warnings (8 instances)
+  - Fixed invalid local function syntax (_cleanup_temp → _kiro_cleanup_temp_file)
+  - Added EXIT signal to trap for complete cleanup coverage
+  - Removed bash-specific BASH_SOURCE from test files
+  - Consistent variable naming (version_output throughout)
+  - Updated Debug Log date
 
 ### File List
 
 **Implementation:**
-- `lib/integrations/kiro-cli.zsh` - Main implementation (510 lines)
+- `lib/integrations/kiro-cli.zsh` - Main implementation (515 lines)
 
 **Tests:**
-- `tests/test-kiro-cli.zsh` - Unit tests
-- `tests/test-kiro-cli-edge-cases.zsh` - Edge case tests
+- `tests/test-kiro-cli.zsh` - Unit tests (16 tests)
+- `tests/test-kiro-cli-edge-cases.zsh` - Edge case tests (28 tests)

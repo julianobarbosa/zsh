@@ -604,7 +604,9 @@ test_concurrent_high_volume_access() {
 
 # Test 25: Unicode character handling
 test_security_unicode_characters() {
-  local unicode_names=("test:rocket:cli" "cafe" "test")
+  # Use actual unicode characters, not ASCII representations
+  # café has accent, 测试 is Chinese, émoji is accented
+  local unicode_names=("café" "测试" "tëst" "naïve")
   local all_rejected=true
 
   for name in "${unicode_names[@]}"; do
@@ -772,7 +774,7 @@ run_edge_case_tests() {
   fi
 }
 
-# Run tests if executed directly
-if [[ "${BASH_SOURCE[0]}" == "${0}" ]] || [[ "${(%):-%x}" == "${0}" ]]; then
+# Run tests if executed directly (zsh-only check)
+if [[ "${(%):-%x}" == "${0}" ]] || [[ "${0}" == *test-kiro-cli-edge-cases.zsh ]]; then
   run_edge_case_tests
 fi

@@ -24,7 +24,8 @@ _kiro_is_installed() {
 
   # Verify it's actually Kiro CLI by checking version output
   # Kiro CLI version format: "Kiro CLI vX.X.X" or similar
-  local version_output=$(q --version 2>/dev/null | head -n1)
+  local version_output
+  version_output=$(q --version 2>/dev/null | head -n1)
 
   # Check for Kiro identifiers in version string
   if [[ "$version_output" =~ [Kk]iro ]] || \
@@ -33,7 +34,8 @@ _kiro_is_installed() {
   fi
 
   # Also check if the q binary is from Kiro app bundle
-  local q_path=$(command -v q 2>/dev/null)
+  local q_path
+  q_path=$(command -v q 2>/dev/null)
   if [[ "$q_path" =~ "Kiro" ]] || [[ "$q_path" =~ "kiro" ]]; then
     return 0
   fi
@@ -48,18 +50,19 @@ _kiro_detect() {
 
   if _kiro_is_installed; then
     # Extract first line only as version output may include additional info
-    local version
+    local version_output
     if command -v kiro-cli >/dev/null 2>&1; then
-      version=$(kiro-cli --version 2>/dev/null | head -n1)
+      version_output=$(kiro-cli --version 2>/dev/null | head -n1)
     else
-      version=$(q --version 2>/dev/null | head -n1)
+      version_output=$(q --version 2>/dev/null | head -n1)
     fi
-    _zsh_tool_log INFO "Kiro CLI detected: $version"
+    _zsh_tool_log INFO "Kiro CLI detected: $version_output"
     return 0
   else
     # Check if there's a different 'q' command that's not Kiro CLI
     if _zsh_tool_is_installed "q"; then
-      local other_q=$(q --version 2>/dev/null | head -n1)
+      local other_q
+      other_q=$(q --version 2>/dev/null | head -n1)
       _zsh_tool_log WARN "Found 'q' command but it's not Kiro CLI: $other_q"
       _zsh_tool_log INFO "Kiro CLI needs to be installed separately"
     else
@@ -186,7 +189,8 @@ _kiro_health_check() {
   fi
 
   # Verify command is executable
-  local cmd_path=$(command -v "$kiro_cmd")
+  local cmd_path
+  cmd_path=$(command -v "$kiro_cmd")
   if [[ ! -x "$cmd_path" ]]; then
     _zsh_tool_log ERROR "Kiro CLI command is not executable: $cmd_path"
     _zsh_tool_log ERROR "Fix with: chmod +x $cmd_path"
@@ -226,8 +230,9 @@ _kiro_validate_cli_name() {
     return 1
   fi
 
-  # Check pattern: only alphanumeric, hyphen, and underscore allowed
-  if [[ ! "$cli_name" =~ ^[a-zA-Z0-9_-]+$ ]]; then
+  # Check pattern: only ASCII alphanumeric, hyphen, and underscore allowed
+  # First check for any non-ASCII characters (bytes > 127)
+  if [[ "$cli_name" =~ [^[:ascii:]] ]] || [[ ! "$cli_name" =~ ^[a-zA-Z0-9_-]+$ ]]; then
     _zsh_tool_log ERROR "Invalid CLI name: '$cli_name'"
     _zsh_tool_log ERROR "Only alphanumeric characters, hyphens, and underscores are allowed"
     return 1
@@ -236,13 +241,16 @@ _kiro_validate_cli_name() {
   return 0
 }
 
+# Helper function for temp file cleanup (defined at module level for proper scoping)
+_kiro_cleanup_temp_file() {
+  local file="$1"
+  [[ -n "$file" && -f "$file" ]] && rm -f "$file" 2>/dev/null
+}
+
 # Configure Kiro CLI settings file
 _kiro_configure_settings() {
   local disabled_clis=("$@")
   local temp_file=""
-  local _cleanup_temp() {
-    [[ -n "$temp_file" && -f "$temp_file" ]] && rm -f "$temp_file" 2>/dev/null
-  }
 
   _zsh_tool_log INFO "Configuring Kiro CLI settings..."
 
@@ -310,34 +318,34 @@ _kiro_configure_settings() {
   # Update settings file using jq (safe JSON manipulation)
   temp_file="${KIRO_SETTINGS_FILE}.tmp.$$.$RANDOM.$(date +%s%N 2>/dev/null || date +%s)"
 
-  # Set up trap for cleanup on interrupt/error
-  trap '_cleanup_temp' INT TERM
+  # Set up trap for cleanup on interrupt/error/exit
+  trap '_kiro_cleanup_temp_file "$temp_file"' INT TERM EXIT
 
   if ! (umask 077; jq ".disabledClis = $jq_array" "$KIRO_SETTINGS_FILE" > "$temp_file") 2>/dev/null; then
     _zsh_tool_log ERROR "Failed to update settings with jq"
-    _cleanup_temp
-    trap - INT TERM
+    _kiro_cleanup_temp_file "$temp_file"
+    trap - INT TERM EXIT
     return 1
   fi
 
   # Verify temp file was created and has content
   if [[ ! -f "$temp_file" ]] || [[ ! -s "$temp_file" ]]; then
     _zsh_tool_log ERROR "Temporary settings file creation failed"
-    _cleanup_temp
-    trap - INT TERM
+    _kiro_cleanup_temp_file "$temp_file"
+    trap - INT TERM EXIT
     return 1
   fi
 
   # Atomic move
   if ! mv "$temp_file" "$KIRO_SETTINGS_FILE" 2>/dev/null; then
     _zsh_tool_log ERROR "Failed to move settings file into place"
-    _cleanup_temp
-    trap - INT TERM
+    _kiro_cleanup_temp_file "$temp_file"
+    trap - INT TERM EXIT
     return 1
   fi
 
-  # Clear trap after successful completion
-  trap - INT TERM
+  # Clear trap after successful completion (temp_file no longer exists after mv)
+  trap - INT TERM EXIT
 
   _zsh_tool_log INFO "Kiro CLI settings configured"
   _zsh_tool_log DEBUG "Settings file: $KIRO_SETTINGS_FILE"
@@ -374,7 +382,8 @@ _kiro_setup_lazy_loading() {
 
   # Check if .zshrc is a symlink and warn user
   if [[ -L "$zshrc" ]]; then
-    local link_target=$(readlink "$zshrc")
+    local link_target
+    link_target=$(readlink "$zshrc")
     _zsh_tool_log WARN ".zshrc is a symlink: $zshrc -> $link_target"
     _zsh_tool_log WARN "Modifying symlinked configuration may affect other systems"
 
@@ -395,7 +404,8 @@ _kiro_setup_lazy_loading() {
   fi
 
   # Create backup with timestamp
-  local backup="${zshrc}.backup-$(date +%Y%m%d-%H%M%S)"
+  local backup
+  backup="${zshrc}.backup-$(date +%Y%m%d-%H%M%S)"
   if ! cp "$zshrc" "$backup" 2>/dev/null; then
     _zsh_tool_log ERROR "Failed to create backup: $backup"
     _zsh_tool_log ERROR "Aborting to avoid data loss"

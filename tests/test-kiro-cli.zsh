@@ -373,6 +373,102 @@ test_kiro_install_integration_flow() {
   fi
 }
 
+# Test 17: State update function exists
+test_state_update_function() {
+  if type _kiro_update_state >/dev/null 2>&1; then
+    test_result "State update: function exists" "PASS"
+  else
+    test_result "State update: function exists" "FAIL" "Function not defined"
+  fi
+}
+
+# Test 18: State update creates state entry
+test_state_update_creates_entry() {
+  local test_state_dir="/tmp/test-state-$$"
+  mkdir -p "$test_state_dir"
+
+  # Set up isolated state file
+  local old_state_file="${ZSH_TOOL_STATE_FILE:-}"
+  export ZSH_TOOL_STATE_FILE="$test_state_dir/state.json"
+  echo '{}' > "$ZSH_TOOL_STATE_FILE"
+
+  # Run state update
+  _kiro_update_state "true" "test-version" "true" "true" >/dev/null 2>&1
+
+  # Check if state was updated
+  local result="FAIL"
+  if [[ -f "$ZSH_TOOL_STATE_FILE" ]]; then
+    if grep -q "kiro_cli" "$ZSH_TOOL_STATE_FILE" 2>/dev/null; then
+      result="PASS"
+    fi
+  fi
+
+  # Restore and cleanup
+  [[ -n "$old_state_file" ]] && export ZSH_TOOL_STATE_FILE="$old_state_file" || unset ZSH_TOOL_STATE_FILE
+  rm -rf "$test_state_dir"
+
+  if [[ "$result" == "PASS" ]]; then
+    test_result "State update: creates state entry" "PASS"
+  else
+    test_result "State update: creates state entry" "FAIL" "kiro_cli not found in state"
+  fi
+}
+
+# Test 19: Remove lazy loading function exists
+test_remove_lazy_loading_function() {
+  if type _kiro_remove_lazy_loading >/dev/null 2>&1; then
+    test_result "Remove lazy loading: function exists" "PASS"
+  else
+    test_result "Remove lazy loading: function exists" "FAIL" "Function not defined"
+  fi
+}
+
+# Test 20: Remove lazy loading removes configuration
+test_remove_lazy_loading_removes_config() {
+  local test_home="/tmp/test-remove-lazy-$$"
+  mkdir -p "$test_home"
+
+  # Create .zshrc with lazy loading
+  cat > "$test_home/.zshrc" << 'EOF'
+# Some existing config
+export PATH=/usr/bin
+
+# Kiro CLI lazy loading (zsh-tool)
+# Defers Kiro CLI initialization until first use
+_kiro_lazy_init() {
+  unalias kiro-cli 2>/dev/null
+  unalias q 2>/dev/null
+}
+alias kiro-cli='_kiro_lazy_init'
+alias q='_kiro_lazy_init'
+
+# More config after
+export EDITOR=vim
+EOF
+
+  # Run remove in subshell
+  local result=$(
+    HOME="$test_home"
+    _kiro_remove_lazy_loading >/dev/null 2>&1
+
+    # Check if lazy loading was removed
+    if grep -q "Kiro CLI lazy loading" "${HOME}/.zshrc" 2>/dev/null; then
+      echo "FAIL"
+    else
+      echo "PASS"
+    fi
+  )
+
+  # Cleanup
+  rm -rf "$test_home"
+
+  if [[ "$result" == "PASS" ]]; then
+    test_result "Remove lazy loading: removes configuration" "PASS"
+  else
+    test_result "Remove lazy loading: removes configuration" "FAIL" "Lazy loading still present"
+  fi
+}
+
 # Main test runner
 run_tests() {
   echo ""
@@ -402,6 +498,10 @@ run_tests() {
   test_error_handling_missing_kiro
   test_integration_with_config
   test_kiro_install_integration_flow
+  test_state_update_function
+  test_state_update_creates_entry
+  test_remove_lazy_loading_function
+  test_remove_lazy_loading_removes_config
 
   # Teardown
   teardown_test_env

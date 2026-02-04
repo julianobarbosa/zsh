@@ -85,13 +85,22 @@ Status: done
 - [x] [AI-Review][Low] Use consistent variable naming (version vs version_output) [lib/integrations/kiro-cli.zsh]
 - [x] [AI-Review][Low] Update story date in Debug Log References [story file]
 
+### Review Follow-ups (AI - 2026-02-04 Round 2)
+
+- [x] [AI-Review][High] Implement state.json integration - Task 7.1 was marked done but not implemented [lib/integrations/kiro-cli.zsh]
+- [x] [AI-Review][Medium] Fix hardcoded path - use KIRO_CONFIG_DIR instead of hardcoded ~/.kiro [lib/integrations/kiro-cli.zsh:430-431]
+- [x] [AI-Review][Medium] Remove unnecessary alias _kiro_install_integration [lib/integrations/kiro-cli.zsh:519]
+- [x] [AI-Review][Medium] Add _kiro_remove_lazy_loading() function for uninstall capability [lib/integrations/kiro-cli.zsh]
+- [x] [AI-Review][Low] Add legacy Amazon Q detection for backwards compatibility [lib/integrations/kiro-cli.zsh:31-34]
+- [x] [AI-Review][Low] Add tests for state.json integration and remove lazy loading [tests/test-kiro-cli.zsh]
+
 ---
 
 ## Dev Notes
 
 ### Component Location
 
-**File:** `lib/integrations/kiro-cli.zsh` (510 lines)
+**File:** `lib/integrations/kiro-cli.zsh` (637 lines)
 
 **Dependencies:**
 - `lib/core/utils.zsh` - Logging, state management, prompts
@@ -163,9 +172,9 @@ Claude (multiple sessions)
 
 ### Debug Log References
 
-- Tests run: 2026-02-04 (code review round)
-- test-kiro-cli.zsh - All 16 tests passing
-- test-kiro-cli-edge-cases.zsh - All 28 edge cases passing (unicode validation fixed)
+- Tests run: 2026-02-04 (code review round 2)
+- test-kiro-cli.zsh - All 20 tests passing (4 new tests added)
+- test-kiro-cli-edge-cases.zsh - All 28 edge cases passing
 
 ### Completion Notes List
 
@@ -175,16 +184,29 @@ Claude (multiple sessions)
 4. **Lazy loading:** Performance optimization implemented with backup/restore
 5. **Atuin compatibility:** Proper disabledClis configuration via jq
 6. **Security:** Input validation, atomic file ops, temp file cleanup
-7. **Tests:** Comprehensive test suite with edge cases
-8. **Code Review (2026-02-04):** 7 issues resolved (4 Medium, 3 Low)
+7. **Tests:** Comprehensive test suite with edge cases (48 total tests)
+8. **Code Review Round 1 (2026-02-04):** 7 issues resolved (4 Medium, 3 Low)
    - Unicode validation now uses C locale to prevent bypass
    - SC2155 warnings fixed (separate declaration/assignment)
    - Trap cleanup now includes EXIT signal
    - Consistent variable naming throughout
+9. **Code Review Round 2 (2026-02-04):** 6 issues resolved (1 High, 3 Medium, 2 Low)
+   - State.json integration now implemented (_kiro_update_state)
+   - Uninstall capability added (_kiro_remove_lazy_loading)
+   - Path consistency and backwards compatibility fixes
 
 ### Change Log
 
-- 2026-02-04: Code Review - Fixed 8 issues (4 Medium, 4 Low)
+- 2026-02-04: Code Review Round 2 - Fixed 6 issues (1 High, 3 Medium, 2 Low)
+  - Implemented _kiro_update_state() for state.json integration (was marked done but missing)
+  - Fixed hardcoded ~/.kiro path to use configurable KIRO_CONFIG_DIR
+  - Removed unnecessary _kiro_install_integration alias
+  - Added _kiro_remove_lazy_loading() function for uninstall capability
+  - Added legacy Amazon Q detection for backwards compatibility
+  - Added 4 new tests for state.json and remove lazy loading functionality
+  - File grew from 520 to 637 lines, tests from 16 to 20
+
+- 2026-02-04: Code Review Round 1 - Fixed 8 issues (4 Medium, 4 Low)
   - Fixed unicode validation by adding explicit non-ASCII check
   - Fixed unicode test data (was using ASCII strings, now uses actual unicode)
   - Fixed SC2155 shellcheck warnings (8 instances)
@@ -197,8 +219,8 @@ Claude (multiple sessions)
 ### File List
 
 **Implementation:**
-- `lib/integrations/kiro-cli.zsh` - Main implementation (515 lines)
+- `lib/integrations/kiro-cli.zsh` - Main implementation (637 lines)
 
 **Tests:**
-- `tests/test-kiro-cli.zsh` - Unit tests (16 tests)
+- `tests/test-kiro-cli.zsh` - Unit tests (20 tests)
 - `tests/test-kiro-cli-edge-cases.zsh` - Edge case tests (28 tests)

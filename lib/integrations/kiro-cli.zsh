@@ -28,8 +28,11 @@ _kiro_is_installed() {
   version_output=$(q --version 2>/dev/null | head -n1)
 
   # Check for Kiro identifiers in version string
+  # Also check for legacy Amazon Q branding for backwards compatibility
   if [[ "$version_output" =~ [Kk]iro ]] || \
-     [[ "$version_output" =~ "kiro-cli" ]]; then
+     [[ "$version_output" =~ "kiro-cli" ]] || \
+     [[ "$version_output" =~ [Aa]mazon.*[Qq] ]] || \
+     [[ "$version_output" =~ "amazonq" ]]; then
     return 0
   fi
 
@@ -427,8 +430,10 @@ _kiro_lazy_init() {
   unfunction _kiro_lazy_init 2>/dev/null
 
   # Source Kiro CLI integration (typically added by installer)
-  if [[ -f "${HOME}/.kiro/shell/zshrc" ]]; then
-    source "${HOME}/.kiro/shell/zshrc"
+  # Use KIRO_CONFIG_DIR if set, otherwise default to ~/.kiro
+  local kiro_shell_rc="${KIRO_CONFIG_DIR:-${HOME}/.kiro}/shell/zshrc"
+  if [[ -f "$kiro_shell_rc" ]]; then
+    source "$kiro_shell_rc"
   fi
 
   # Execute the command with the real function (now defined by Kiro CLI)
@@ -510,10 +515,123 @@ kiro_install_integration() {
     return 1
   fi
 
+  # Step 6: Update state.json with installation info
+  local version_info="unknown"
+  if command -v kiro-cli >/dev/null 2>&1; then
+    version_info=$(kiro-cli --version 2>/dev/null | head -n1)
+  elif command -v q >/dev/null 2>&1; then
+    version_info=$(q --version 2>/dev/null | head -n1)
+  fi
+  _kiro_update_state "true" "$version_info" "$enable_lazy_loading" "$configure_atuin"
+
   _zsh_tool_log INFO "Kiro CLI integration complete"
 
   return 0
 }
 
-# Alias for consistency with naming convention
-alias _kiro_install_integration='kiro_install_integration'
+# Update state.json with Kiro CLI installation info
+_kiro_update_state() {
+  local installed="${1:-true}"
+  local version="${2:-unknown}"
+  local lazy_loading="${3:-false}"
+  local atuin_compat="${4:-false}"
+
+  _zsh_tool_log DEBUG "Updating Kiro CLI state in state.json..."
+
+  # Load current state
+  local state
+  state=$(_zsh_tool_load_state)
+
+  # Build Kiro CLI state object
+  local kiro_state
+  kiro_state=$(cat <<EOF
+{
+  "installed": $installed,
+  "version": "$version",
+  "lazy_loading": $lazy_loading,
+  "atuin_compatibility": $atuin_compat,
+  "last_configured": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+}
+EOF
+)
+
+  # Update state - use jq if available for safe JSON manipulation
+  local updated
+  if command -v jq >/dev/null 2>&1; then
+    # Ensure integrations object exists, then set kiro_cli
+    updated=$(echo "$state" | jq --argjson val "$kiro_state" '
+      if .integrations == null then .integrations = {} else . end |
+      .integrations.kiro_cli = $val
+    ')
+  else
+    # Fallback without jq - basic string manipulation
+    local kiro_json
+    kiro_json=$(echo "$kiro_state" | tr -d '\n' | sed 's/  */ /g')
+
+    if [[ "$state" == *'"integrations"'* ]]; then
+      if [[ "$state" == *'"kiro_cli"'* ]]; then
+        _zsh_tool_log WARN "Complex state update without jq - please install jq for reliable state management"
+        updated="$state"
+      else
+        updated="${state/\"integrations\":\{/\"integrations\":\{\"kiro_cli\":${kiro_json},}"
+      fi
+    else
+      updated="${state%\}}"
+      if [[ "$updated" == "{" ]]; then
+        updated="{\"integrations\":{\"kiro_cli\":${kiro_json}}}"
+      else
+        updated="${updated},\"integrations\":{\"kiro_cli\":${kiro_json}}}"
+      fi
+    fi
+  fi
+
+  _zsh_tool_save_state "$updated"
+  _zsh_tool_log DEBUG "Kiro CLI state updated successfully"
+}
+
+# Remove lazy loading configuration from .zshrc
+_kiro_remove_lazy_loading() {
+  _zsh_tool_log INFO "Removing Kiro CLI lazy loading configuration..."
+
+  local zshrc="${HOME}/.zshrc"
+  local lazy_load_marker="# Kiro CLI lazy loading (zsh-tool)"
+  local lazy_load_end_marker="alias q='_kiro_lazy_init'"
+
+  # Check if lazy loading is configured
+  if ! grep -q "$lazy_load_marker" "$zshrc" 2>/dev/null; then
+    _zsh_tool_log INFO "Lazy loading not configured - nothing to remove"
+    return 0
+  fi
+
+  # Create backup before modification
+  local backup
+  backup="${zshrc}.backup-$(date +%Y%m%d-%H%M%S)"
+  if ! cp "$zshrc" "$backup" 2>/dev/null; then
+    _zsh_tool_log ERROR "Failed to create backup: $backup"
+    return 1
+  fi
+  _zsh_tool_log INFO "Created backup: $backup"
+
+  # Remove the lazy loading block using sed
+  # The block starts with the marker comment and ends with the q alias
+  local temp_file="${zshrc}.tmp.$$"
+  if command -v sed >/dev/null 2>&1; then
+    # Remove from marker to end marker (inclusive), plus trailing blank line
+    sed "/${lazy_load_marker}/,/${lazy_load_end_marker}/d" "$zshrc" > "$temp_file"
+
+    if [[ -s "$temp_file" ]] || [[ ! -s "$zshrc" ]]; then
+      mv "$temp_file" "$zshrc"
+      _zsh_tool_log INFO "Lazy loading configuration removed"
+    else
+      rm -f "$temp_file"
+      _zsh_tool_log ERROR "Failed to remove lazy loading - restoring backup"
+      mv "$backup" "$zshrc"
+      return 1
+    fi
+  else
+    _zsh_tool_log ERROR "sed not available - cannot remove lazy loading"
+    return 1
+  fi
+
+  return 0
+}

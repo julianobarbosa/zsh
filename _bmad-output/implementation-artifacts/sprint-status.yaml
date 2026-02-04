@@ -41,27 +41,27 @@ story_location: /Users/juliano.barbosa/Repos/github/zsh/_bmad-output/implementat
 
 development_status:
   # Epic 1: Core Installation & Configuration System
-  epic-1: in-progress
+  epic-1: done
   1-1-prerequisite-detection-and-installation: done
-  1-2-backup-existing-configuration: backlog
-  1-3-install-team-standard-configuration: backlog
-  1-4-plugin-management-system: backlog
-  1-5-theme-installation-and-selection: backlog
-  1-6-personal-customization-layer: backlog
-  1-7-installation-verification-and-summary: backlog
+  1-2-backup-existing-configuration: done
+  1-3-install-team-standard-configuration: done
+  1-4-plugin-management-system: done
+  1-5-theme-installation-and-selection: done
+  1-6-personal-customization-layer: done
+  1-7-installation-verification-and-summary: done
   epic-1-retrospective: optional
 
   # Epic 2: Maintenance & Lifecycle Management
-  epic-2: backlog
-  2-1-self-update-mechanism: backlog
-  2-2-bulk-plugin-and-theme-updates: backlog
-  2-3-configuration-backup-management: backlog
-  2-4-configuration-restore-from-backup: backlog
-  2-5-git-integration-for-dotfiles: backlog
+  epic-2: done
+  2-1-self-update-mechanism: done
+  2-2-bulk-plugin-and-theme-updates: done
+  2-3-configuration-backup-management: done
+  2-4-configuration-restore-from-backup: done
+  2-5-git-integration-for-dotfiles: done
   epic-2-retrospective: optional
 
   # Epic 3: Advanced Integrations
-  epic-3: backlog
-  3-1-atuin-shell-history-integration: backlog
-  3-2-amazon-q-cli-integration: backlog
+  epic-3: done
+  3-1-atuin-shell-history-integration: done
+  3-2-kiro-cli-integration: done
   epic-3-retrospective: optional

@@ -16,6 +16,7 @@ Start here if you're new to zsh-tool:
 
 | Document | Description | Best For |
 |----------|-------------|----------|
+| [product-brief.md](product-brief.md) | Product Brief - vision, personas, success metrics, MVP scope | High-level product understanding |
 | [PRD.md](PRD.md) | Product Requirements Document - goals, requirements, user journeys | Understanding project scope and requirements |
 | [epic-stories.md](epic-stories.md) | Story breakdown with acceptance criteria | Understanding feature implementation details |
 | [PRD-validation-report.md](PRD-validation-report.md) | PRD validation findings and recommendations | Checking requirement completeness |
@@ -139,6 +140,7 @@ docs/
 │   └── cohesion-check-report.md    # Code quality analysis
 │
 ├── Product & Planning
+│   ├── product-brief.md            # Product brief (vision, personas, metrics)
 │   ├── epic-stories.md             # Story breakdown
 │   ├── PRD-validation-report.md    # PRD validation
 │   └── backlog.md                  # Engineering backlog
@@ -214,4 +216,4 @@ If you can't find what you're looking for:
 
 ---
 
-Last Updated: 2025-12-17
+Last Updated: 2026-02-04

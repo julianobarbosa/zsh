@@ -1,7 +1,7 @@
 # zsh Product Requirements Document (PRD)
 
 **Author:** Barbosa
-**Date:** 2025-10-01 (Updated: 2025-12-23)
+**Date:** 2025-10-01 (Updated: 2026-02-04)
 **Project Level:** Level 2 (Small complete system)
 **Project Type:** CLI/Shell Configuration Tool
 **Target Scale:** 14 stories, 3 epics
@@ -35,6 +35,30 @@ Development teams often struggle with inconsistent shell configurations, leading
 1. **Reduce onboarding time** - New developers can set up a fully configured zsh environment in under 10 minutes
 2. **Ensure consistency** - All team members use the same base configuration, plugins, and conventions
 3. **Enable easy maintenance** - Developers can update configurations, plugins, and themes with simple commands
+
+### Key Differentiators
+
+What makes zsh-tool different from traditional dotfile management:
+
+| Approach | zsh-tool | Traditional Dotfiles |
+|----------|----------|---------------------|
+| Configuration | Declarative YAML (`config.yaml`) | Imperative scripts |
+| Team sharing | PR-based workflow | Copy/paste or symlinks |
+| Updates | Idempotent, repeatable | Manual, risky |
+| Personal customization | Separate layer (`~/.zshrc.local`) | Mixed with team config |
+| Audit trail | Full git history | Often none |
+
+**Core Innovation:** True "Configuration as Code" for shell environments - versioned, reviewable, and deployable like infrastructure.
+
+### Success Metrics
+
+| Metric | Target | Measurement |
+|--------|--------|-------------|
+| Onboarding Time | < 5 minutes | Time from clone to working shell |
+| Installation Success | > 95% first-attempt | Installer exit codes |
+| Team Adoption | 80% within 30 days | Active installations |
+| Support Reduction | 50% fewer shell tickets | Ticket tracking |
+| Zero Breakage | 0 broken shells | User-reported issues |
 
 ## Requirements
 
@@ -80,9 +104,39 @@ Development teams often struggle with inconsistent shell configurations, leading
 
 **NFR005: User Experience** - All commands must provide clear progress indicators and helpful error messages with suggested remediation steps
 
+## Target Users & Personas
+
+### Primary Personas
+
+**Maya - Platform Engineer / DevOps Lead**
+- Responsible for developer experience and tooling standardization
+- Maintains team's `config.yaml` in version control
+- Reviews PRs for configuration changes
+- Pain: Hours helping new hires debug shell issues, outdated wiki pages
+
+**Dev - Software Developer**
+- Uses terminal constantly for git, docker, kubectl
+- Joined team 6 months ago, still discovering useful aliases
+- Pain: Spent days copying dotfiles, worries about breaking shell
+- Need: Get productive immediately, keep personal customizations
+
+### Secondary Personas
+
+**Jordan - Engineering Manager / Tech Lead**
+- Leads team of 8 developers, cares about consistency
+- Needs audit trail for compliance
+- Pain: "Works on my machine" debugging sessions
+
+**Alex - New Hire**
+- Just joined, overwhelmed with onboarding
+- Needs one-command setup instead of 20-step wiki
+- Pain: First day spent configuring instead of coding
+
+---
+
 ## User Journeys
 
-### User Journey: New Developer Onboarding
+### User Journey 1: New Developer Onboarding (Sarah)
 
 **Actor:** Sarah, a new backend developer joining the team
 
@@ -125,6 +179,69 @@ Development teams often struggle with inconsistent shell configurations, leading
 - Total time from start to finish: < 10 minutes
 - Zero manual configuration file editing required
 - Sarah's environment matches all team members' setups
+
+### User Journey 2: Team Standardization (Maya - Platform Engineer)
+
+**Goal:** Standardize shell environments across 50+ developer team
+
+**Journey:**
+1. Maya discovers zsh-tool while searching for "team shell standardization"
+2. Creates branch, migrates existing aliases/plugins/exports to `config.yaml`
+3. Runs `./install.sh` - backs up existing config, applies new one, idempotent
+4. Opens PR with team's config, gets reviewed and merged
+5. Announces in Slack: "Run `./install.sh` from infra repo"
+6. Within an hour, 10 developers have same environment - no support tickets
+
+**Success Criteria:** Configuration changes are PRs, onboarding dropped from 2 hours to 5 minutes
+
+### User Journey 3: Plugin Discovery (Dev - Developer)
+
+**Goal:** Discover and contribute to team configuration
+
+**Journey:**
+1. Dev notices colleague's fancy git diff viewer, asks "what plugin is that?"
+2. Checks `config.yaml`, finds `diff-so-fancy` in plugins list
+3. Runs `./install.sh` again - detects new plugin, installs it
+4. Discovers other plugins in config they weren't using
+5. Finds useful plugin, opens PR to add it - reviewed, merged, everyone benefits
+
+**Success Criteria:** Living documentation of team best practices, community-driven evolution
+
+### User Journey 4: Compliance Audit (Jordan - Manager)
+
+**Goal:** Prove compliance for security audit
+
+**Journey:**
+1. Security audit requires proving approved shell configurations
+2. Jordan checks `config.yaml` - in version control with full history
+3. Writes script to verify all team members have matching config hashes
+4. Presents to leadership: "Shell configs versioned, reviewed, auditable"
+
+**Success Criteria:** Audit passes, mandatory adoption for new teams
+
+---
+
+## Domain-Specific Requirements
+
+### Security Constraints
+
+| Requirement | Priority | Notes |
+|-------------|----------|-------|
+| No credential storage | Critical | Never store passwords/tokens in config.yaml |
+| Safe defaults | High | Default config must not expose sensitive data |
+| Backup before modify | High | Always backup existing configs |
+| No arbitrary code execution | Critical | Config parsing must not execute shell commands |
+
+### Cross-Platform Compatibility
+
+| Platform | Support Level |
+|----------|---------------|
+| macOS (Apple Silicon) | Full |
+| macOS (Intel) | Full |
+| Linux (Ubuntu/Debian) | Full |
+| WSL 2 | Full |
+
+---
 
 ## UX Design Principles
 

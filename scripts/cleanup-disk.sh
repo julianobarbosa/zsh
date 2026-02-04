@@ -86,7 +86,7 @@ Options:
 
 Cleanup Levels:
     Level 1 (Safe):         NPM, Bun, pnpm, Homebrew, temp files, trash, pre-commit
-    Level 2 (Moderate):     Level 1 + Python (uv/pip), Docker, browsers, Cargo, Go, Gradle, Maven, CocoaPods
+    Level 2 (Moderate):     Level 1 + Python (uv/pip/__pycache__), Docker, browsers, Cargo, Go, Gradle, Maven, CocoaPods
     Level 3 (Aggressive):   Level 2 + Huggingface, Playwright, Xcode, iOS DeviceSupport, Android SDK
 
 Examples:
@@ -317,6 +317,35 @@ print_cache_size() {
     return 1
 }
 
+# Show top space consumers
+show_top_space_consumers() {
+    log_info "${MAGENTA}Top Space Consumers in Home Directory:${NC}"
+    echo
+
+    # Get top directories in home (depth 1)
+    log_info "Top-level directories:"
+    du -sh "${HOME}"/* "${HOME}"/.[!.]* 2>/dev/null | sort -hr | head -15 | while read -r size path; do
+        local name
+        name=$(basename "${path}")
+        printf "  %-35s %s\n" "${name}" "${size}"
+    done
+    echo
+
+    # Deep scan for largest directories (can take time)
+    if [[ "${QUIET_MODE}" == "false" ]]; then
+        log_info "Scanning for largest directories (this may take a moment)..."
+        echo
+        log_info "Top 20 largest directories:"
+        # Use timeout and limit depth to avoid very long scans
+        timeout 120 du -sh "${HOME}"/*/* "${HOME}"/.[!.]*/* 2>/dev/null | sort -hr | head -20 | while read -r size path; do
+            # Show relative path from home
+            local rel_path="${path#"${HOME}"/}"
+            printf "  %-50s %s\n" "${rel_path}" "${size}"
+        done
+        echo
+    fi
+}
+
 # Analysis phase
 run_analysis() {
     log_info "=== Disk Space Analysis ==="
@@ -330,6 +359,9 @@ run_analysis() {
         return 0
     fi
 
+    # Show top space consumers first
+    show_top_space_consumers
+
     log_info "Analyzing caches..."
     echo
 
@@ -337,8 +369,10 @@ run_analysis() {
     log_info "${MAGENTA}Package Manager Caches:${NC}"
     local pkg_total=0
     local found=false
+    # Show NPM subdirectories for better visibility
     for cache_info in \
-        "NPM:${HOME}/.npm" \
+        "NPM _cacache:${HOME}/.npm/_cacache" \
+        "NPM _npx:${HOME}/.npm/_npx" \
         "Bun:${HOME}/.bun/install/cache" \
         "pnpm:${HOME}/.pnpm-store" \
         "Yarn:${HOME}/.yarn" \
@@ -373,6 +407,14 @@ run_analysis() {
             found=true
         fi
     done
+    # Check __pycache__ directories (quick estimate)
+    local pycache_size
+    pycache_size=$(timeout 30 find "${HOME}" -name "__pycache__" -type d -prune 2>/dev/null | head -1000 | xargs du -sk 2>/dev/null | awk '{sum+=$1} END {print sum+0}')
+    if [[ "${pycache_size}" -gt 0 ]]; then
+        printf "  %-25s %s\n" "__pycache__:" "$(get_size_colored "${pycache_size}")"
+        lang_total=$((lang_total + pycache_size))
+        found=true
+    fi
     [[ "${found}" == "false" ]] && echo "  (none found)"
     [[ "${lang_total}" -gt 0 ]] && echo -e "  ${BLUE}Total: $(get_size_colored "${lang_total}")${NC}"
     echo
@@ -465,8 +507,12 @@ cleanup_level_1() {
     log_info "=== Level 1: Safe Cleanup ==="
     echo
 
-    # NPM cache
-    execute_command_cleanup "NPM Cache" "${HOME}/.npm" "npm cache clean --force" "npm"
+    # NPM cache - use rm for complete cleanup (npm cache clean only clears index)
+    if command_exists npm; then
+        execute_cleanup "NPM Cache" "${HOME}/.npm/_cacache" "rm -rf '${HOME}/.npm/_cacache'"
+        execute_cleanup "NPM npx Cache" "${HOME}/.npm/_npx" "rm -rf '${HOME}/.npm/_npx'"
+        execute_cleanup "NPM Logs" "${HOME}/.npm/_logs" "rm -rf '${HOME}/.npm/_logs'"
+    fi
 
     # Bun cache
     execute_command_cleanup "Bun Cache" "${HOME}/.bun/install/cache" "bun pm cache rm" "bun"
@@ -497,6 +543,29 @@ cleanup_level_2() {
     # Python caches
     execute_command_cleanup "UV Cache" "${HOME}/.cache/uv" "uv cache clean" "uv"
     execute_command_cleanup "Pip Cache" "${HOME}/Library/Caches/pip" "pip cache purge" "pip"
+
+    # Python __pycache__ directories
+    if [[ "${QUIET_MODE}" == "false" ]]; then
+        log_info "Finding __pycache__ directories..."
+        local pycache_size
+        pycache_size=$(timeout 60 find "${HOME}" -name "__pycache__" -type d -prune 2>/dev/null | xargs du -sk 2>/dev/null | awk '{sum+=$1} END {print sum+0}')
+        if [[ "${pycache_size}" -gt 0 ]]; then
+            local pycache_colored
+            pycache_colored=$(get_size_colored "${pycache_size}")
+            log_info "__pycache__ directories: ${pycache_colored}"
+            if [[ "${DRY_RUN}" == "true" ]]; then
+                log_warning "[DRY RUN] Would clean __pycache__ directories"
+            elif confirm "Clean __pycache__ directories ($(kb_to_human "${pycache_size}"))?"; then
+                log_info "Cleaning __pycache__ directories..."
+                local before_size="${pycache_size}"
+                find "${HOME}" -name "__pycache__" -type d -prune -exec rm -rf '{}' + 2>/dev/null || true
+                TOTAL_SAVED=$((TOTAL_SAVED + before_size))
+                log_success "__pycache__: Cleaned! Freed: $(kb_to_human "${before_size}")"
+            fi
+        else
+            log_info "__pycache__: None found or empty"
+        fi
+    fi
 
     # Rust cache
     if command_exists cargo; then
@@ -650,8 +719,12 @@ custom_cleanup() {
     log_info "=== Custom Cleanup ==="
     echo
 
-    # Package managers
-    execute_command_cleanup "NPM Cache" "${HOME}/.npm" "npm cache clean --force" "npm"
+    # Package managers - NPM uses rm for complete cleanup
+    if command_exists npm; then
+        execute_cleanup "NPM Cache" "${HOME}/.npm/_cacache" "rm -rf '${HOME}/.npm/_cacache'"
+        execute_cleanup "NPM npx Cache" "${HOME}/.npm/_npx" "rm -rf '${HOME}/.npm/_npx'"
+        execute_cleanup "NPM Logs" "${HOME}/.npm/_logs" "rm -rf '${HOME}/.npm/_logs'"
+    fi
     execute_command_cleanup "Bun Cache" "${HOME}/.bun/install/cache" "bun pm cache rm" "bun"
     execute_command_cleanup "pnpm Cache" "${HOME}/.pnpm-store" "pnpm store prune" "pnpm"
     execute_command_cleanup "Homebrew Cache" "${HOME}/Library/Caches/Homebrew" "brew cleanup -s" "brew"

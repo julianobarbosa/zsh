@@ -42,10 +42,16 @@ test_skip() {
 run_test() {
   local test_name="$1"
   local test_func="$2"
+  local skip_count_before=$TESTS_SKIPPED
   ((TESTS_RUN++))
 
   if $test_func; then
-    test_pass "$test_name"
+    # Only count as passed if test didn't call test_skip
+    # (test_skip increments TESTS_SKIPPED before returning 0)
+    if [[ $TESTS_SKIPPED -eq $skip_count_before ]]; then
+      test_pass "$test_name"
+    fi
+    # If TESTS_SKIPPED increased, test_skip already printed the skip message
   else
     test_fail "$test_name"
   fi
@@ -341,7 +347,7 @@ run_test "Homebrew install has rollback mechanism" test_homebrew_install_has_rol
 run_test "jq install has rollback mechanism" test_jq_install_has_rollback
 echo ""
 
-# Security and robustness tests (NEW - adversarial review 2026-01-04)
+# Security and robustness tests (NEW - adversarial review 2026-02-04)
 echo "${YELLOW}[6/6] Testing Security & Robustness...${NC}"
 run_test "State save is atomic" test_state_save_atomic
 run_test "Log function handles lowercase levels" test_log_case_insensitive

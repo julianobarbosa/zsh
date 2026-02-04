@@ -2,6 +2,10 @@
 # Story 1.1: Prerequisite Detection and Installation
 # Detect and install Homebrew, git, Xcode CLI tools
 
+# shellcheck disable=SC2001
+# SC2001: sed expressions are used intentionally for JSON manipulation fallback
+# when jq is not available. See _zsh_tool_check_prerequisites() for details.
+
 # Check if Homebrew is installed
 _zsh_tool_check_homebrew() {
   if _zsh_tool_is_installed brew; then
@@ -29,7 +33,18 @@ _zsh_tool_install_homebrew() {
   fi
 
   # Run official Homebrew install script
-  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  # First verify curl succeeds before passing to bash
+  local install_script
+  install_script=$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)
+  if [[ -z "$install_script" ]]; then
+    _zsh_tool_log error "Failed to download Homebrew install script (network error or empty response)"
+    _zsh_tool_log info "Rolling back state changes..."
+    _zsh_tool_save_state "$pre_install_state"
+    _zsh_tool_log error "Please check your network connection and try again"
+    return 1
+  fi
+
+  /bin/bash -c "$install_script"
   local exit_code=$?
 
   if [[ $exit_code -eq 0 ]]; then
@@ -89,7 +104,7 @@ _zsh_tool_install_git() {
     _zsh_tool_save_state "$pre_install_state"
     _zsh_tool_log info "State rolled back to pre-installation"
 
-    _zsh_tool_log error "Please try: brew install git manually"
+    _zsh_tool_log error "Please install manually: brew install git"
     return 1
   fi
 }
@@ -211,10 +226,23 @@ _zsh_tool_check_prerequisites() {
     # Safe JSON manipulation with jq
     local state updated_state
     state=$(_zsh_tool_load_state)
+
+    # Validate state is valid JSON before attempting update
+    if [[ -z "$state" ]] || ! echo "$state" | jq empty 2>/dev/null; then
+      _zsh_tool_log warn "State file corrupted or empty, initializing fresh state"
+      state='{"version":"1.0.0"}'
+    fi
+
     updated_state=$(echo "$state" | jq --argjson hb true --argjson git true \
       --argjson jq "$jq_installed" --argjson xcode "$xcode_installed" \
-      '. + {prerequisites: {homebrew: $hb, git: $git, jq: $jq, xcode_cli: $xcode}}')
-    _zsh_tool_save_state "$updated_state"
+      '. + {prerequisites: {homebrew: $hb, git: $git, jq: $jq, xcode_cli: $xcode}}' 2>/dev/null)
+
+    # Verify jq produced valid output
+    if [[ -z "$updated_state" ]] || ! echo "$updated_state" | jq empty 2>/dev/null; then
+      _zsh_tool_log error "Failed to update state JSON, keeping original state"
+    else
+      _zsh_tool_save_state "$updated_state"
+    fi
   else
     # Fallback: Use jq-like merge pattern with sed
     # WARNING: This sed-based JSON manipulation is fragile and assumes well-formed
@@ -239,7 +267,12 @@ _zsh_tool_check_prerequisites() {
     # If fields don't exist, add them
     state=$(echo "$state" | sed 's/\("prerequisites":\s*{\)/\1"homebrew":true,"git":true,"jq":'"${jq_installed}"',"xcode_cli":'"${xcode_installed}"',/' | sed 's/,,/,/g' | sed 's/,}/}/g')
 
-    _zsh_tool_save_state "$state"
+    # Basic validation: ensure state still looks like JSON before saving
+    if [[ "$state" == "{"*"}" ]]; then
+      _zsh_tool_save_state "$state"
+    else
+      _zsh_tool_log error "sed-based state update produced invalid JSON, state not saved"
+    fi
   fi
 
   _zsh_tool_log info "✓ Prerequisites check complete"

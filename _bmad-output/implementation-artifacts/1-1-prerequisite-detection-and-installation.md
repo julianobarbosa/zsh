@@ -54,6 +54,16 @@ so that **I don't have to manually install Homebrew, git, or other dependencies*
 - [x] [AI-Review][Low] Document fragile sed JSON fallback with comment [lib/install/prerequisites.zsh:219-226]
 - [x] [AI-Review][Low] Add comment about Apple Silicon test coverage limitation [tests/test-prerequisites.zsh]
 
+### Review Follow-ups Round 2 (AI - 2026-02-04)
+
+- [x] [AI-Review][Medium] Fix curl failure not detected in Homebrew install [lib/install/prerequisites.zsh:32]
+- [x] [AI-Review][Medium] Fix test skip double-counting bug [tests/test-prerequisites.zsh:89-91]
+- [x] [AI-Review][Medium] Add error handling for corrupted state JSON [lib/install/prerequisites.zsh:213-216]
+- [x] [AI-Review][Medium] Add state structure validation before update [lib/install/prerequisites.zsh:229]
+- [x] [AI-Review][Low] Add shellcheck disable directive for SC2001 [lib/install/prerequisites.zsh]
+- [x] [AI-Review][Low] Fix inconsistent error message format [lib/install/prerequisites.zsh:52,92]
+- [x] [AI-Review][Low] Fix test comment date typo [tests/test-prerequisites.zsh:344]
+
 ## Dev Notes
 
 ### Current Implementation Status
@@ -170,8 +180,9 @@ Claude Opus 4.5 (claude-opus-4-5-20251101)
 
 - Test run: 2026-02-04, all 24 tests passed (added jq rollback test after code review)
 - Code review: 2026-02-04, 6 findings resolved (3 Medium, 3 Low)
+- Code review Round 2: 2026-02-04, 7 findings resolved (4 Medium, 3 Low)
 - shellcheck validation: Fixed SC2155 warnings (declare and assign separately)
-- Remaining SC2001 style suggestions are acceptable (sed for JSON regex manipulation)
+- SC2001 style suggestions: shellcheck disable directive added; shellcheck doesn't support zsh (SC1071)
 
 ### Completion Notes List
 
@@ -183,9 +194,20 @@ Claude Opus 4.5 (claude-opus-4-5-20251101)
 - ✅ shellcheck warnings fixed (SC2155 - separate declare/assign)
 - ✅ Code quality improved while maintaining all functionality
 - ✅ All 6 code review action items resolved (3 Medium, 3 Low)
+- ✅ Code Review Round 2: 7 additional issues resolved (4 Medium, 3 Low)
+- ✅ Curl failure detection added to prevent false-positive Homebrew install success
+- ✅ Test skip counting bug fixed - accurate test statistics now
 
 ### Change Log
 
+- 2026-02-04: Code Review Round 2 - Fixed 7 issues (4 Medium, 3 Low)
+  - Added curl failure detection before Homebrew install script execution
+  - Fixed test skip double-counting bug (skipped tests no longer counted as passed)
+  - Added error handling for corrupted state JSON (jq path)
+  - Added state structure validation before saving (sed fallback path)
+  - Added shellcheck disable directive for SC2001
+  - Fixed inconsistent error message format
+  - Fixed test comment date typo (2026-01-04 → 2026-02-04)
 - 2026-02-04: Fixed all 6 code review action items (3 Medium, 3 Low)
 - 2026-02-04: Added rollback mechanism to `_zsh_tool_install_jq()` for AC9 consistency
 - 2026-02-04: Added explicit skip tracking (TESTS_SKIPPED counter, test_skip function)

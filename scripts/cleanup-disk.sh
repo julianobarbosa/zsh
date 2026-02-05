@@ -740,6 +740,7 @@ custom_cleanup() {
     # Other languages
     if command_exists cargo; then
         execute_cleanup "Cargo Registry" "${HOME}/.cargo/registry" "rm -rf '${HOME}/.cargo/registry/'*"
+        execute_cleanup "Cargo Git" "${HOME}/.cargo/git" "rm -rf '${HOME}/.cargo/git/'*"
     fi
     execute_command_cleanup "Go Module Cache" "${HOME}/go/pkg/mod" "go clean -modcache" "go"
     execute_cleanup "Gradle Cache" "${HOME}/.gradle/caches" "rm -rf '${HOME}/.gradle/caches/'*"

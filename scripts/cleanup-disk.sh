@@ -85,7 +85,7 @@ Options:
     --help, -h          Show this help message
 
 Cleanup Levels:
-    Level 1 (Safe):         NPM, Bun, pnpm, Homebrew, temp files, trash, pre-commit
+    Level 1 (Safe):         NPM, Bun, pnpm, Homebrew, temp files, trash, pre-commit, user logs
     Level 2 (Moderate):     Level 1 + Python (uv/pip/__pycache__), Docker, browsers, Cargo, Go, Gradle, Maven, CocoaPods
     Level 3 (Aggressive):   Level 2 + Huggingface, Playwright, Xcode, iOS DeviceSupport, Android SDK
 
@@ -481,8 +481,21 @@ run_analysis() {
 
     # System Caches
     log_info "${MAGENTA}System:${NC}"
-    print_cache_size "Trash" "${HOME}/.Trash" || true
-    print_cache_size "Temp Files" "${HOME}/.cache/tmp" || true
+    local sys_total=0
+    found=false
+    for cache_info in \
+        "Trash:${HOME}/.Trash" \
+        "Temp Files:${HOME}/.cache/tmp" \
+        "User Logs:${HOME}/Library/Logs"; do
+        local name="${cache_info%%:*}"
+        local path="${cache_info#*:}"
+        if print_cache_size "${name}" "${path}"; then
+            sys_total=$((sys_total + $(get_size "${path}")))
+            found=true
+        fi
+    done
+    [[ "${found}" == "false" ]] && echo "  (none found)"
+    [[ "${sys_total}" -gt 0 ]] && echo -e "  ${BLUE}Total: $(get_size_colored "${sys_total}")${NC}"
     echo
 
     # Docker
@@ -531,6 +544,9 @@ cleanup_level_1() {
 
     # Pre-commit cache
     execute_command_cleanup "Pre-commit Cache" "${HOME}/.cache/pre-commit" "pre-commit clean && pre-commit gc" "pre-commit"
+
+    # User logs
+    execute_cleanup "User Logs" "${HOME}/Library/Logs" "rm -rf '${HOME}/Library/Logs/'*"
 }
 
 # Level 2: Moderate cleanup
@@ -685,7 +701,7 @@ EOF
 
     echo
     log_info "Select cleanup level:"
-    echo "  1) Safe        - NPM, Bun, pnpm, Homebrew, temp files, trash"
+    echo "  1) Safe        - NPM, Bun, pnpm, Homebrew, temp files, trash, logs"
     echo "  2) Moderate    - Level 1 + Python, Rust, Go, Java, Docker, browsers"
     echo "  3) Aggressive  - Level 2 + Huggingface, Xcode, Playwright, etc."
     echo "  4) Custom      - Choose individual items"
@@ -732,6 +748,7 @@ custom_cleanup() {
     # System
     execute_cleanup "Temp Files" "${HOME}/.cache/tmp" "rm -rf '${HOME}/.cache/tmp/'*"
     execute_cleanup "Trash" "${HOME}/.Trash" "rm -rf '${HOME}/.Trash/'*"
+    execute_cleanup "User Logs" "${HOME}/Library/Logs" "rm -rf '${HOME}/Library/Logs/'*"
 
     # Python
     execute_command_cleanup "UV Cache" "${HOME}/.cache/uv" "uv cache clean" "uv"

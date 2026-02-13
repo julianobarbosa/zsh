@@ -7,7 +7,9 @@
       "Bash(shellcheck:*)",
       "WebSearch",
       "WebFetch(domain:gist.github.com)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(tmux send-keys:*)",
+      "Bash(tmux capture-pane:*)"
     ]
   }
 }

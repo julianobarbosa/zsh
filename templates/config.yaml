@@ -29,8 +29,6 @@ aliases:
     command: "git pull"
   - name: "gps"
     command: "git push"
-  - name: "gc"
-    command: "git commit"
   - name: "ll"
     command: "ls -lah"
 

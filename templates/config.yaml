@@ -23,12 +23,6 @@ themes:
 
 # Team aliases
 aliases:
-  - name: "gs"
-    command: "git status"
-  - name: "gp"
-    command: "git pull"
-  - name: "gps"
-    command: "git push"
   - name: "ll"
     command: "ls -lah"
 

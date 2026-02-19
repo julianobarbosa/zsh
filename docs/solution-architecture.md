@@ -199,10 +199,8 @@ themes:
     - powerlevel10k
 
 aliases:
-  - name: "gs"
-    command: "git status"
-  - name: "gp"
-    command: "git pull"
+  - name: "ll"
+    command: "ls -lah"
 
 exports:
   - name: "EDITOR"

@@ -185,8 +185,7 @@ test_parse_theme() {
 test_parse_aliases() {
   local aliases=$(_zsh_tool_parse_aliases 2>/dev/null)
   # Should generate alias statements
-  echo "$aliases" | grep -q 'alias gs="git status"' && \
-  echo "$aliases" | grep -q 'alias gp="git pull"'
+  echo "$aliases" | grep -q 'alias ll="ls -lah"'
 }
 
 # Test: Export parsing and statement generation

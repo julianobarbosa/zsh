@@ -121,8 +121,8 @@ themes:
   default: "robbyrussell"
 
 aliases:
-  - name: "gs"
-    command: "git status"
+  - name: "ll"
+    command: "ls -lah"
 ```
 
 ### User Configuration (`~/.config/zsh-tool/config.yaml`)

@@ -101,8 +101,8 @@ themes:
     - agnoster
     - powerlevel10k
 aliases:
-  - name: "gs"
-    command: "git status"
+  - name: "ll"
+    command: "ls -lah"
 exports:
   - name: "EDITOR"
     value: "vim"

@@ -154,8 +154,7 @@ plugins=(git zsh-syntax-highlighting zsh-autosuggestions)
 source $ZSH/oh-my-zsh.sh
 
 # Team aliases
-alias gs="git status"
-alias gp="git pull"
+alias ll="ls -lah"
 
 # Team exports
 export EDITOR="vim"

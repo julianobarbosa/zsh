@@ -97,8 +97,8 @@ plugins:
 themes:
   default: "robbyrussell"
 aliases:
-  - name: "gs"
-    command: "git status"
+  - name: "ll"
+    command: "ls -lah"
 exports:
   - name: "EDITOR"
     value: "vim"

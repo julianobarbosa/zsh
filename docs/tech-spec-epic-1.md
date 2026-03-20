@@ -284,14 +284,14 @@ themes:
   available:
     - robbyrussell
     - agnoster
-    - powerlevel10k  # Custom, requires download
+    - spaceship-prompt  # Custom, requires download
 ```
 
 **Custom Theme Installation:**
 ```zsh
-# Example: powerlevel10k
-git clone --depth=1 https://github.com/romkatv/powerlevel10k.git \
-  ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/themes/powerlevel10k
+# Example: spaceship-prompt
+git clone --depth=1 https://github.com/spaceship-prompt/spaceship-prompt.git \
+  ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/themes/spaceship-prompt
 ```
 
 **Error Handling:**

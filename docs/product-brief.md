@@ -225,7 +225,7 @@ The MVP delivers a complete, production-ready shell configuration management sys
 
 #### 3. Configuration Categories
 - **Plugins**: Oh My Zsh plugin management (git, docker, kubectl, etc.)
-- **Themes**: Theme selection and configuration (Powerlevel10k, etc.)
+- **Themes**: Theme selection and configuration (Spaceship, etc.)
 - **Aliases**: Team-standard command shortcuts
 - **Exports**: Environment variable definitions
 - **Paths**: PATH prepends and appends

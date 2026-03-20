@@ -194,7 +194,7 @@ git clone https://github.com/user/plugin.git
 ### Set theme
 ```yaml
 # In config.yaml
-theme: powerlevel10k
+theme: spaceship-prompt
 # Or: robbyrussell, agnoster, etc.
 ```
 

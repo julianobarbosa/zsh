@@ -196,7 +196,7 @@ themes:
   available:
     - robbyrussell
     - agnoster
-    - powerlevel10k
+    - spaceship-prompt
 
 aliases:
   - name: "ll"

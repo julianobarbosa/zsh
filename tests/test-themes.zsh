@@ -99,7 +99,6 @@ themes:
   available:
     - robbyrussell
     - agnoster
-    - powerlevel10k
 aliases:
   - name: "ll"
     command: "ls -lah"

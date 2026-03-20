@@ -88,14 +88,14 @@ Status: done
 - [x] [AI-Review][MEDIUM] Handle empty theme from config - fallback to default [themes.zsh:57-59]
 - [x] [AI-Review][MEDIUM] Add error handling for stat permission preservation failure [themes.zsh:188-192]
 - [x] [AI-Review][LOW] Consider dynamic built-in theme list from OMZ themes dir [themes.zsh:105] - FIXED: Added _zsh_tool_get_builtin_themes() for dynamic detection from OMZ themes directory
-- [x] [AI-Review][LOW] Add more custom themes to THEME_URLS registry [themes.zsh:10-12] - FIXED: Expanded THEME_URLS with 7 popular themes (powerlevel10k, spaceship-prompt, pure, agkozak-zsh-prompt, starship, bullet-train, alien)
+- [x] [AI-Review][LOW] Add more custom themes to THEME_URLS registry [themes.zsh:10-12] - FIXED: Expanded THEME_URLS with popular themes (spaceship-prompt, pure, agkozak-zsh-prompt, starship, bullet-train, alien)
 
 ### Review Follow-ups (AI) - 2026-01-04 - ADVERSARIAL REVIEW (YOLO MODE)
 
 - [x] [AI-Review][HIGH] Code duplication with plugins.zsh - 90% identical logic [lib/install/themes.zsh] - RESOLVED: Now uses shared component-manager.zsh (verified: themes.zsh sources component-manager.zsh at line 8, uses _zsh_tool_install_git_component for installation)
 - [x] [AI-Review][MEDIUM] Static built-in theme list will become stale as OMZ updates [lib/install/themes.zsh:105] - FIXED: Added _zsh_tool_get_builtin_themes() for dynamic detection from OMZ themes directory
 - [x] [AI-Review][MEDIUM] Theme set doesn't validate theme works before applying [lib/install/themes.zsh:set] - DEFERRED/ACCEPTED: Validating theme works requires sourcing it which could have side effects (environment modification, prompts). Current approach verifies theme file exists (lines 285-299) but doesn't source. Consistent with OMZ behavior.
-- [x] [AI-Review][MEDIUM] Only 2-3 themes in registry - insufficient for team choice [lib/install/themes.zsh:10-12] - FIXED: Expanded THEME_URLS with 5 compatible themes (powerlevel10k, spaceship-prompt, agkozak-zsh-prompt, bullet-train, alien)
+- [x] [AI-Review][MEDIUM] Only 2-3 themes in registry - insufficient for team choice [lib/install/themes.zsh:10-12] - FIXED: Expanded THEME_URLS with 4 compatible themes (spaceship-prompt, agkozak-zsh-prompt, bullet-train, alien)
 - [x] [AI-Review][LOW] No test for theme conflicts (multiple themes with same name) [tests/test-themes.zsh] - FIXED: Added 2 tests (test_builtin_takes_precedence_over_custom, test_theme_set_uses_builtin_priority) - 40 tests total now passing
 
 ### Review Follow-ups (AI) - 2026-01-06 - ADVERSARIAL REVIEW R2
@@ -105,7 +105,7 @@ Status: done
 - [x] [AI-Review][MEDIUM] AC10 "progress spinner" claim inaccurate [story] - FIXED: Clarified to "progress log messages" not animated spinner
 - [x] [AI-Review][MEDIUM] sprint-status.yaml not in File List [story] - FIXED: Added to File List
 - [x] [AI-Review][MEDIUM] Test count inconsistency 38 vs 40 [story] - FIXED: Corrected to 40 tests throughout
-- [ ] [AI-Review][LOW] Verify remaining registry themes work with standard OMZ loading - DEFERRED: powerlevel10k, spaceship, bullet-train, alien are known-compatible
+- [ ] [AI-Review][LOW] Verify remaining registry themes work with standard OMZ loading - DEFERRED: spaceship, bullet-train, alien are known-compatible
 - [ ] [AI-Review][LOW] Add test for git clone network failure mock - DEFERRED: Current error handling tests URL validation, network mock adds complexity
 
 ---
@@ -166,7 +166,6 @@ Status: done
      available:
        - robbyrussell
        - agnoster
-       - powerlevel10k
    ```
 
 4. **Idempotency Pattern (Section 7.3):**
@@ -184,7 +183,7 @@ Current implementation uses `THEME_URLS` associative array:
 ```zsh
 typeset -gA THEME_URLS
 THEME_URLS=(
-  "powerlevel10k" "https://github.com/romkatv/powerlevel10k.git"
+  "spaceship-prompt" "https://github.com/spaceship-prompt/spaceship-prompt.git"
 )
 ```
 

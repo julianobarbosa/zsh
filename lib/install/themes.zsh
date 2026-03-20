@@ -15,7 +15,6 @@ OMZ_CUSTOM_THEMES="${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}/themes"
 # Themes requiring special installation (starship, pure) are excluded - they need dedicated integrations
 typeset -gA THEME_URLS
 THEME_URLS=(
-  "powerlevel10k" "https://github.com/romkatv/powerlevel10k.git"
   "spaceship-prompt" "https://github.com/spaceship-prompt/spaceship-prompt.git"
   "agkozak-zsh-prompt" "https://github.com/agkozak/agkozak-zsh-prompt.git"
   "bullet-train" "https://github.com/caiogondim/bullet-train.zsh.git"

@@ -147,7 +147,6 @@ source "${ZSH_TOOL_LIB_DIR}/core/component-manager.zsh"
 
 # Theme-specific configuration
 typeset -gA THEME_URLS=(
-  powerlevel10k "https://github.com/romkatv/powerlevel10k"
   spaceship-prompt "https://github.com/spaceship-prompt/spaceship-prompt"
 )
 

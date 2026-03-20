@@ -301,12 +301,7 @@ zsh-tool/
       "last_update": "2026-01-03T14:32:05Z"
     }
   },
-  "themes": {
-    "powerlevel10k": {
-      "version": "v1.16.1",
-      "last_update": "2026-01-03T14:33:00Z"
-    }
-  }
+  "themes": {}
 }
 ```
 
